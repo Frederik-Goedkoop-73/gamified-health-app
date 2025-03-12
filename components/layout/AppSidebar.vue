@@ -15,9 +15,9 @@ const teams: {
   plan: string
 }[] = [
   {
-    name: 'Acme Inc',
+    name: 'KU Leuven',
     logo: 'i-lucide-gallery-vertical-end',
-    plan: 'Enterprise',
+    plan: 'University',
   },
   {
     name: 'Acme Corp.',

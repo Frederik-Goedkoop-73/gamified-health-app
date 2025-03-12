@@ -57,6 +57,16 @@ function handleSelectLink(link: string) {
         </CommandItem>
       </CommandGroup>
       <CommandSeparator />
+      <CommandGroup heading="General">
+        <CommandItem value="Health" @select="handleSelectLink('/health')">
+          Health
+        </CommandItem>
+        <CommandItem value="Tasks" @select="handleSelectLink('/tasks')">
+          Tasks
+        </CommandItem>
+      </CommandGroup>
+      <CommandSeparator />
+      <!--- This can be deleted -->
       <CommandGroup heading="Components">
         <CommandItem
           v-for="nav in componentsNav?.children"

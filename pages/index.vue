@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import NumberFlow from '@number-flow/vue'
-import { Activity, CreditCard, DollarSign, Users } from 'lucide-vue-next'
+import { Activity, CreditCard, DollarSign, User, Users } from 'lucide-vue-next'
 
 const dataCard = ref({
   totalRevenue: 0,
@@ -15,28 +15,28 @@ const dataCard = ref({
 
 const dataRecentSales = [
   {
-    name: 'Olivia Martin',
-    email: 'olivia.martin@email.com',
+    name: 'Mike Hunt',
+    email: 'mike.hunt@email.com',
     amount: 1999,
   },
   {
-    name: 'Jackson Lee',
-    email: 'jackson.lee@email.com',
+    name: 'Jackson Off',
+    email: 'jackson.off@email.com',
     amount: 39,
   },
   {
-    name: 'Isabella Nguyen',
-    email: 'isabella.nguyen@email.com',
+    name: 'Optimum Nogger',
+    email: 'Optimum.Nogger@email.com',
     amount: 299,
   },
   {
-    name: 'William Kim',
-    email: 'will@email.com',
+    name: 'Barmit Kim',
+    email: 'barmit@email.com',
     amount: 99,
   },
   {
-    name: 'Sofia Davis',
-    email: 'sofia.davis@email.com',
+    name: 'Pasta Davis',
+    email: 'pasta.davis@email.com',
     amount: 39,
   },
 ]
@@ -67,6 +67,75 @@ onMounted(() => {
       </div>
     </div>
     <main class="flex flex-1 flex-col gap-4 md:gap-8">
+      <Card>
+        <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
+          <CardTitle class="text-md font-medium">
+            <NuxtLink to="/profile" class="text-md cursor-pointer font-medium">
+              Profile
+            </NuxtLink><!-- add username {{ username }} -->
+          </CardTitle>
+          <User class="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <div class="text-2xl font-bold">
+            <div class="flex items-center gap-2">
+              <Avatar class="h-12 w-12">
+                <AvatarFallback>JD</AvatarFallback>
+              </Avatar>
+              <Progress />
+            </div>
+          </div>
+          <p class="text-xs text-muted-foreground">
+            <NumberFlow
+              :value="dataCard.totalRevenueDesc"
+              prefix="+"
+              :format="{ style: 'percent', minimumFractionDigits: 1 }"
+            />
+            from last month
+          </p>
+        </CardContent>
+      </Card>
+      <div class="grid gap-4 lg:grid-cols-2 xl:grid-cols-3 md:gap-8">
+        <Card class="xl:col-span-2">
+          <CardHeader>
+            <CardTitle>Overview</CardTitle>
+          </CardHeader>
+          <CardContent class="pl-2">
+            <DashboardOverview />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Daily Quests</CardTitle>
+          </CardHeader>
+          <CardContent class="grid gap-8">
+            <div
+              v-for="recentSales in dataRecentSales" :key="recentSales.name"
+              class="flex items-center gap-4"
+            >
+              <Avatar class="hidden h-9 w-9 sm:flex">
+                <AvatarFallback>{{ recentSales.name.split(' ').map((n) => n[0]).join('') }}</AvatarFallback>
+              </Avatar>
+              <div class="grid gap-1">
+                <p class="text-sm font-medium leading-none">
+                  {{ recentSales.name }}
+                </p>
+                <p class="text-sm text-muted-foreground">
+                  {{ recentSales.email }}
+                </p>
+              </div>
+              <div class="ml-auto font-medium">
+                <NumberFlow
+                  :value="recentSales.amount"
+                  :format="{ style: 'currency', currency: 'USD', trailingZeroDisplay: 'stripIfInteger' }"
+                  prefix="+"
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+      <hr>
       <div class="grid gap-4 lg:grid-cols-4 md:grid-cols-2 md:gap-8">
         <Card>
           <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
@@ -158,46 +227,6 @@ onMounted(() => {
                 prefix="+"
               /> since last hour
             </p>
-          </CardContent>
-        </Card>
-      </div>
-      <div class="grid gap-4 lg:grid-cols-2 xl:grid-cols-3 md:gap-8">
-        <Card class="xl:col-span-2">
-          <CardHeader>
-            <CardTitle>Overview</CardTitle>
-          </CardHeader>
-          <CardContent class="pl-2">
-            <DashboardOverview />
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Sales</CardTitle>
-          </CardHeader>
-          <CardContent class="grid gap-8">
-            <div
-              v-for="recentSales in dataRecentSales" :key="recentSales.name"
-              class="flex items-center gap-4"
-            >
-              <Avatar class="hidden h-9 w-9 sm:flex">
-                <AvatarFallback>{{ recentSales.name.split(' ').map((n) => n[0]).join('') }}</AvatarFallback>
-              </Avatar>
-              <div class="grid gap-1">
-                <p class="text-sm font-medium leading-none">
-                  {{ recentSales.name }}
-                </p>
-                <p class="text-sm text-muted-foreground">
-                  {{ recentSales.email }}
-                </p>
-              </div>
-              <div class="ml-auto font-medium">
-                <NumberFlow
-                  :value="recentSales.amount"
-                  :format="{ style: 'currency', currency: 'USD', trailingZeroDisplay: 'stripIfInteger' }"
-                  prefix="+"
-                />
-              </div>
-            </div>
           </CardContent>
         </Card>
       </div>
