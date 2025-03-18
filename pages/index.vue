@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useXPStore } from '@/stores/xpStore'
 import NumberFlow from '@number-flow/vue'
 import { Activity, CreditCard, DollarSign, User, Users } from 'lucide-vue-next'
 
@@ -41,6 +42,9 @@ const dataRecentSales = [
   },
 ]
 
+// Initialise the Pinia store
+const { progress } = useXPStore()
+
 onMounted(() => {
   dataCard.value = {
     totalRevenue: 45231.89,
@@ -66,7 +70,9 @@ onMounted(() => {
         <Button>Download</Button>
       </div>
     </div>
+    <!-- Main body under header -->
     <main class="flex flex-1 flex-col gap-4 md:gap-8">
+      <!-- Profile card -->
       <Card>
         <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
           <CardTitle class="text-md font-medium">
@@ -82,7 +88,7 @@ onMounted(() => {
               <Avatar class="h-12 w-12">
                 <AvatarFallback>JD</AvatarFallback>
               </Avatar>
-              <Progress />
+              <Progress v-model="progress" />
             </div>
           </div>
           <p class="text-xs text-muted-foreground">
@@ -95,7 +101,9 @@ onMounted(() => {
           </p>
         </CardContent>
       </Card>
+      <!-- Grid 2 card underneath -->
       <div class="grid gap-4 lg:grid-cols-2 xl:grid-cols-3 md:gap-8">
+        <!-- Graph card -->
         <Card class="xl:col-span-2">
           <CardHeader>
             <CardTitle>Overview</CardTitle>
@@ -104,6 +112,7 @@ onMounted(() => {
             <DashboardOverview />
           </CardContent>
         </Card>
+        <!-- Daily quests card -->
         <Card>
           <CardHeader>
             <CardTitle>Daily Quests</CardTitle>
@@ -136,6 +145,7 @@ onMounted(() => {
         </Card>
       </div>
       <hr>
+      <!-- Other dashboard cards -> may be deleted -->
       <div class="grid gap-4 lg:grid-cols-4 md:grid-cols-2 md:gap-8">
         <Card>
           <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">

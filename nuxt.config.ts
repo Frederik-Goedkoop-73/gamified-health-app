@@ -16,6 +16,12 @@ export default defineNuxtConfig({
     '@unocss/reset/tailwind.css',
   ],
 
+  nitro: {
+    firebase: {
+      gen: 2,
+    },
+  },
+
   colorMode: {
     classSuffix: '',
   },
