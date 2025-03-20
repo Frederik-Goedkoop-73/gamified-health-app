@@ -43,7 +43,7 @@ const dataRecentSales = [
 ]
 
 // Initialise the Pinia store
-const { progress } = useXPStore()
+const { xpProgress } = useXPStore()
 
 onMounted(() => {
   dataCard.value = {
@@ -88,7 +88,7 @@ onMounted(() => {
               <Avatar class="h-12 w-12">
                 <AvatarFallback>JD</AvatarFallback>
               </Avatar>
-              <Progress v-model="progress" />
+              <Progress v-model="xpProgress" />
             </div>
           </div>
           <p class="text-xs text-muted-foreground">
