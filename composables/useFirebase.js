@@ -9,3 +9,4 @@ export async function createUser(email, password) {
     })
   return credentials
 }
+// This file is probably not necessary anymore (20/3/2025 23:51)

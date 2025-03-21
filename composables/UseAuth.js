@@ -37,12 +37,14 @@ export function useAuth() {
       }
     }
     catch (error) {
+      console.error('Failed to fetch username:', error)
       return null
     }
   }
 
   // Save or update username in Firestore and Pinia
   const saveUsernameToFirestore = async (user, username) => {
+    // eslint-disable-next-line no-useless-catch
     try {
       const db = getFirestore()
       const docRef = doc(db, 'users', user.uid)
@@ -71,7 +73,6 @@ export function useAuth() {
 
         // Handle prompt cancellation or empty input
         if (usernameFromPrompt === null || usernameFromPrompt.trim() === '') {
-          console.log('Username input canceled or empty.')
           errMsg.value = 'Username is required.'
           return // Exit the function if the prompt is canceled or empty
         }
@@ -83,7 +84,6 @@ export function useAuth() {
       // Save the username to Firestore
       try {
         await saveUsernameToFirestore(user, username.value)
-        console.log('Succesfully registered!')
         router.push('/dashboard')
       }
       catch (error) {
@@ -92,7 +92,7 @@ export function useAuth() {
       }
     }
     catch (error) {
-      console.log(error.code)
+      console.error('Failed to register:', error)
       switch (error.code) {
         case 'auth/invalid-email':
           errMsg.value = 'Invalid email'
@@ -125,7 +125,6 @@ export function useAuth() {
 
         // Handle prompt cancellation or emptu input
         if (usernameFromPrompt === null || usernameFromPrompt.trim() === '') {
-          console.log('Username input canceled or empty.')
           errMsg.value = 'Username is required.'
           return // Exit the function if the prompt is canceled or empty
         }
@@ -138,7 +137,7 @@ export function useAuth() {
       router.push('/dashboard')
     }
     catch (error) {
-      console.log(error.message)
+      console.error('Failed to sign in with Google:', error)
       errMsg.value = error.message
     }
   }
@@ -147,11 +146,10 @@ export function useAuth() {
   const login = async () => {
     try {
       await signInWithEmailAndPassword(auth, email.value, password.value)
-      console.log('Successfully logged in!')
       router.push('/dashboard')
     }
     catch (error) {
-      console.log(error.code)
+      console.error('Failed to login:', error)
       switch (error.code) {
         case 'auth/invalid-email':
           errMsg.value = 'Invalid email'
@@ -172,11 +170,10 @@ export function useAuth() {
   const handleSignOut = async () => {
     try {
       await signOut(auth)
-      console.log('User signed out!')
       router.push('/')
     }
     catch (error) {
-      console.log(error.message)
+      console.error('Failed to sign out:', error)
       errMsg.value = 'Failed to sign out'
     }
   }

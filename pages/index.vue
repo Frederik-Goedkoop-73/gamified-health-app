@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useCoinStore } from '@/stores/coinStore'
+import { useStreakStore } from '@/stores/streakStore'
 import { useXPStore } from '@/stores/xpStore'
 import NumberFlow from '@number-flow/vue'
 import { Activity, CreditCard, DollarSign, User, Users } from 'lucide-vue-next'
@@ -43,7 +45,13 @@ const dataRecentSales = [
 ]
 
 // Initialise the Pinia store
-const { xpProgress } = useXPStore()
+const xpStore = useXPStore()
+const coinStore = useCoinStore()
+const streakStore = useStreakStore()
+
+const progressValue = computed(() => xpStore.xpProgress())
+const xpProgressValue = computed(() => xpStore.xp)
+const xpToNextLevelValue = computed(() => xpStore.totalXpNeededForNextLevel())
 
 onMounted(() => {
   dataCard.value = {
@@ -83,22 +91,87 @@ onMounted(() => {
           <User class="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div class="text-2xl font-bold">
+          <div class="text-2m font-bold">
             <div class="flex items-center gap-2">
               <Avatar class="h-12 w-12">
                 <AvatarFallback>JD</AvatarFallback>
               </Avatar>
-              <Progress v-model="xpProgress" />
+              <p>Lvl.{{ xpStore.level }}</p>
+              <!-- Shadcn Progress Bar -->
+              <div class="mt-6 w-full flex flex-col gap-2">
+                <Progress v-model="progressValue" />
+                <p class="flex justify-center text-xs text-muted-foreground font-normal">
+                  <NumberFlow
+                    :value="xpProgressValue" suffix=" XP"
+                  />
+                  /
+                  <NumberFlow
+                    :value="xpToNextLevelValue" suffix=" XP"
+                  />
+                </p>
+              </div>
+
+              <p>Lvl.{{ xpStore.level + 1 }}</p>
             </div>
           </div>
-          <p class="text-xs text-muted-foreground">
-            <NumberFlow
-              :value="dataCard.totalRevenueDesc"
-              prefix="+"
-              :format="{ style: 'percent', minimumFractionDigits: 1 }"
-            />
-            from last month
-          </p>
+        </CardContent>
+      </Card>
+      <!-- Devtools -->
+      <Card>
+        <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
+          <CardTitle class="text-md font-medium">
+            <NuxtLink to="/profile" class="text-md cursor-pointer font-medium">
+              Devtools
+            </NuxtLink><!-- add username {{ username }} -->
+          </CardTitle>
+          <User class="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <div class="flex-container justify">
+            <div class="mt-4 flex flex-row justify-between gap-4">
+              <Button class="w-30%" @click="xpStore.addXP(10)">
+                Gain 10 XP
+              </Button>
+              <Button class="w-30%" @click="xpStore.addXP(100)">
+                Gain 100 XP
+              </Button>
+              <Button class="w-30%" @click="xpStore.addXP(1000)">
+                Gain 1000 XP
+              </Button>
+            </div>
+            <div class="mt-4 flex flex-row justify-between gap-4">
+              <Button class="w-30%" @click="streakStore.addStreak(1)">
+                Gain 1 streak
+              </Button>
+              <Button class="w-30%" @click="streakStore.addStreak(10)">
+                Gain 10
+                streak
+              </Button>
+              <Button class="w-30%" @click="streakStore.addStreak(100)">
+                Gain 100
+                streak
+              </Button>
+            </div>
+            <div class="mt-4 flex flex-row justify-between gap-4">
+              <Button class="w-30%" @click="coinStore.addCoins(10)">
+                Gain 10 coins
+              </Button>
+              <Button class="w-30%" @click="coinStore.addCoins(100)">
+                Gain 100 coins
+              </Button>
+              <Button class="w-30%" @click="coinStore.addCoins(1000)">
+                Gain 1000 coins
+              </Button>
+            </div>
+            <div class="mt-4 flex flex-row items-center justify-center">
+              <Button
+                class="w-100% bg-rose-600 lg:w-30% md:w-70% hover:bg-rose-500"
+                @click="xpStore.resetXP(); streakStore.resetStreak(); coinStore.resetCoins()"
+              >
+                Reset all
+              </Button>
+            </div>
+          </div>
         </CardContent>
       </Card>
       <!-- Grid 2 card underneath -->
@@ -118,10 +191,7 @@ onMounted(() => {
             <CardTitle>Daily Quests</CardTitle>
           </CardHeader>
           <CardContent class="grid gap-8">
-            <div
-              v-for="recentSales in dataRecentSales" :key="recentSales.name"
-              class="flex items-center gap-4"
-            >
+            <div v-for="recentSales in dataRecentSales" :key="recentSales.name" class="flex items-center gap-4">
               <Avatar class="hidden h-9 w-9 sm:flex">
                 <AvatarFallback>{{ recentSales.name.split(' ').map((n) => n[0]).join('') }}</AvatarFallback>
               </Avatar>
@@ -136,8 +206,7 @@ onMounted(() => {
               <div class="ml-auto font-medium">
                 <NumberFlow
                   :value="recentSales.amount"
-                  :format="{ style: 'currency', currency: 'USD', trailingZeroDisplay: 'stripIfInteger' }"
-                  prefix="+"
+                  :format="{ style: 'currency', currency: 'EUR', trailingZeroDisplay: 'stripIfInteger' }" prefix="+"
                 />
               </div>
             </div>
@@ -163,8 +232,7 @@ onMounted(() => {
             </div>
             <p class="text-xs text-muted-foreground">
               <NumberFlow
-                :value="dataCard.totalRevenueDesc"
-                prefix="+"
+                :value="dataCard.totalRevenueDesc" prefix="+"
                 :format="{ style: 'percent', minimumFractionDigits: 1 }"
               />
               from last month
@@ -180,15 +248,11 @@ onMounted(() => {
           </CardHeader>
           <CardContent>
             <div class="text-2xl font-bold">
-              <NumberFlow
-                :value="dataCard.subscriptions"
-                prefix="+"
-              />
+              <NumberFlow :value="dataCard.subscriptions" prefix="+" />
             </div>
             <p class="text-xs text-muted-foreground">
               <NumberFlow
-                :value="dataCard.subscriptionsDesc"
-                prefix="+"
+                :value="dataCard.subscriptionsDesc" prefix="+"
                 :format="{ style: 'percent', minimumFractionDigits: 1 }"
               /> from last month
             </p>
@@ -203,15 +267,11 @@ onMounted(() => {
           </CardHeader>
           <CardContent>
             <div class="text-2xl font-bold">
-              <NumberFlow
-                :value="dataCard.sales"
-                prefix="+"
-              />
+              <NumberFlow :value="dataCard.sales" prefix="+" />
             </div>
             <p class="text-xs text-muted-foreground">
               <NumberFlow
-                :value="dataCard.salesDesc"
-                prefix="+"
+                :value="dataCard.salesDesc" prefix="+"
                 :format="{ style: 'percent', minimumFractionDigits: 1 }"
               /> from last month
             </p>
@@ -226,16 +286,10 @@ onMounted(() => {
           </CardHeader>
           <CardContent>
             <div class="text-2xl font-bold">
-              <NumberFlow
-                :value="dataCard.activeNow"
-                prefix="+"
-              />
+              <NumberFlow :value="dataCard.activeNow" prefix="+" />
             </div>
             <p class="text-xs text-muted-foreground">
-              <NumberFlow
-                :value="dataCard.activeNowDesc"
-                prefix="+"
-              /> since last hour
+              <NumberFlow :value="dataCard.activeNowDesc" prefix="+" /> since last hour
             </p>
           </CardContent>
         </Card>
