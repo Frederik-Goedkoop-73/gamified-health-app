@@ -137,7 +137,7 @@ onMounted(() => {
                   <NumberFlow
                     :value="xpProgressValue" suffix=" XP"
                   />
-                  /
+                  &nbsp;/&nbsp;
                   <NumberFlow
                     :value="xpToNextLevelValue" suffix=" XP"
                   />
@@ -215,7 +215,7 @@ onMounted(() => {
             <CardTitle>Overview</CardTitle>
           </CardHeader>
           <CardContent class="pl-2">
-            <DashboardOverview />
+            <DashboardBarChart />
           </CardContent>
         </Card>
         <!-- Daily quests card -->
