@@ -3,7 +3,7 @@ import { useCoinStore } from '@/stores/coinStore'
 import { useStreakStore } from '@/stores/streakStore'
 import { useXPStore } from '@/stores/xpStore'
 import NumberFlow from '@number-flow/vue'
-import { Activity, CreditCard, DollarSign, User, Users } from 'lucide-vue-next'
+import { Activity, Coins, CreditCard, DollarSign, Flame, User, Users } from 'lucide-vue-next'
 
 const dataCard = ref({
   totalRevenue: 0,
@@ -49,9 +49,16 @@ const xpStore = useXPStore()
 const coinStore = useCoinStore()
 const streakStore = useStreakStore()
 
+// Computed values for number-flow
 const progressValue = computed(() => xpStore.xpProgress())
 const xpProgressValue = computed(() => xpStore.xp)
 const xpToNextLevelValue = computed(() => xpStore.totalXpNeededForNextLevel())
+const streakValue = computed(() => streakStore.streak)
+const coinValue = computed(() => coinStore.coins)
+
+// Function for checking if values aren't 0 -> styling
+const streakIsPositive = (streakValue: number) => streakValue > 0
+const coinIsPositive = (coinValue: number) => coinValue > 0
 
 onMounted(() => {
   dataCard.value = {
@@ -75,7 +82,7 @@ onMounted(() => {
       </h2>
       <div class="flex items-center space-x-2">
         <BaseDateRangePicker />
-        <Button>Download</Button>
+        <!-- <Button>Download</Button> -->
       </div>
     </div>
     <!-- Main body under header -->
@@ -88,6 +95,32 @@ onMounted(() => {
               Profile
             </NuxtLink><!-- add username {{ username }} -->
           </CardTitle>
+          <div class="text-s w-85% flex flex-row items-center justify-end gap-5% text-muted-foreground">
+            <!-- Streak value -->
+            <div class="flex flex-row items-center gap-2">
+              <Flame
+                class="h-4 w-4" :class="{
+                  'text-rose-500': streakIsPositive(streakValue),
+                  'text-muted-foreground': streakValue === 0,
+                }"
+              />
+              <NumberFlow
+                :value="streakValue"
+              />
+            </div>
+            <!-- Coin value -->
+            <div class="flex flex-row items-center gap-2">
+              <Coins
+                class="h-4 w-4" :class="{
+                  'text-yellow-500': coinIsPositive(coinValue),
+                  'text-muted-foreground': coinValue === 0,
+                }"
+              />
+              <NumberFlow
+                :value="coinValue"
+              />
+            </div>
+          </div>
           <User class="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
