@@ -5,9 +5,12 @@ import { defineStore } from 'pinia'
 export const useXPStore = defineStore('xp', {
   state: () => ({
     xp: 0, // Initial XP state
+    totalXP: 0, // Total XP earned by the user
     level: 1, // Initial level
     showPopup: false, // Initial visibility of the level-up popup
     leveledUpTo: 0, // Initial level the user leveled up to in one go
+
+    hasAwarded1000XP: false, // Track if 200 XP has been awarded for reaching 1000 XP
   }),
   actions: {
     // Fetch XP and level from Firestore for the current user
@@ -24,10 +27,12 @@ export const useXPStore = defineStore('xp', {
           if (docSnap.exists()) {
             const data = docSnap.data()
             this.xp = data.xp || 0 // Update local state with Firestore data
+            this.totalXP = data.totalXP || 0 // Update local state with Firestore data
             this.level = data.level || 1 // Update local state with Firestore data
           }
           else {
             this.xp = 0 // Default to 0 if no document exists
+            this.totalXP = 0 // Default to 0 if no document exists
             this.level = 1 // Default to level 1 if no document exists
           }
         }
@@ -40,6 +45,15 @@ export const useXPStore = defineStore('xp', {
     // Add XP and update Firestore
     async addXP(xpAmount) {
       this.xp += xpAmount // Update local state
+      this.totalXP += xpAmount // Update local state
+
+      // Check if totalXP exceeds 1000 and award 200 XP if it hasn't been awarded yet
+      if (this.totalXP >= 1000 && !this.hasAwarded1000XP) {
+        this.xp += 200 // Add 200 XP
+        this.totalXP += 200 // Add 200 XP to totalXP
+        this.hasAwarded1000XP = true // Mark as awarded
+      }
+
       this.updateLevel() // Update level based on new XP
       await this.saveXPToFirestore() // Save to Firestore
     },
@@ -47,9 +61,11 @@ export const useXPStore = defineStore('xp', {
     // Reset XP and update Firestore
     async resetXP() {
       this.xp = 0 // Reset local state
+      this.totalXP = 0 // Reset local
       this.level = 1 // Reset local state
       this.leveledUpTo = 0 // Reset local state
       this.showPopup = false // Reset local state
+      this.hasAwarded1000XP = false // Reset local state
       await this.saveXPToFirestore() // Save to Firestore
     },
 
@@ -65,6 +81,7 @@ export const useXPStore = defineStore('xp', {
         try {
           await setDoc(userDocRef, {
             xp: this.xp, // Save the current XP
+            totalXP: this.totalXP, // Save the total XP
             level: this.level, // Save the current level
           }, { merge: true }) // Merge with existing document data
         }
@@ -92,6 +109,10 @@ export const useXPStore = defineStore('xp', {
     // Calculate the current progress towards the next level -> currently not used
     xpProgress() {
       return (this.xp / this.totalXpNeededForNextLevel()) * 100
+    },
+
+    totalXP() {
+      return this.totalXP
     },
 
     // Close the level-up popup

@@ -34,7 +34,7 @@ onMounted(() => {
         Health Stats
       </h2>
       <div class="flex items-center space-x-2">
-        <BaseDateRangePicker />
+        <BaseDateRangePicker /> <!-- Change to range calendar: RangeCalendar -->
         <!-- <Button>Download</Button> -->
       </div>
     </div>
@@ -75,26 +75,6 @@ onMounted(() => {
             <CarouselPrevious />
             <CarouselNext v-if="canScrollNext" />
           </Carousel>
-        </CardContent>
-      </Card>
-      <!-- Test bar chart -->
-      <Card class="xl:col-span-2">
-        <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
-          <CardTitle>Overview</CardTitle>
-          <HeartPulse class="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent class="pl-2">
-          <DashboardBarChart /> <!-- https://ui.shadcn.com/docs/components/chart -->
-        </CardContent>
-      </Card>
-      <!-- Test line chart -->
-      <Card class="xl:col-span-2">
-        <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
-          <CardTitle>Overview</CardTitle>
-          <HeartPulse class="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent class="pl-2">
-          <DashboardLineChart />
         </CardContent>
       </Card>
     </main>
