@@ -48,18 +48,8 @@ export const navMenu: NavMenu[] = [
     ],
   },
   {
-    heading: 'Pages',
+    heading: 'More',
     items: [
-      {
-        title: 'Email',
-        icon: 'i-lucide-mail',
-        link: '/email',
-      },
-      {
-        title: 'Tasks',
-        icon: 'i-lucide-calendar-check-2',
-        link: '/tasks',
-      },
       {
         title: 'Authentication',
         icon: 'i-lucide-lock-keyhole-open',
@@ -68,11 +58,6 @@ export const navMenu: NavMenu[] = [
             title: 'Login',
             icon: 'i-lucide-circle',
             link: '/login',
-          },
-          {
-            title: 'Login Basic',
-            icon: 'i-lucide-circle',
-            link: '/login-basic',
           },
           {
             title: 'Register',
@@ -86,6 +71,27 @@ export const navMenu: NavMenu[] = [
           },
         ],
       },
+      {
+        title: 'Settings',
+        icon: 'i-lucide-settings',
+        children: [
+          {
+            title: 'Profile',
+            icon: 'i-lucide-circle',
+            link: '/settings/profile',
+          },
+          {
+            title: 'Appearance',
+            icon: 'i-lucide-circle',
+            link: '/settings/appearance',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    heading: 'Dev pages',
+    items: [
       {
         title: 'Errors',
         icon: 'i-lucide-triangle-alert',
@@ -117,42 +123,6 @@ export const navMenu: NavMenu[] = [
           },
         ],
       },
-      {
-        title: 'Settings',
-        icon: 'i-lucide-settings',
-        children: [
-          {
-            title: 'Profile',
-            icon: 'i-lucide-circle',
-            link: '/settings/profile',
-          },
-          {
-            title: 'Account',
-            icon: 'i-lucide-circle',
-            link: '/settings/account',
-          },
-          {
-            title: 'Appearance',
-            icon: 'i-lucide-circle',
-            link: '/settings/appearance',
-          },
-          {
-            title: 'Notifications',
-            icon: 'i-lucide-circle',
-            link: '/settings/notifications',
-          },
-          {
-            title: 'Display',
-            icon: 'i-lucide-circle',
-            link: '/settings/display',
-          },
-        ],
-      },
-    ],
-  },
-  {
-    heading: 'Components',
-    items: [
       {
         title: 'Components',
         icon: 'i-lucide-component',
@@ -428,3 +398,46 @@ export const navMenuBottom: NavMenuItems = [
     new: true,
   },
 ]
+
+/*       {
+        title: 'Email',
+        icon: 'i-lucide-mail',
+        link: '/email',
+      },
+      {
+        title: 'Tasks',
+        icon: 'i-lucide-calendar-check-2',
+        link: '/tasks',
+      }, */
+
+/* {
+        title: 'Settings',
+        icon: 'i-lucide-settings',
+        children: [
+          {
+            title: 'Profile',
+            icon: 'i-lucide-circle',
+            link: '/settings/profile',
+          },
+                   {
+            title: 'Account',
+            icon: 'i-lucide-circle',
+            link: '/settings/account',
+          }, 
+          {
+            title: 'Appearance',
+            icon: 'i-lucide-circle',
+            link: '/settings/appearance',
+          },
+           {
+            title: 'Notifications',
+            icon: 'i-lucide-circle',
+            link: '/settings/notifications',
+          },
+          {
+            title: 'Display',
+            icon: 'i-lucide-circle',
+            link: '/settings/display',
+          }, 
+        ],
+      }, */

@@ -3,7 +3,7 @@ import { useCoinStore } from '@/stores/coinStore'
 import { useStreakStore } from '@/stores/streakStore'
 import { useXPStore } from '@/stores/xpStore'
 import NumberFlow from '@number-flow/vue'
-import { Activity, Coins, CreditCard, DollarSign, Flame, User, Users } from 'lucide-vue-next'
+import { Activity, Coins, CreditCard, DollarSign, User, Users, Zap } from 'lucide-vue-next'
 
 const dataCard = ref({
   totalRevenue: 0,
@@ -92,13 +92,13 @@ onMounted(() => {
         <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
           <CardTitle class="text-md font-medium">
             <NuxtLink to="/profile" class="text-md cursor-pointer font-medium">
-              Profile
+              Username
             </NuxtLink><!-- add username {{ username }} -->
           </CardTitle>
           <div class="text-s w-85% flex flex-row items-center justify-end gap-5% text-muted-foreground">
             <!-- Streak value -->
             <div class="flex flex-row items-center gap-2">
-              <Flame
+              <Zap
                 class="h-4 w-4" :class="{
                   'text-rose-500': streakIsPositive(streakValue),
                   'text-muted-foreground': streakValue === 0,
@@ -125,7 +125,7 @@ onMounted(() => {
         </CardHeader>
         <CardContent>
           <div class="text-2m font-bold">
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-4">
               <Avatar class="h-12 w-12">
                 <AvatarFallback>JD</AvatarFallback>
               </Avatar>
