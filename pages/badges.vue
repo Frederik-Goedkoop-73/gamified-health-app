@@ -212,7 +212,7 @@ const badges = [
           </Card>
         </cardcontent>
       </card>
-      <img src="public/badges/Calories.svg" alt="Avatar 1" class="h-80 w-80 rounded-lg">
+      <img src="public/badges/Calories.png" alt="Avatar 1" class="h-80 w-80 rounded-lg">
     </main>
   </div>
 </template>
