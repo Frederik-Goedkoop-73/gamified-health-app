@@ -212,7 +212,36 @@ const badges = [
           </Card>
         </cardcontent>
       </card>
-      <img src="public/badges/Calories.png" alt="Avatar 1" class="h-80 w-80 rounded-lg">
+      <div class="flex flex-row flex-wrap items-center justify-center gap-4">
+        <Card class="normal min-w-80 hover:shadow-md">
+          <CardHeader class="lex-col flex flex-col items-center justify-center pb-2 space-y-0">
+            <CardTitle>Calories badges</CardTitle>
+          </cardheader>
+          <hr class="normal-hr my-1 w-full">
+          <CardContent class="flex flex-col items-center justify-between gap-1 pt-2">
+            <img src="public/badges/Calories.png" class="h-80 min-w-80 rounded-lg">
+          </cardcontent>
+        </card>
+        <Card class="normal min-w-80 hover:shadow-md">
+          <CardHeader class="lex-col flex flex-col items-center justify-center pb-2 space-y-0">
+            <CardTitle>Steps badges</CardTitle>
+          </cardheader>
+          <hr class="normal-hr my-1 w-full">
+          <CardContent class="flex flex-col items-center justify-between gap-1 pt-2">
+            <img src="public/badges/Steps.png" class="h-80 min-w-80 rounded-lg">
+          </cardcontent>
+        </card>
+        <Card class="normal min-w-80 hover:shadow-md">
+          <CardHeader class="lex-col flex flex-col items-center justify-center pb-2 space-y-0">
+            <CardTitle>Platinum badge</CardTitle>
+          </cardheader>
+          <hr class="normal-hr my-1 w-full">
+          <CardContent class="flex flex-col items-center justify-between gap-1 pt-2">
+            <img src="public/badges/Platinum.png" class="aspect-ratio h-80 rounded-lg">
+          </cardcontent>
+        </card>
+      </div>
+      <Strong class="text-center text-muted-foreground">More coming soon ...</Strong>
     </main>
   </div>
 </template>

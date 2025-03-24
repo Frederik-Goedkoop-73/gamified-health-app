@@ -18,29 +18,19 @@ const dataCard = ref({
 
 const dataRecentSales = [
   {
-    name: 'Mike Hunt',
-    email: 'mike.hunt@email.com',
-    amount: 1999,
+    name: 'Daily 1',
+    email: 'Walk 10k steps',
+    amount: 100,
   },
   {
-    name: 'Jackson Off',
-    email: 'jackson.off@email.com',
-    amount: 39,
+    name: 'Daily 2',
+    email: 'Ride 10 km',
+    amount: 200,
   },
   {
-    name: 'Optimum Nogger',
-    email: 'Optimum.Nogger@email.com',
-    amount: 299,
-  },
-  {
-    name: 'Barmit Kim',
-    email: 'barmit@email.com',
-    amount: 99,
-  },
-  {
-    name: 'Pasta Davis',
-    email: 'pasta.davis@email.com',
-    amount: 39,
+    name: 'Daily 3',
+    email: 'Run 5 km',
+    amount: 500,
   },
 ]
 
@@ -149,56 +139,57 @@ onMounted(() => {
           </div>
         </CardContent>
       </Card>
+
       <!-- Devtools -->
       <Card>
         <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
           <CardTitle class="text-md font-medium">
             <NuxtLink to="/profile" class="text-md cursor-pointer font-medium">
               Devtools
-            </NuxtLink><!-- add username {{ username }} -->
+            </NuxtLink>
           </CardTitle>
           <User class="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
           <div class="flex-container justify">
-            <div class="mt-4 flex flex-row justify-between gap-4">
-              <Button class="w-30%" @click="xpStore.addXP(10)">
+            <div class="mt-4 flex flex-row flex-wrap justify-center gap-4">
+              <Button class="min-w-60 w-32%" @click="xpStore.addXP(10)">
                 Gain 10 XP
               </Button>
-              <Button class="w-30%" @click="xpStore.addXP(100)">
+              <Button class="min-w-60 w-32%" @click="xpStore.addXP(100)">
                 Gain 100 XP
               </Button>
-              <Button class="w-30%" @click="xpStore.addXP(1000)">
+              <Button class="min-w-60 w-32%" @click="xpStore.addXP(1000)">
                 Gain 1000 XP
               </Button>
             </div>
-            <div class="mt-4 flex flex-row justify-between gap-4">
-              <Button class="w-30%" @click="streakStore.addStreak(1)">
+            <div class="mt-4 flex flex-row flex-wrap justify-center gap-4">
+              <Button class="min-w-60 w-32%" @click="streakStore.addStreak(1)">
                 Gain 1 streak
               </Button>
-              <Button class="w-30%" @click="streakStore.addStreak(10)">
+              <Button class="min-w-60 w-32%" @click="streakStore.addStreak(10)">
                 Gain 10
                 streak
               </Button>
-              <Button class="w-30%" @click="streakStore.addStreak(100)">
+              <Button class="min-w-60 w-32%" @click="streakStore.addStreak(100)">
                 Gain 100
                 streak
               </Button>
             </div>
-            <div class="mt-4 flex flex-row justify-between gap-4">
-              <Button class="w-30%" @click="coinStore.addCoins(10)">
+            <div class="mt-4 flex flex-row flex-wrap justify-center gap-4">
+              <Button class="min-w-60 w-32%" @click="coinStore.addCoins(10)">
                 Gain 10 coins
               </Button>
-              <Button class="w-30%" @click="coinStore.addCoins(100)">
+              <Button class="min-w-60 w-32%" @click="coinStore.addCoins(100)">
                 Gain 100 coins
               </Button>
-              <Button class="w-30%" @click="coinStore.addCoins(1000)">
+              <Button class="min-w-60 w-32%" @click="coinStore.addCoins(1000)">
                 Gain 1000 coins
               </Button>
             </div>
             <div class="mt-4 flex flex-row items-center justify-center">
               <Button
-                class="w-100% bg-rose-600 lg:w-30% md:w-70% hover:bg-rose-500"
+                class="w-100% bg-rose-600 lg:w-32% md:w-70% hover:bg-rose-500"
                 @click="xpStore.resetXP(); streakStore.resetStreak(); coinStore.resetCoins()"
               >
                 Reset all
@@ -207,29 +198,31 @@ onMounted(() => {
           </div>
         </CardContent>
       </Card>
+
       <!-- Grid 2 card underneath -->
-      <div class="grid gap-4 lg:grid-cols-2 xl:grid-cols-3 md:gap-8">
+      <div class="grid gap-4 overflow-clip lg:grid-cols-2 xl:grid-cols-3 md:gap-8">
         <!-- Graph card -->
         <Card class="xl:col-span-2">
           <CardHeader>
             <CardTitle>Overview</CardTitle>
           </CardHeader>
-          <CardContent class="pl-2">
-            <DashboardBarChart />
+          <CardContent class="flex justify-center pl-2">
+            <DashboardBarChart class="max-w-97%" />
           </CardContent>
         </Card>
+
         <!-- Daily quests card -->
         <Card>
           <CardHeader>
             <CardTitle>Daily Quests</CardTitle>
           </CardHeader>
           <CardContent class="grid gap-8">
-            <div v-for="recentSales in dataRecentSales" :key="recentSales.name" class="flex items-center gap-4">
-              <Avatar class="hidden h-9 w-9 sm:flex">
-                <AvatarFallback>{{ recentSales.name.split(' ').map((n) => n[0]).join('') }}</AvatarFallback>
-              </Avatar>
+            <Card v-for="recentSales in dataRecentSales" :key="recentSales.name" class="flex items-center gap-4 p-4">
+              <div class="hidden h-9 w-9 sm:flex">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0" /><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" /><g id="SVGRepo_iconCarrier"> <path d="M18.5 6C19.8807 6 21 4.88071 21 3.5C21 2.11929 19.8807 1 18.5 1C17.1193 1 16 2.11929 16 3.5C16 4.88071 17.1193 6 18.5 6Z" fill="hsl(var(--primary))" /> <path d="M9.49967 3.9377L7.47 5.20625C7.11268 5.42957 7 5.79894 7 6.19575C7 6.98119 7.86395 7.46003 8.53 7.04375L10.4185 5.86341C10.7689 5.64441 11.218 5.66348 11.5485 5.91141L13 7L9.29261 10.7074C9.09787 10.9021 8.91955 11.1126 8.75947 11.3367L6.94614 13.8754C6.683 14.2438 6.20519 14.3894 5.78129 14.2305L3.21008 13.2663C2.7942 13.1103 2.3257 13.2614 2.07933 13.631C1.76802 14.098 1.92419 14.7314 2.41688 15.0001L4.88909 16.3486C6.12269 17.0215 7.65806 16.7479 8.58338 15.6904L10.5 13.5L12.3001 16.0201C12.7307 16.623 12.7928 17.4144 12.4615 18.077L10.7236 21.5528C10.3912 22.2177 10.8746 23 11.618 23C12.0887 23 12.5417 22.9167 12.7764 22.4472L14.7476 18.5049C15.2149 17.5701 15.1622 16.4595 14.6083 15.5732L13 13L16 10L17.3722 10.9148C18.6066 11.7378 19.9731 11.6756 21.3162 11.2279C21.7813 11.0729 22 10.6447 22 10.1805C22 9.56252 21.4451 9.09248 20.8356 9.19407C20.1453 9.30911 19.1462 9.69488 18.6352 9.01366C16.9655 6.78731 14.9948 5.21933 12.5466 3.85922C11.5923 3.32907 10.4254 3.35913 9.49967 3.9377Z" fill="hsl(var(--primary))" /> </g></svg>
+              </div>
               <div class="grid gap-1">
-                <p class="text-sm font-medium leading-none">
+                <p class="text-md font-medium leading-none">
                   {{ recentSales.name }}
                 </p>
                 <p class="text-sm text-muted-foreground">
@@ -239,28 +232,30 @@ onMounted(() => {
               <div class="ml-auto font-medium">
                 <NumberFlow
                   :value="recentSales.amount"
-                  :format="{ style: 'currency', currency: 'EUR', trailingZeroDisplay: 'stripIfInteger' }" prefix="+"
+                  prefix="+ " suffix="xp"
                 />
               </div>
-            </div>
+            </Card>
           </CardContent>
         </Card>
       </div>
+
       <hr>
+
       <!-- Other dashboard cards -> may be deleted -->
       <div class="grid gap-4 lg:grid-cols-4 md:grid-cols-2 md:gap-8">
         <Card>
           <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle class="text-sm font-medium">
-              Total Revenue
+              Heart beat increase
             </CardTitle>
-            <DollarSign class="h-4 w-4 text-muted-foreground" />
+            <Activity class="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div class="text-2xl font-bold">
               <NumberFlow
-                :value="dataCard.totalRevenue"
-                :format="{ style: 'currency', currency: 'USD', trailingZeroDisplay: 'stripIfInteger' }"
+                :value="20"
+                prefix="+" suffix=" bpm"
               />
             </div>
             <p class="text-xs text-muted-foreground">
@@ -275,13 +270,16 @@ onMounted(() => {
         <Card>
           <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle class="text-sm font-medium">
-              Subscriptions
+              Heart beat increase
             </CardTitle>
-            <Users class="h-4 w-4 text-muted-foreground" />
+            <Activity class="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div class="text-2xl font-bold">
-              <NumberFlow :value="dataCard.subscriptions" prefix="+" />
+              <NumberFlow
+                :value="15"
+                prefix="+" suffix=" bpm"
+              />
             </div>
             <p class="text-xs text-muted-foreground">
               <NumberFlow
@@ -294,13 +292,16 @@ onMounted(() => {
         <Card>
           <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle class="text-sm font-medium">
-              Sales
+              Heart beat increase
             </CardTitle>
-            <CreditCard class="h-4 w-4 text-muted-foreground" />
+            <Activity class="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div class="text-2xl font-bold">
-              <NumberFlow :value="dataCard.sales" prefix="+" />
+              <NumberFlow
+                :value="30"
+                prefix="+" suffix=" bpm"
+              />
             </div>
             <p class="text-xs text-muted-foreground">
               <NumberFlow
@@ -313,16 +314,16 @@ onMounted(() => {
         <Card>
           <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle class="text-sm font-medium">
-              Active Now
+              Heart beat increase
             </CardTitle>
             <Activity class="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div class="text-2xl font-bold">
-              <NumberFlow :value="dataCard.activeNow" prefix="+" />
+              <NumberFlow :value="30" prefix="-" suffix=" bpm" />
             </div>
             <p class="text-xs text-muted-foreground">
-              <NumberFlow :value="dataCard.activeNowDesc" prefix="+" /> since last hour
+              <NumberFlow :value="12" prefix="-" /> since last hour
             </p>
           </CardContent>
         </Card>

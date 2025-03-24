@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import type { NavGroup, NavLink, NavSectionTitle } from '~/types/nav'
+import { add } from 'date-fns'
+import { GraduationCap } from 'lucide-vue-next'
 import { navMenu, navMenuBottom } from '~/constants/menus'
 
 function resolveNavItemComponent(item: NavLink | NavGroup | NavSectionTitle): any {
@@ -9,45 +11,42 @@ function resolveNavItemComponent(item: NavLink | NavGroup | NavSectionTitle): an
   return resolveComponent('LayoutSidebarNavLink')
 }
 
-const teams: {
-  name: string
-  logo: string
-  plan: string
-}[] = [
-  {
-    name: 'KU Leuven',
-    logo: 'i-lucide-gallery-vertical-end',
-    plan: 'University',
-  },
-  {
-    name: 'Acme Corp.',
-    logo: 'i-lucide-audio-waveform',
-    plan: 'Startup',
-  },
-  {
-    name: 'Evil Corp.',
-    logo: 'i-lucide-command',
-    plan: 'Free',
-  },
-]
-
 const user: {
   name: string
   email: string
   avatar: string
 } = {
-  name: 'Dian Pratama',
-  email: 'dianpratama2@gmail.com',
+  name: 'User123',
+  email: 'user123@gmail.com',
   avatar: '/avatars/avatartion.png',
 }
 
 const { sidebar } = useAppSettings()
+
+function openKULWebsiteInNewTab() {
+  window.open('https://www.kuleuven.be/en', '_blank')
+}
 </script>
 
 <template>
   <Sidebar :collapsible="sidebar.collapsible" :side="sidebar.side" :variant="sidebar.variant">
     <SidebarHeader>
-      <LayoutSidebarNavHeader :teams="teams" />
+      <!-- KUL icon -->
+      <SidebarMenuButton
+        size="lg"
+        class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+        @click="openKULWebsiteInNewTab"
+      >
+        <div class="aspect-square size-8 flex items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+          <GraduationCap class="size-6" />
+        </div>
+        <div class="grid flex-1 text-left text-sm leading-tight">
+          <span class="truncate font-semibold">
+            KU Leuven
+          </span>
+          <span class="truncate text-xs">Health Monitor</span>
+        </div>
+      </SidebarMenuButton>
       <Search />
     </SidebarHeader>
     <SidebarContent>

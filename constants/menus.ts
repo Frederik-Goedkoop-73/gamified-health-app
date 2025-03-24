@@ -43,7 +43,6 @@ export const navMenu: NavMenu[] = [
         title: 'Profile',
         icon: 'i-lucide-user',
         link: '/profile',
-        new: true,
       },
     ],
   },

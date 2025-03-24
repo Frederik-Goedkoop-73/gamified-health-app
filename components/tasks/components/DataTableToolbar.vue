@@ -19,7 +19,7 @@ const isFiltered = computed(() => props.table.getState().columnFilters.length > 
   <div class="flex items-center justify-between">
     <div class="flex flex-1 items-center space-x-2">
       <Input
-        placeholder="Filter tasks..."
+        placeholder="Filter users..."
         :model-value="(table.getColumn('title')?.getFilterValue() as string) ?? ''"
         class="h-8 w-[150px] lg:w-[250px]"
         @input="table.getColumn('title')?.setFilterValue($event.target.value)"
