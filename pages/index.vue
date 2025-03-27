@@ -3,7 +3,7 @@ import { useCoinStore } from '@/stores/coinStore'
 import { useStreakStore } from '@/stores/streakStore'
 import { useXPStore } from '@/stores/xpStore'
 import NumberFlow from '@number-flow/vue'
-import { Activity, Coins, CreditCard, DollarSign, User, Users, Zap } from 'lucide-vue-next'
+import { Activity, Coins, User, Zap } from 'lucide-vue-next'
 
 const dataCard = ref({
   totalRevenue: 0,

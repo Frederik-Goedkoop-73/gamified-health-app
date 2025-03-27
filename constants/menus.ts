@@ -86,6 +86,11 @@ export const navMenu: NavMenu[] = [
           },
         ],
       },
+      {
+        title: 'Recommendation',
+        icon: 'i-lucide-star',
+        link: '/recommendation',
+      },
     ],
   },
   {

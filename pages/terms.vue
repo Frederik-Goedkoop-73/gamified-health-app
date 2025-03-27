@@ -8,7 +8,7 @@ definePageMeta({
 
 <template>
   <section>
-    <div class="terms-container rounded-lg bg-white p-8 shadow-md">
+    <Card class="terms-container rounded-lg p-8">
       <Button class="mb-5 min-w-10" :disabled="isLoading">
         <NuxtLink to="/" class="flex flex-row items-center gap-4" @click="setOpenMobile(false)">
           <House class="h-5 w-5" />
@@ -267,6 +267,6 @@ definePageMeta({
           <a href="tel:+32474547625" class="text-blue-500 hover:underline">+32 4 74 54 76 25</a>
         </p>
       </section>
-    </div>
+    </Card>
   </section>
 </template>
