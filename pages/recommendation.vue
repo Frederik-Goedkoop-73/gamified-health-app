@@ -1,5 +1,17 @@
 <script setup lang="ts">
-import { Bell, CalendarCheck, ClockArrowUp, Dumbbell, HeartPulse, Sticker, Swords } from 'lucide-vue-next'
+import {
+  AudioWaveform,
+  Bell,
+  BicepsFlexed,
+  CalendarCheck,
+  ClockArrowUp,
+  Dumbbell,
+  EyeClosed,
+  HeartPulse,
+  Lightbulb,
+  Sticker,
+  Swords,
+} from 'lucide-vue-next'
 
 definePageMeta({
   layout: 'blank',
@@ -27,7 +39,7 @@ definePageMeta({
               Start small—if you're currently averaging 5,000 steps a day, aim to bump it up by 500 steps next week.
               This might seem insignificant, but these little increases add up.
             </p>
-            <Card>
+            <Card class="border-green-300 text-left">
               <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
                 <Strong>Fun fact!</Strong>
                 <Sticker class="h-4 w-4 text-muted-foreground" />
@@ -115,7 +127,7 @@ definePageMeta({
               You could go for a jog on Monday, do some yoga on Wednesday, and bike on the weekend.
               Variety doesn’t just keep things interesting—it also prevents injuries by working different muscle groups.
             </p>
-            <Card class="border-green-300">
+            <Card class="border-green-300 text-left">
               <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
                 <Strong>Here’s a fun challenge!</Strong>
                 <Swords class="h-4 w-4 text-muted-foreground" />
@@ -153,7 +165,7 @@ definePageMeta({
               For example, if your step count tends to drop on weekends,
               plan an outdoor activity or a fun hike with friends.
             </p>
-            <Card>
+            <Card class="border-green-300 text-left">
               <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
                 <Strong>Pro tip:</Strong>
                 <HeartPulse class="h-4 w-4 text-muted-foreground" />
@@ -191,21 +203,21 @@ definePageMeta({
                 </p>
               </li>
               <li class="flex items-center gap-2">
-                <Bell class="mt-2 size-4 min-w-4 self-start text-muted-foreground" />
+                <AudioWaveform class="mt-2 size-4 min-w-4 self-start text-muted-foreground" />
                 <p>
                   <strong>Listen to Your Body:</strong>
                   If you feel fatigued or sore, prioritize rest.
                 </p>
               </li>
               <li class="flex items-center gap-3">
-                <Dumbbell class="mt-2 size-4 min-w-4 self-start text-muted-foreground" />
+                <BicepsFlexed class="mt-2 size-4 min-w-4 self-start text-muted-foreground" />
                 <p>
                   <strong>Incorporate Mobility Work:</strong>
                   On rest days, dedicate 10-15 minutes to stretches.
                 </p>
               </li>
               <li class="flex items-center gap-2">
-                <ClockArrowUp class="mt-2 size-4 min-w-4 self-start text-muted-foreground" />
+                <EyeClosed class="mt-2 size-4 min-w-4 self-start text-muted-foreground" />
                 <p>
                   <strong>Monitor Fatigue with Fitbit:</strong>
                   Check your resting heart rate for signs of overexertion.
@@ -230,21 +242,27 @@ definePageMeta({
             6. Track Progress
           </h2>
           <div class="space-y-4">
-            <ul class="ml-4 list-disc space-y-2">
-              <li>
-                <strong>Set Monthly Milestones:</strong> Aim to increase your daily steps by 10% each
-                month.
-              </li>
-              <li>
-                <strong>Use Fitbit's Progress Tracker:</strong> Monitor how your activity levels change
-                over time.
-              </li>
-              <li><strong>Celebrate Wins:</strong> Set up small rewards for reaching milestones.</li>
-              <li>
-                <strong>Compare Data to Your Goals:</strong> Reflect each month on whether you met your
-                targets.
-              </li>
-            </ul>
+            <p>
+              There’s nothing quite like seeing your progress over time.
+              Whether it's an increase in steps, a lower resting heart rate,
+              or more active minutes, tracking your fitness journey can be incredibly
+              motivating.
+              Use your Fitbit to visualize this data—graphs and charts can
+              show you just how far you’ve come.
+            </p>
+            <Card class="border-green-300 text-left">
+              <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
+                <Strong>Here's a fun idea:</Strong>
+                <Lightbulb class="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7922504/#:~:text=Fourteen%20key%20factors%20were%20identified,initial%20exploration%20of%20participant's%20characteristics%2C" class="decoration-underline" target="_blank">Research</a>
+                Reward yourself when you hit a new milestone,
+                like reaching 10,000 steps consistently for a week or completing your first 5K.
+                Treat yourself to something that makes you feel good,
+                like a new pair of workout shoes or a relaxing day at the spa.
+              </CardContent>
+            </Card>
           </div>
         </div>
         <Card class="md:w-1/3">
@@ -263,23 +281,19 @@ definePageMeta({
             7. Seek Support
           </h2>
           <div class="space-y-4">
-            <ul class="ml-4 list-disc space-y-2">
-              <li>
-                <strong>Find Accountability Partners:</strong> Team up with friends who also use Fitbit.
-              </li>
-              <li>
-                <strong>Join a Fitness Community:</strong> Online or in-person communities offer
-                encouragement.
-              </li>
-              <li>
-                <strong>Seek Professional Guidance:</strong> Consider hiring a personal trainer if
-                needed.
-              </li>
-              <li>
-                <strong>Share Achievements:</strong> Post your progress in fitness groups for
-                encouragement.
-              </li>
-            </ul>
+            <p>
+              Fitness is more fun with friends!
+              Whether you’re joining a virtual workout group or simply competing with a
+              friend to see who can take the most steps, having an accountability
+              buddy can make a huge difference. Humans are social creatures,
+              after all—why not use that to your fitness advantage?
+            </p>
+            <p>
+              You can even start a friendly competition with your friends using your Fitbit.
+              Set up challenges to see who can rack up the most steps in a week or burn
+              the most active minutes.
+              Plus, a little friendly rivalry never hurt anyone!
+            </p>
           </div>
         </div>
         <Card class="md:w-1/3">
@@ -298,16 +312,28 @@ definePageMeta({
             8. Utilize Resources
           </h2>
           <div class="space-y-4">
-            <ul class="ml-4 list-disc space-y-2">
-              <li><strong>Explore Fitness Apps:</strong> Look into apps that offer workout plans.</li>
-              <li>
-                <strong>Check Out Local Gyms or Classes:</strong> Many communities offer free/low-cost
-                classes.
-              </li>
-              <li>
-                <strong>Plan for Active Events:</strong> Sign up for local 5K races or charity walks.
-              </li>
-            </ul>
+            <p>
+              Fitness doesn’t have to be complicated, and you don’t have to do it alone.
+              There are tons of free resources out there to help you along the way,
+              from workout videos to local running groups.
+              Whether you’re looking for a new routine, guidance on form,
+              or just some fitness inspiration,
+              there’s a whole world of options to explore.
+              Additionally, you can consult the <a href="https://www.kuleuven.be/sport/eng/univ-fit/team" class="decoration-underline" target="_blank">KUL's sport team </a> for fitnessprograms, coaching,
+              and other wellness services!
+            </p>
+            <Card class="border-green-300 text-left">
+              <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
+                <Strong>Fun Fact!</Strong>
+                <Sticker class="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7922504/#:~:text=Fourteen%20key%20factors%20were%20identified,initial%20exploration%20of%20participant's%20characteristics%2C" class="decoration-underline" target="_blank">Research</a>
+                Did you know that outdoor exercise can improve your mood more than indoor workouts?
+                So, if the weather’s nice, head outside!
+                Fresh air, sunlight, and movement—a winning combo.
+              </CardContent>
+            </Card>
           </div>
         </div>
         <Card class="md:w-1/3">
