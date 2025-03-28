@@ -20,7 +20,7 @@ definePageMeta({
 
 <template>
   <section>
-    <div class="mx-auto max-w-6xl rounded-lg p-8 text-justify leading-8">
+    <div class="mx-auto max-w-6xl rounded-lg p-8 leading-8">
       <div class="mb-6">
         <h1 class="mb-6 text-center text-3xl font-bold">
           Health Recommendations
@@ -39,7 +39,7 @@ definePageMeta({
               Start small—if you're currently averaging 5,000 steps a day, aim to bump it up by 500 steps next week.
               This might seem insignificant, but these little increases add up.
             </p>
-            <Card class="border-green-300 text-left">
+            <Card class="border-green-300">
               <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
                 <Strong>Fun fact!</Strong>
                 <Sticker class="h-4 w-4 text-muted-foreground" />
@@ -127,7 +127,7 @@ definePageMeta({
               You could go for a jog on Monday, do some yoga on Wednesday, and bike on the weekend.
               Variety doesn’t just keep things interesting—it also prevents injuries by working different muscle groups.
             </p>
-            <Card class="border-green-300 text-left">
+            <Card class="border-green-300">
               <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
                 <Strong>Here’s a fun challenge!</Strong>
                 <Swords class="h-4 w-4 text-muted-foreground" />
@@ -165,7 +165,7 @@ definePageMeta({
               For example, if your step count tends to drop on weekends,
               plan an outdoor activity or a fun hike with friends.
             </p>
-            <Card class="border-green-300 text-left">
+            <Card class="border-green-300">
               <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
                 <Strong>Pro tip:</Strong>
                 <HeartPulse class="h-4 w-4 text-muted-foreground" />
@@ -250,7 +250,7 @@ definePageMeta({
               Use your Fitbit to visualize this data—graphs and charts can
               show you just how far you’ve come.
             </p>
-            <Card class="border-green-300 text-left">
+            <Card class="border-green-300">
               <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
                 <Strong>Here's a fun idea:</Strong>
                 <Lightbulb class="h-4 w-4 text-muted-foreground" />
@@ -322,7 +322,7 @@ definePageMeta({
               Additionally, you can consult the <a href="https://www.kuleuven.be/sport/eng/univ-fit/team" class="decoration-underline" target="_blank">KUL's sport team </a> for fitnessprograms, coaching,
               and other wellness services!
             </p>
-            <Card class="border-green-300 text-left">
+            <Card class="border-green-300">
               <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
                 <Strong>Fun Fact!</Strong>
                 <Sticker class="h-4 w-4 text-muted-foreground" />
