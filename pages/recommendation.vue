@@ -25,6 +25,9 @@ definePageMeta({
         <h1 class="mb-6 text-center text-3xl font-bold">
           Health Recommendations
         </h1>
+        <h2 class="mb-6 text-center text-xl text-muted-foreground">
+          Want to maintain your lovely new habits?
+        </h2>
         <hr class="border-t-2">
       </div>
       <!-- Section 1 - Image on right -->

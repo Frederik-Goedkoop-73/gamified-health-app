@@ -116,7 +116,8 @@ onMounted(() => {
         <CardContent>
           <div class="text-2m font-bold">
             <div class="flex items-center gap-4">
-              <Avatar class="h-12 w-12">
+              <Avatar class="size-16">
+                <AvatarImage src="/avatars/avatartion.png" />
                 <AvatarFallback>JD</AvatarFallback>
               </Avatar>
               <p>Lvl.{{ xpStore.level }}</p>

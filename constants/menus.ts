@@ -13,31 +13,26 @@ export const navMenu: NavMenu[] = [
         title: 'Health',
         icon: 'i-lucide-heart',
         link: '/health',
-        new: true,
       },
       {
         title: 'Quests',
         icon: 'i-lucide-trophy',
         link: '/quests',
-        new: true,
       },
       {
         title: 'Shop',
         icon: 'i-lucide-shopping-cart',
         link: '/shop',
-        new: true,
       },
       {
         title: 'Badges',
         icon: 'i-lucide-award',
         link: '/badges',
-        new: true,
       },
       {
         title: 'Leaderboard',
         icon: 'i-lucide-crown',
         link: '/leaderboard',
-        new: true,
       },
       {
         title: 'Profile',
@@ -85,11 +80,6 @@ export const navMenu: NavMenu[] = [
             link: '/settings/appearance',
           },
         ],
-      },
-      {
-        title: 'Recommendation',
-        icon: 'i-lucide-star',
-        link: '/recommendation',
       },
     ],
   },
@@ -393,12 +383,16 @@ export const navMenuBottom: NavMenuItems = [
     title: 'Terms of Service',
     icon: 'i-lucide-file-text',
     link: '/terms',
-    new: true,
   },
   {
     title: 'Privacy Policy',
     icon: 'i-lucide-shield-check',
     link: '/privacy',
+  },
+  {
+    title: 'Recommendation',
+    icon: 'i-lucide-star',
+    link: '/recommendation',
     new: true,
   },
 ]
