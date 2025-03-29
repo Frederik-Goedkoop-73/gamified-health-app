@@ -259,7 +259,6 @@ definePageMeta({
                 <Lightbulb class="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7922504/#:~:text=Fourteen%20key%20factors%20were%20identified,initial%20exploration%20of%20participant's%20characteristics%2C" class="decoration-underline" target="_blank">Research</a>
                 Reward yourself when you hit a new milestone,
                 like reaching 10,000 steps consistently for a week or completing your first 5K.
                 Treat yourself to something that makes you feel good,
@@ -331,7 +330,6 @@ definePageMeta({
                 <Sticker class="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7922504/#:~:text=Fourteen%20key%20factors%20were%20identified,initial%20exploration%20of%20participant's%20characteristics%2C" class="decoration-underline" target="_blank">Research</a>
                 Did you know that outdoor exercise can improve your mood more than indoor workouts?
                 So, if the weather’s nice, head outside!
                 Fresh air, sunlight, and movement—a winning combo.
