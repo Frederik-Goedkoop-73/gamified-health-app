@@ -1,141 +1,7 @@
 <script setup lang="ts">
 // import NumberFlow from '@number-flow/vue'
-import { Award, Coins } from 'lucide-vue-next'
-
-const badges = [
-  {
-    category: 'Marathon Stepper 🚶‍➡️',
-    badges: [
-      { tier: 'Bronze I', requirement: 'Walk 10,000 steps', icon: '/badges/Steps/Steps_B1.png' },
-      { tier: 'Bronze II', requirement: 'Walk 25,000 steps', icon: '/badges/Steps/Steps_B2.png' },
-      { tier: 'Bronze III', requirement: 'Walk 50,000 steps', icon: '/badges/Steps/Steps_B3.png' },
-      { tier: 'Silver I', requirement: 'Walk 75,000 steps', icon: '/badges/Steps/Steps_S1.png' },
-      { tier: 'Silver II', requirement: 'Walk 100,000 steps', icon: '/badges/Steps/Steps_S2.png' },
-      { tier: 'Silver III', requirement: 'Walk 150,000 steps', icon: '/badges/Steps/Steps_S3.png' },
-      { tier: 'Gold I', requirement: 'Walk 200,000 steps', icon: '/badges/Steps/Steps_G1.png' },
-      { tier: 'Gold II', requirement: 'Walk 300,000 steps', icon: '/badges/Steps/Steps_G2.png' },
-      { tier: 'Gold III', requirement: 'Walk 500,000 steps', icon: '/badges/Steps/Steps_G3.png' },
-    ],
-  },
-  {
-    category: 'Calorie Inferno 🔥',
-    badges: [
-      { tier: 'Bronze I', requirement: 'Burn 1,000 calories', icon: '/badges/Calories/Calories_B1.png' },
-      { tier: 'Bronze II', requirement: 'Burn 2,500 calories', icon: '/badges/Calories/Calories_B2.png' },
-      { tier: 'Bronze III', requirement: 'Burn 5,000 calories', icon: '/badges/Calories/Calories_B3.png' },
-      { tier: 'Silver I', requirement: 'Burn 7,500 calories', icon: '/badges/Calories/Calories_S1.png' },
-      { tier: 'Silver II', requirement: 'Burn 10,000 calories', icon: '/badges/Calories/Calories_S2.png' },
-      { tier: 'Silver III', requirement: 'Burn 15,000 calories', icon: '/badges/Calories/Calories_S3.png' },
-      { tier: 'Gold I', requirement: 'Burn 20,000 calories', icon: '/badges/Calories/Calories_G1.png' },
-      { tier: 'Gold II', requirement: 'Burn 30,000 calories', icon: '/badges/Calories/Calories_G2.png' },
-      { tier: 'Gold III', requirement: 'Burn 50,000 calories', icon: '/badges/Calories/Calories_G3.png' },
-    ],
-  },
-  {
-    category: 'Super Cardio Bros ❤️',
-    badges: [
-      { tier: 'Bronze I', requirement: 'Achieve 100 cardio load points', icon: '/badges/Cardio/Cardio_B1.png' },
-      { tier: 'Bronze II', requirement: 'Achieve 250 cardio load points', icon: '/badges/Cardio/Cardio_B2.png' },
-      { tier: 'Bronze III', requirement: 'Achieve 500 cardio load points', icon: '/badges/Cardio/Cardio_B3.png' },
-      { tier: 'Silver I', requirement: 'Achieve 750 cardio load points', icon: '/badges/Cardio/Cardio_S1.png' },
-      { tier: 'Silver II', requirement: 'Achieve 1,000 cardio load points', icon: '/badges/Cardio/Cardio_S2.png' },
-      { tier: 'Silver III', requirement: 'Achieve 1,500 cardio load points', icon: '/badges/Cardio/Cardio_S3.png' },
-      { tier: 'Gold I', requirement: 'Achieve 2,000 cardio load points', icon: '/badges/Cardio/Cardio_G1.png' },
-      { tier: 'Gold II', requirement: 'Achieve 3,000 cardio load points', icon: '/badges/Cardio/Cardio_G2.png' },
-      { tier: 'Gold III', requirement: 'Achieve 5,000 cardio load points', icon: '/badges/Cardio/Cardio_G3.png' },
-    ],
-  },
-  {
-    category: 'Sleeping Beauty 💤',
-    badges: [
-      { tier: 'Bronze I', requirement: 'Sleep 7 hours in a night', icon: '/badges/Sleep/Sleep_B1.png' },
-      { tier: 'Bronze II', requirement: 'Sleep 7 hours for 3 consecutive nights', icon: '/badges/Sleep/Sleep_B2.png' },
-      { tier: 'Bronze III', requirement: 'Sleep 7 hours for 7 consecutive nights', icon: '/badges/Sleep/Sleep_B3.png' },
-      { tier: 'Silver I', requirement: 'Sleep 8 hours in a night', icon: '/badges/Sleep/Sleep_S1.png' },
-      { tier: 'Silver II', requirement: 'Sleep 8 hours for 3 consecutive nights', icon: '/badges/Sleep/Sleep_S2.png' },
-      { tier: 'Silver III', requirement: 'Sleep 8 hours for 7 consecutive nights', icon: '/badges/Sleep/Sleep_S3.png' },
-      { tier: 'Gold I', requirement: 'Sleep 9 hours in a night', icon: '/badges/Sleep/Sleep_G1.png' },
-      { tier: 'Gold II', requirement: 'Sleep 9 hours for 3 consecutive nights', icon: '/badges/Sleep/Sleep_G2.png' },
-      { tier: 'Gold III', requirement: 'Sleep 9 hours for 7 consecutive nights', icon: '/badges/Sleep/Sleep_G3.png' },
-    ],
-  },
-  {
-    category: 'Distance Runner 🏃‍♂️',
-    badges: [
-      { tier: 'Bronze I', requirement: 'Walk/run 5 km', icon: '/badges/Distance/Distance_B1.png' },
-      { tier: 'Bronze II', requirement: 'Walk/run 10 km', icon: '/badges/Distance/Distance_B2.png' },
-      { tier: 'Bronze III', requirement: 'Walk/run 25 km', icon: '/badges/Distance/Distance_B3.png' },
-      { tier: 'Silver I', requirement: 'Walk/run 50 km', icon: '/badges/Distance/Distance_S1.png' },
-      { tier: 'Silver II', requirement: 'Walk/run 75 km', icon: '/badges/Distance/Distance_S2.png' },
-      { tier: 'Silver III', requirement: 'Walk/run 100 km', icon: '/badges/Distance/Distance_S3.png' },
-      { tier: 'Gold I', requirement: 'Walk/run 150 km', icon: '/badges/Distance/Distance_G1.png' },
-      { tier: 'Gold II', requirement: 'Walk/run 200 km', icon: '/badges/Distance/Distance_G2.png' },
-      { tier: 'Gold III', requirement: 'Walk/run 300 km', icon: '/badges/Distance/Distance_G3.png' },
-    ],
-  },
-  {
-    category: 'Go-Getter 🚀',
-    badges: [
-      { tier: 'Bronze I', requirement: 'Achieve 30 active zone minutes', icon: '/badges/AZM/AZM_B1.png' },
-      { tier: 'Bronze II', requirement: 'Achieve 60 active zone minutes', icon: '/badges/AZM/AZM_B2.png' },
-      { tier: 'Bronze III', requirement: 'Achieve 120 active zone minutes', icon: '/badges/AZM/AZM_B3.png' },
-      { tier: 'Silver I', requirement: 'Achieve 200 active zone minutes', icon: '/badges/AZM/AZM_S1.png' },
-      { tier: 'Silver II', requirement: 'Achieve 300 active zone minutes', icon: '/badges/AZM/AZM_S2.png' },
-      { tier: 'Silver III', requirement: 'Achieve 500 active zone minutes', icon: '/badges/AZM/AZM_S3.png' },
-      { tier: 'Gold I', requirement: 'Achieve 750 active zone minutes', icon: '/badges/AZM/AZM_G1.png' },
-      { tier: 'Gold II', requirement: 'Achieve 1,000 active zone minutes', icon: '/badges/AZM/AZM_G2.png' },
-      { tier: 'Gold III', requirement: 'Achieve 1,500 active zone minutes', icon: '/badges/AZM/AZM_G3.png' },
-    ],
-  },
-  {
-    category: 'Golddigger 💰',
-    badges: [
-      { tier: 'Bronze I', requirement: 'Earn 100 coins', icon: '/badges/Coins/Coins_B1.png' },
-      { tier: 'Bronze II', requirement: 'Earn 250 coins', icon: '/badges/Coins/Coins_B2.png' },
-      { tier: 'Bronze III', requirement: 'Earn 500 coins', icon: '/badges/Coins/Coins_B3.png' },
-      { tier: 'Silver I', requirement: 'Earn 750 coins', icon: '/badges/Coins/Coins_S1.png' },
-      { tier: 'Silver II', requirement: 'Earn 1,000 coins', icon: '/badges/Coins/Coins_S2.png' },
-      { tier: 'Silver III', requirement: 'Earn 1,500 coins', icon: '/badges/Coins/Coins_S3.png' },
-      { tier: 'Gold I', requirement: 'Earn 2,000 coins', icon: '/badges/Coins/Coins_G1.png' },
-      { tier: 'Gold II', requirement: 'Earn 3,000 coins', icon: '/badges/Coins/Coins_G2.png' },
-      { tier: 'Gold III', requirement: 'Earn 5,000 coins', icon: '/badges/Coins/Coins_G3.png' },
-    ],
-  },
-  {
-    category: 'Experienced One 🌟',
-    badges: [
-      { tier: 'Bronze I', requirement: 'Earn 100 XP', icon: '/badges/XP/XP_B1.png' },
-      { tier: 'Bronze II', requirement: 'Earn 250 XP', icon: '/badges/XP/XP_B2.png' },
-      { tier: 'Bronze III', requirement: 'Earn 500 XP', icon: '/badges/XP/XP_B3.png' },
-      { tier: 'Silver I', requirement: 'Earn 750 XP', icon: '/badges/XP/XP_S1.png' },
-      { tier: 'Silver II', requirement: 'Earn 1,000 XP', icon: '/badges/XP/XP_S2.png' },
-      { tier: 'Silver III', requirement: 'Earn 1,500 XP', icon: '/badges/XP/XP_S3.png' },
-      { tier: 'Gold I', requirement: 'Earn 2,000 XP', icon: '/badges/XP/XP_G1.png' },
-      { tier: 'Gold II', requirement: 'Earn 3,000 XP', icon: '/badges/XP/XP_G2.png' },
-      { tier: 'Gold III', requirement: 'Earn 5,000 XP', icon: '/badges/XP/XP_G3.png' },
-    ],
-  },
-  {
-    category: 'Consistent Streaker 📅',
-    badges: [
-      { tier: 'Bronze I', requirement: 'Maintain a 3-day streak', icon: '/badges/Streak/Streak_B1.png' },
-      { tier: 'Bronze II', requirement: 'Maintain a 7-day streak', icon: '/badges/Streak/Streak_B2.png' },
-      { tier: 'Bronze III', requirement: 'Maintain a 14-day streak', icon: '/badges/Streak/Streak_B3.png' },
-      { tier: 'Silver I', requirement: 'Maintain a 21-day streak', icon: '/badges/Streak/Streak_S1.png' },
-      { tier: 'Silver II', requirement: 'Maintain a 25-day streak', icon: '/badges/Streak/Streak_S2.png' },
-      { tier: 'Silver III', requirement: 'Maintain a 28-day streak', icon: '/badges/Streak/Streak_S3.png' },
-      { tier: 'Gold I', requirement: 'Maintain a 30-day streak', icon: '/badges/Streak/Streak_G1.png' },
-      { tier: 'Gold II', requirement: 'Maintain a 35-day streak', icon: '/badges/Streak/Streak_G2.png' },
-      { tier: 'Gold III', requirement: 'Maintain a 40-day streak', icon: '/badges/Streak/Streak_G3.png' },
-    ],
-  },
-  {
-    category: 'Completionist 🏆',
-    badges: [
-      { tier: 'Platinum Completionist', requirement: 'Collect all 81 badges (9 categories × 9 badges each)', icon: '/badges/Platinum.png' },
-    ],
-  },
-]
+import { Award } from 'lucide-vue-next'
+import { badges } from '~/components/tasks/data/badgeData.js'
 </script>
 
 <template>
@@ -144,15 +10,15 @@ const badges = [
       <h2 class="text-2xl font-bold tracking-tight">
         Badges
       </h2>
-      <i class="m-3 text-muted-foreground"><b>Tip: </b>Hover over a quest to see more info</i>
     </div>
     <!-- Main body under header -->
     <main class="flex flex-1 flex-col gap-4 md:gap-8">
       <!-- Daily quests -->
       <Card class="xl:col-span-2">
         <CardHeader>
-          <CardTitle class="text-2xl font-bold">
+          <CardTitle class="flex flex-row items-center justify-between pb-2 space-y-0 text-2xl font-bold">
             Achievement Badges
+            <Award class="h-4 w-4 text-muted-foreground" />
           </CardTitle>
         </CardHeader>
 
