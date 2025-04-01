@@ -1,9 +1,20 @@
+import type { User } from 'firebase/auth'
 import { getAuth } from 'firebase/auth'
 import { doc, getDoc, getFirestore, setDoc } from 'firebase/firestore'
 import { defineStore } from 'pinia'
 
+// Type definition
+interface XPState {
+  xp: number
+  totalXP: number
+  level: number
+  showPopup: boolean
+  leveledUpTo: number
+  hasAwarded1000XP: boolean
+}
+
 export const useXPStore = defineStore('xp', {
-  state: () => ({
+  state: (): XPState => ({
     xp: 0, // Initial XP state
     totalXP: 0, // Total XP earned by the user
     level: 1, // Initial level
@@ -12,38 +23,37 @@ export const useXPStore = defineStore('xp', {
 
     hasAwarded1000XP: false, // Track if 200 XP has been awarded for reaching 1000 XP
   }),
+
   actions: {
     // Fetch XP and level from Firestore for the current user
-    async fetchXP() {
+    async fetchXP(): Promise<void> {
       const auth = getAuth()
-      const user = auth.currentUser
+      const user: User | null = auth.currentUser
 
       if (user) {
-        const db = getFirestore() // rm db's because already globally defined
+        const db = getFirestore()
         const userDocRef = doc(db, 'users', user.uid)
 
         try {
           const docSnap = await getDoc(userDocRef)
           if (docSnap.exists()) {
             const data = docSnap.data()
-            this.xp = data.xp || 0 // Update local state with Firestore data
-            this.totalXP = data.totalXP || 0 // Update local state with Firestore data
-            this.level = data.level || 1 // Update local state with Firestore data
+            this.xp = data.xp ?? 0 // Update local state with Firestore data
+            this.totalXP = data.totalXP ?? 0 // Update local state with Firestore data
+            this.level = data.level ?? 1 // Update local state with Firestore data
           }
           else {
-            this.xp = 0 // Default to 0 if no document exists
-            this.totalXP = 0 // Default to 0 if no document exists
-            this.level = 1 // Default to level 1 if no document exists
+            this.resetXP()
           }
         }
-        catch (error) {
+        catch (error: unknown) {
           console.error('Error fetching XP:', error)
         }
       }
     },
 
     // Add XP and update Firestore
-    async addXP(xpAmount) {
+    async addXP(xpAmount: number): Promise<void> {
       this.xp += xpAmount // Update local state
       this.totalXP += xpAmount // Update local state
 
@@ -59,7 +69,7 @@ export const useXPStore = defineStore('xp', {
     },
 
     // Reset XP and update Firestore
-    async resetXP() {
+    async resetXP(): Promise<void> {
       this.xp = 0 // Reset local state
       this.totalXP = 0 // Reset local
       this.level = 1 // Reset local state
@@ -70,34 +80,38 @@ export const useXPStore = defineStore('xp', {
     },
 
     // Save the current XP and level to Firestore
-    async saveXPToFirestore() {
+    async saveXPToFirestore(): Promise<void> {
       const auth = getAuth()
-      const user = auth.currentUser
+      const user: User | null = auth.currentUser
 
       if (user) {
         const db = getFirestore()
         const userDocRef = doc(db, 'users', user.uid)
 
         try {
-          await setDoc(userDocRef, {
-            xp: this.xp, // Save the current XP
-            totalXP: this.totalXP, // Save the total XP
-            level: this.level, // Save the current level
-          }, { merge: true }) // Merge with existing document data
+          await setDoc(
+            userDocRef,
+            {
+              xp: this.xp, // Save the current XP
+              totalXP: this.totalXP, // Save the total XP
+              level: this.level, // Save the current level
+            },
+            { merge: true },
+          ) // Merge with existing document data
         }
-        catch (error) {
+        catch (error: unknown) {
           console.error('Error saving XP and level to Firestore:', error)
         }
       }
     },
 
     // Calculate the total XP needed for the next level
-    totalXpNeededForNextLevel() {
+    totalXpNeededForNextLevel(): number {
       return this.level * 10
     },
 
     // Update the player's level based on XP
-    updateLevel() {
+    updateLevel(): void {
       while (this.xp >= this.totalXpNeededForNextLevel()) {
         this.xp -= this.totalXpNeededForNextLevel() // Subtract required XP for current level-up
         this.level++
@@ -107,17 +121,19 @@ export const useXPStore = defineStore('xp', {
     },
 
     // Calculate the current progress towards the next level -> currently not used
-    xpProgress() {
+    xpProgress(): number {
       return (this.xp / this.totalXpNeededForNextLevel()) * 100
     },
 
-    totalXP() {
-      return this.totalXP
-    },
-
     // Close the level-up popup
-    closePopup() {
+    closePopup(): void {
       this.showPopup = false
+    },
+  },
+
+  getters: {
+    getTotalXP(): number {
+      return this.totalXP
     },
   },
 })

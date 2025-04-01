@@ -15,11 +15,11 @@ import { badges } from '~/components/tasks/data/badgeData.js'
     <main class="flex flex-1 flex-col gap-4 md:gap-8">
       <!-- Daily quests -->
       <Card class="xl:col-span-2">
-        <CardHeader>
-          <CardTitle class="flex flex-row items-center justify-between pb-2 space-y-0 text-2xl font-bold">
+        <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
+          <CardTitle class="text-2xl font-bold">
             Achievement Badges
-            <Award class="h-4 w-4 text-muted-foreground" />
           </CardTitle>
+          <Award class="h-4 w-4 text-muted-foreground" />
         </CardHeader>
 
         <CardContent class="space-y-8">

@@ -2,7 +2,7 @@ import { createUserWithEmailAndPassword, getAuth, GoogleAuthProvider, onAuthStat
 import { doc, getDoc, getFirestore, setDoc } from 'firebase/firestore'
 import { onMounted, ref } from 'vue'
 
-import { useRouter } from 'vue-router'
+import { useRouter } from 'vue-router' // Might not be necessary -> nuxt router instead
 import { useCoinStore } from '../stores/coinStore'
 
 import { useStreakStore } from '../stores/streakStore'
