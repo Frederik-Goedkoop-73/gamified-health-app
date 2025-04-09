@@ -20,6 +20,8 @@ export const useStreakStore = defineStore('streak', {
     async fetchStreak(): Promise<void> {
       const auth = getAuth()
       const user: User | null = auth.currentUser
+      if (!user)
+        return // No user logged in -> no function run
 
       if (user) {
         const db = getFirestore()
@@ -32,9 +34,6 @@ export const useStreakStore = defineStore('streak', {
             this.streak = data.streak ?? 0 // Update local state with Firestore data, ?? instead of || because only want to return 0 for undefined or null
             this.lastLoginDate = (data.lastLoginDate as Timestamp)?.toDate() ?? null
           }
-          else {
-            await this.resetStreak()
-          }
         }
         catch (error: unknown) {
           console.error('Error fetching streak:', error)
@@ -44,6 +43,13 @@ export const useStreakStore = defineStore('streak', {
 
     // Update streak
     async checkAndUpdateStreak(): Promise<void> {
+      const auth = getAuth()
+      const user: User | null = auth.currentUser
+      if (!user)
+        return // No user logged in -> no function run
+
+      const db = getFirestore()
+      const userDocRef = doc(db, 'users', user.uid)
       const today = new Date()
       today.setHours(0, 0, 0, 0)
 

@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import { useAuth } from '@/composables/UseAuth'
 import { useCoinStore } from '@/stores/coinStore'
 import { useStreakStore } from '@/stores/streakStore'
+import { useUserStore } from '@/stores/userStore'
 import { useXPStore } from '@/stores/xpStore'
 import NumberFlow from '@number-flow/vue'
 import { Activity, Coins, User, Zap } from 'lucide-vue-next'
@@ -38,6 +40,7 @@ const dataRecentSales = [
 const xpStore = useXPStore()
 const coinStore = useCoinStore()
 const streakStore = useStreakStore()
+const userStore = useUserStore()
 
 // Computed values for number-flow
 const progressValue = computed(() => xpStore.xpProgress())
@@ -62,6 +65,18 @@ onMounted(() => {
     activeNowDesc: 201,
   }
 })
+
+/* onMounted(async () => {
+  if (useAuth().isLoggedIn.value) {
+    await streakStore.fetchStreak()
+    await coinStore.fetchCoins()
+    await xpStore.fetchXP()
+  }
+  else {
+    // Redirect to login page if not logged in
+    navigateTo('/login')
+  }
+}) */
 </script>
 
 <template>
@@ -82,7 +97,7 @@ onMounted(() => {
         <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
           <CardTitle class="text-md font-medium">
             <NuxtLink to="/profile" class="text-md cursor-pointer font-medium">
-              Username
+              <p>{{ userStore.username }}</p>
             </NuxtLink><!-- add username {{ username }} -->
           </CardTitle>
           <div class="text-s w-85% flex flex-row items-center justify-end gap-5% text-muted-foreground">

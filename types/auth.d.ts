@@ -11,6 +11,7 @@ export interface UserData {
   photoURL?: string // avatar -> maybe change to a path (avatarPath or smthn)
   createdAt?: Timestamp
   updatedAt?: Timestamp
+  lastLoginDate?: Date
   xp?: number
   streak?: number
   coins?: number

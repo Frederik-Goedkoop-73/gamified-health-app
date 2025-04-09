@@ -11,5 +11,5 @@ export interface PlayerProgress {
   purchasedItems: ShopItemID[]
   selectedAvatar: string
   selectedTheme: string
-  lastUpdated?: Timestamp
+  lastUpdated?: Timestamp // Moved to userStore to track logins
 }

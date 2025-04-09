@@ -1,8 +1,7 @@
 import type { UserData } from '~/types/auth'
-import { doc, getDoc, getFirestore } from 'firebase/firestore'
+import { doc, getDoc } from 'firebase/firestore'
 import { defineStore } from 'pinia'
-
-const db = getFirestore()
+import { useFirebase } from '~/composables/useFirebase'
 
 export const useUserStore = defineStore('user', {
   state: () => ({
@@ -12,6 +11,7 @@ export const useUserStore = defineStore('user', {
 
   actions: {
     async fetchUser(uid: string): Promise<void> {
+      const { db } = useFirebase()
       this.loading = true
       try {
         const docRef = doc(db, 'users', uid)
@@ -47,6 +47,7 @@ export const useUserStore = defineStore('user', {
     photoURL: state => state.data?.photoURL || '',
     createdAt: state => state.data?.createdAt || '',
     updatedAt: state => state.data?.updatedAt || '',
+    lastLoginDate: state => state.data?.lastLoginDate || '',
     xp: state => state.data?.xp || '',
     streak: state => state.data?.streak || '',
     coins: state => state.data?.coins || '',
