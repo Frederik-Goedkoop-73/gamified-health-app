@@ -36,13 +36,16 @@ const dataRecentSales = [
   },
 ]
 
+// Initialise the auth composable
+const { user, isLoading, signInWithGoogle } = useAuth()
+
 // Initialise the Pinia store
 const xpStore = useXPStore()
 const coinStore = useCoinStore()
 const streakStore = useStreakStore()
 const userStore = useUserStore()
 
-// Computed values for number-flow
+// Computed values for number-flow animation
 const progressValue = computed(() => xpStore.xpProgress())
 const xpProgressValue = computed(() => xpStore.xp)
 const xpToNextLevelValue = computed(() => xpStore.totalXpNeededForNextLevel())
@@ -52,6 +55,17 @@ const coinValue = computed(() => coinStore.coins)
 // Function for checking if values aren't 0 -> styling
 const streakIsPositive = (streakValue: number) => streakValue > 0
 const coinIsPositive = (coinValue: number) => coinValue > 0
+
+// Auth: Fetch additional data when user is available
+watch(() => user.value, async (newUser) => {
+  if (newUser) {
+    await userStore.fetchUser(newUser.uid)
+    // Load other data here if needed
+  }
+  else {
+    userStore.clearUser()
+  }
+}, { immediate: true })
 
 onMounted(() => {
   dataCard.value = {
@@ -65,18 +79,6 @@ onMounted(() => {
     activeNowDesc: 201,
   }
 })
-
-/* onMounted(async () => {
-  if (useAuth().isLoggedIn.value) {
-    await streakStore.fetchStreak()
-    await coinStore.fetchCoins()
-    await xpStore.fetchXP()
-  }
-  else {
-    // Redirect to login page if not logged in
-    navigateTo('/login')
-  }
-}) */
 </script>
 
 <template>
@@ -92,12 +94,34 @@ onMounted(() => {
     </div>
     <!-- Main body under header -->
     <main class="flex flex-1 flex-col gap-4 md:gap-8">
+      <!-- Test new persistence -->
+      <div>
+        <!-- Loading state -->
+        <div v-if="isLoading">
+          Loading user data...
+        </div>
+
+        <!-- Authenticated content -->
+        <div v-else-if="user">
+          <h1>Welcome, {{ userStore.username }}!</h1>
+          <!-- Your protected content here -->
+        </div>
+
+        <!-- Unauthenticated state -->
+        <div v-else>
+          <p>Please sign in to continue</p>
+          <button @click="signInWithGoogle">
+            Sign in with Google
+          </button>
+        </div>
+      </div>
+
       <!-- Profile card -->
       <Card>
         <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
           <CardTitle class="text-md font-medium">
             <NuxtLink to="/profile" class="text-md cursor-pointer font-medium">
-              <p>{{ userStore.username }}</p>
+              <p>Me: {{ userStore.username }}</p>
             </NuxtLink><!-- add username {{ username }} -->
           </CardTitle>
           <div class="text-s w-85% flex flex-row items-center justify-end gap-5% text-muted-foreground">

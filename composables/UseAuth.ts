@@ -3,7 +3,6 @@ import type { AuthError, UserData } from '~/types/auth'
 import { useNuxtApp } from '#imports'
 import {
   createUserWithEmailAndPassword,
-  getAuth,
   GoogleAuthProvider,
   onAuthStateChanged,
   signInWithEmailAndPassword,
@@ -12,8 +11,9 @@ import {
   type User,
   type UserCredential,
 } from 'firebase/auth'
-import { doc, getDoc, getFirestore, setDoc, writeBatch } from 'firebase/firestore'
+import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { ref } from 'vue'
+import { useFirebase } from '~/server/utils/firebase'
 import { useCoinStore } from '~/stores/coinStore'
 import { useStreakStore } from '~/stores/streakStore'
 import { useUserStore } from '~/stores/userStore'
@@ -32,10 +32,11 @@ const DEFAULT_USER_DATA: Partial<UserData> = {
 
 export function useAuth() {
   const { $router } = useNuxtApp()
-  const auth = getAuth()
-  const db = getFirestore()
+  // Firebase services
+  const { auth, db } = useFirebase()
 
   // State
+  const user = ref<User | null>(auth.currentUser)
   const email = ref('')
   const password = ref('')
   const username = ref('')
@@ -173,6 +174,16 @@ export function useAuth() {
         userStore.setUsername(username.value.trim())
         await fetchAllUserData(userCredential.user)
 
+        // Wait for auth persistence to complete
+        await new Promise<void>((resolve) => {
+          const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if (user) { // Only resolve when we have a user
+              unsubscribe()
+              resolve()
+            }
+          })
+        })
+
         if (!username.value.trim()) {
           safeNavigate('/setup-username')
         }
@@ -193,21 +204,39 @@ export function useAuth() {
         const userCredential = await signInWithPopup(auth, provider)
         const { user } = userCredential
 
-        const userDoc = await getDoc(getUserDocRef(user.uid))
-        if (!userDoc.exists()) {
-          await createUserDocument(user, {
-            username: user.displayName || '',
-            photoURL: user.photoURL || '',
-            profileComplete: !!user.displayName,
+        // 1. Wait for auth persistence to complete
+        // This is a workaround to ensure that the user data loads after refresh
+        await new Promise<void>((resolve) => {
+          const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if (user) { // Only resolve when we have a user
+              unsubscribe()
+              resolve()
+            }
           })
-        }
+        })
 
-        if (!userDoc.exists() || !userDoc.data()?.username) {
+        // 2. Ensure document exists
+        const docRef = doc(db, 'users', user.uid)
+        await setDoc(docRef, {
+          ...DEFAULT_USER_DATA,
+          uid: user.uid,
+          email: user.email || '', // Google email
+          username: user.displayName || 'Anonymous', // Google display name
+          photoURL: user.photoURL || '', // Google profile picture
+          profileComplete: !!user.displayName, // True if name exists
+          lastLoginDate: new Date(), // Update last login date
+        }, { merge: true })
+        // ✅ Creates a new document if it doesn't exist
+
+        // 3. Get fresh snapshot (optional - only needed if you need immediate read-after-write)
+        // const updatedDoc = await getDoc(docRef)
+
+        // 4. Route based on profile completion
+        if (!user.displayName) { // More reliable than checking document
           safeNavigate('/setup-username')
         }
         else {
           await fetchAllUserData(user)
-          await updateLastLogin(user.uid)
           safeNavigate('/')
         }
 
@@ -229,6 +258,15 @@ export function useAuth() {
           password.value,
         )
 
+        await new Promise<void>((resolve) => {
+          const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if (user) { // Only resolve when we have a user
+              unsubscribe()
+              resolve()
+            }
+          })
+        })
+
         await fetchAllUserData(userCredential.user)
         await updateLastLogin(userCredential.user.uid)
         safeNavigate('/')
@@ -243,14 +281,11 @@ export function useAuth() {
   const handleSignOut = async () => {
     try {
       await signOut(auth)
-      // Reset all stores in a batch
-      const batch = writeBatch(db)
+      // Reset all stores
       userStore.$reset()
       xpStore.$reset()
       streakStore.$reset()
       coinStore.$reset()
-      await batch.commit()
-
       safeNavigate('/')
     }
     catch (err) {
@@ -263,7 +298,6 @@ export function useAuth() {
   const setupUsername = async (user: User | null, username: string | null = null): Promise<boolean> => {
     // Mode 1: Check if username exists
     if (user === null && username === null) {
-      const auth = getAuth()
       if (!auth.currentUser)
         return false
 
@@ -301,21 +335,47 @@ export function useAuth() {
   }
 
   // Auth state listener
-  const unsubscribe = onAuthStateChanged(auth, async (user) => {
-    if (user) {
-      await fetchAllUserData(user)
-      await updateLastLogin(user.uid)
-      isLoggedIn.value = true
+  const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+  // Update reactive user reference
+    user.value = firebaseUser
+
+    if (firebaseUser) {
+      try {
+      // 1. Fetch all data in parallel
+        await Promise.all([
+          fetchAllUserData(firebaseUser),
+          updateLastLogin(firebaseUser.uid),
+        ])
+
+        // 2. Update login state only after successful load
+        isLoggedIn.value = true
+      }
+      catch (error) {
+        console.error('Error loading user data:', error)
+        isLoggedIn.value = false
+
+        // Optional: Force sign-out if data loading fails
+        await signOut(auth)
+      }
     }
     else {
+    // 3. Clear all stores when logged out
+      userStore.$reset()
+      xpStore.$reset()
+      streakStore.$reset()
+      coinStore.$reset()
+
       isLoggedIn.value = false
     }
   })
 
-  // Cleanup
+  // Cleanup: Unsubscribe from auth state listener on component unmount
+  // This is a workaround for the issue with onAuthStateChanged not being removed
+  // when the component is destroyed. It ensures that the listener is removed
   tryOnUnmounted(() => unsubscribe())
 
   return {
+    user,
     email,
     password,
     username,

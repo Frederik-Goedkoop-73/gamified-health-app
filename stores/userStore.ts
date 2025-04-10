@@ -1,7 +1,7 @@
 import type { UserData } from '~/types/auth'
 import { doc, getDoc } from 'firebase/firestore'
 import { defineStore } from 'pinia'
-import { useFirebase } from '~/composables/useFirebase'
+import { useFirebase } from '~/server/utils/firebase' // This composable allows you to access Firebase services
 
 export const useUserStore = defineStore('user', {
   state: () => ({
