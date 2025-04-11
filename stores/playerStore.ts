@@ -1,31 +1,38 @@
-import type { PlayerProgress } from '~/types/player'
-import { getAuth } from 'firebase/auth'
-import { doc, getDoc, getFirestore, setDoc } from 'firebase/firestore'
+import type { AvatarID, PlayerProgress } from '~/types/player'
+import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { defineStore } from 'pinia'
+import { useFirebase } from '~/server/utils/firebase'
+import { AVATAR_SPRITES } from '~/types/player'
 
 export const usePlayerStore = defineStore('player', {
   state: (): PlayerProgress => ({
     unlockedBadges: [],
     completedQuests: [],
     purchasedItems: [],
+    unlockedAvatars: ['default'],
     selectedAvatar: 'default',
     selectedTheme: 'light',
   }),
 
   actions: {
     async fetchPlayerData(): Promise<void> {
-      const db = getFirestore()
-      const user = getAuth().currentUser
-      if (!user)
+      const { auth, db } = useFirebase()
+      const currentUser = auth.currentUser
+      if (!currentUser)
         return
 
       try {
-        const docRef = doc(db, 'players', user.uid)
+        const docRef = doc(db, 'players', currentUser.uid)
         const docSnap = await getDoc(docRef)
 
         if (docSnap.exists()) {
           const data = docSnap.data() as PlayerProgress
-          this.$patch(data)
+
+          // Ensure default avatar is always unlocked
+          this.$patch({
+            ...data,
+            unlockedAvatars: [...new Set([...data.unlockedAvatars ?? [], 'default'])],
+          })
         }
       }
       catch (error) {
@@ -34,14 +41,14 @@ export const usePlayerStore = defineStore('player', {
     },
 
     async savePlayerData(): Promise<void> {
-      const db = getFirestore()
-      const user = getAuth().currentUser
-      if (!user)
+      const { auth, db } = useFirebase()
+      const currentUser = auth.currentUser
+      if (!currentUser)
         return
 
       try {
         await setDoc(
-          doc(db, 'players', user.uid),
+          doc(db, 'players', currentUser.uid),
           {
             ...this.$state,
             lastUpdated: new Date(),
@@ -51,6 +58,22 @@ export const usePlayerStore = defineStore('player', {
       }
       catch (error) {
         console.error('Error saving player data:', error)
+      }
+    },
+
+    // Avatars
+    unlockAvatar(avatarId: AvatarID): void {
+      // Check if the avatarId is valid
+      if (!this.unlockedAvatars.includes(avatarId)) {
+        this.unlockedAvatars.push(avatarId)
+        this.savePlayerData()
+      }
+    },
+
+    setAvatar(avatarId: AvatarID): void {
+      if (this.unlockedAvatars.includes(avatarId)) {
+        this.selectedAvatar = avatarId
+        this.savePlayerData()
       }
     },
 
@@ -78,12 +101,6 @@ export const usePlayerStore = defineStore('player', {
       }
     },
 
-    // Customization
-    setAvatar(avatarId: string): void {
-      this.selectedAvatar = avatarId
-      this.savePlayerData()
-    },
-
     setTheme(themeId: string): void {
       this.selectedTheme = themeId
       this.savePlayerData()
@@ -99,5 +116,12 @@ export const usePlayerStore = defineStore('player', {
 
     hasPurchasedItem: state => (itemId: ShopItemID) =>
       state.purchasedItems.includes(itemId),
+
+    currentAvatarSprite(state): SpritePosition {
+      return AVATAR_SPRITES[state.selectedAvatar] || AVATAR_SPRITES.default
+    },
+
+    hasAvatar: state => (avatarId: AvatarID) =>
+      state.unlockedAvatars.includes(avatarId),
   },
 })

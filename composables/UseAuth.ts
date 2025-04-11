@@ -67,6 +67,8 @@ export function useAuth() {
     }
   }
 
+  // Loading wrapper
+  // This function wraps any async function and sets isLoading to true while the function is executing
   const withLoading = async <T>(fn: () => Promise<T>): Promise<T> => {
     isLoading.value = true
     try {
@@ -105,13 +107,16 @@ export function useAuth() {
       const docSnap = await getDoc(getUserDocRef(user.uid))
       if (docSnap.exists()) {
         const data = docSnap.data() as UserData
-        userStore.setUsername(data.username || 'Anonymous')
-        return { ...data, uid: user.uid, email: user.email || '' }
+        // ONLY update username if it exists in Firestore
+        if (data.username) {
+          userStore.setUsername(data.username)
+        }
+        return data
       }
       return null
     }
     catch (err) {
-      console.error('Error fetching user data:', err)
+      console.error('Fetch error:', err)
       return null
     }
   }
@@ -335,38 +340,50 @@ export function useAuth() {
   }
 
   // Auth state listener
+  // This listener is triggered when the user's authentication state changes
+  // It updates the user state and fetches user data from Firestore
   const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-  // Update reactive user reference
-    user.value = firebaseUser
+    return withLoading(async () => {
+      user.value = firebaseUser
 
-    if (firebaseUser) {
-      try {
-      // 1. Fetch all data in parallel
-        await Promise.all([
-          fetchAllUserData(firebaseUser),
-          updateLastLogin(firebaseUser.uid),
-        ])
+      if (firebaseUser) {
+        try {
+        // 1. FIRST load user data before updating stores
+          const userData = await fetchUserData(firebaseUser)
 
-        // 2. Update login state only after successful load
-        isLoggedIn.value = true
+          // 2. Only set defaults if NO data exists
+          if (!userData) {
+            await createUserDocument(firebaseUser, {
+              username: firebaseUser.displayName || 'Anonymous',
+            // Preserve existing data with merge: true
+            })
+          }
+
+          // 3. THEN load all other data
+          await Promise.all([
+            xpStore.fetchXP(),
+            streakStore.fetchStreak(),
+            coinStore.fetchCoins(),
+          ])
+
+          // 4. Update last login AFTER data is loaded
+          await updateLastLogin(firebaseUser.uid)
+          isLoggedIn.value = true
+        }
+        catch (error) {
+          console.error('Data load error:', error)
+        // Don't reset stores - preserve existing data
+        }
       }
-      catch (error) {
-        console.error('Error loading user data:', error)
+      else {
+      // Clear stores ONLY after confirming logout
+        userStore.$reset()
+        xpStore.$reset()
+        streakStore.$reset()
+        coinStore.$reset()
         isLoggedIn.value = false
-
-        // Optional: Force sign-out if data loading fails
-        await signOut(auth)
       }
-    }
-    else {
-    // 3. Clear all stores when logged out
-      userStore.$reset()
-      xpStore.$reset()
-      streakStore.$reset()
-      coinStore.$reset()
-
-      isLoggedIn.value = false
-    }
+    })
   })
 
   // Cleanup: Unsubscribe from auth state listener on component unmount

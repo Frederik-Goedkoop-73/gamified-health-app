@@ -6,6 +6,7 @@ import { useUserStore } from '@/stores/userStore'
 import { useXPStore } from '@/stores/xpStore'
 import NumberFlow from '@number-flow/vue'
 import { Activity, Coins, User, Zap } from 'lucide-vue-next'
+import { useToast } from '~/components/ui/toast/use-toast'
 
 const dataCard = ref({
   totalRevenue: 0,
@@ -38,6 +39,7 @@ const dataRecentSales = [
 
 // Initialise the auth composable
 const { user, isLoading, signInWithGoogle } = useAuth()
+const { toast } = useToast()
 
 // Initialise the Pinia store
 const xpStore = useXPStore()
@@ -46,9 +48,9 @@ const streakStore = useStreakStore()
 const userStore = useUserStore()
 
 // Computed values for number-flow animation
-const progressValue = computed(() => xpStore.xpProgress())
+const progressValue = computed(() => xpStore.xpProgress)
 const xpProgressValue = computed(() => xpStore.xp)
-const xpToNextLevelValue = computed(() => xpStore.totalXpNeededForNextLevel())
+const xpToNextLevelValue = computed(() => xpStore.totalXpNeededForNextLevel)
 const streakValue = computed(() => streakStore.streak)
 const coinValue = computed(() => coinStore.coins)
 
@@ -64,6 +66,18 @@ watch(() => user.value, async (newUser) => {
   }
   else {
     userStore.clearUser()
+  }
+}, { immediate: true })
+
+// XP: watch for level up popups
+watch(() => xpStore.showPopup, (show, prevShow) => {
+  if (show && !prevShow) { // Only trigger when changing from false to true
+    toast({
+      title: 'Level Up!',
+      description: `You have reached level ${xpStore.leveledUpTo}!`,
+    })
+    // Close the popup after showing the toast
+    xpStore.closePopup()
   }
 }, { immediate: true })
 
@@ -103,7 +117,7 @@ onMounted(() => {
 
         <!-- Authenticated content -->
         <div v-else-if="user">
-          <h1>Welcome, {{ userStore.username }}!</h1>
+          <h1>Welcome, {{ userStore.username || 'Guest' }}!</h1>
           <!-- Your protected content here -->
         </div>
 
@@ -121,7 +135,7 @@ onMounted(() => {
         <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
           <CardTitle class="text-md font-medium">
             <NuxtLink to="/profile" class="text-md cursor-pointer font-medium">
-              <p>Me: {{ userStore.username }}</p>
+              <p>{{ userStore.username || 'Guest' }}</p>
             </NuxtLink><!-- add username {{ username }} -->
           </CardTitle>
           <div class="text-s w-85% flex flex-row items-center justify-end gap-5% text-muted-foreground">

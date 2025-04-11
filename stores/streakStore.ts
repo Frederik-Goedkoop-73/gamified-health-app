@@ -1,8 +1,8 @@
 import type { User } from 'firebase/auth'
 import type { Timestamp } from 'firebase/firestore'
-import { getAuth } from 'firebase/auth'
-import { doc, getDoc, getFirestore, setDoc } from 'firebase/firestore'
+import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { defineStore } from 'pinia'
+import { useFirebase } from '~/server/utils/firebase'
 
 // Type definition
 interface StreakState {
@@ -15,16 +15,16 @@ export const useStreakStore = defineStore('streak', {
     streak: 0, // Local streak balance
     lastLoginDate: null,
   }),
+
   actions: {
     // Fetch streak from Firestore for the current user
     async fetchStreak(): Promise<void> {
-      const auth = getAuth()
+      const { auth, db } = useFirebase()
       const user: User | null = auth.currentUser
       if (!user)
         return // No user logged in -> no function run
 
       if (user) {
-        const db = getFirestore()
         const userDocRef = doc(db, 'users', user.uid)
 
         try {
@@ -43,37 +43,35 @@ export const useStreakStore = defineStore('streak', {
 
     // Update streak
     async checkAndUpdateStreak(): Promise<void> {
-      const auth = getAuth()
-      const user: User | null = auth.currentUser
-      if (!user)
-        return // No user logged in -> no function run
+      const { auth } = useFirebase()
+      const currentUser = auth.currentUser
 
-      const db = getFirestore()
-      const userDocRef = doc(db, 'users', user.uid)
+      if (!currentUser) {
+        return
+      }
       const today = new Date()
       today.setHours(0, 0, 0, 0)
 
+      // Use nullish coalescing for safer defaults
+      const lastLogin = this.lastLoginDate ?? new Date(0)
+
+      // Convert to dates at midnight for accurate comparison
+      const lastMidnight = new Date(lastLogin)
+      lastMidnight.setHours(0, 0, 0, 0)
+
+      const yesterday = new Date(today)
+      yesterday.setDate(yesterday.getDate() - 1)
+
       if (!this.lastLoginDate) {
-        // First time login
         await this.addStreak(1)
       }
-      else {
-        const lastLogin = new Date(this.lastLoginDate)
-        lastLogin.setHours(0, 0, 0, 0)
-
-        const yesterday = new Date(today)
-        yesterday.setDate(yesterday.getDate() - 1)
-
-        if (lastLogin.getTime() === yesterday.getTime()) {
-          // Logged in consecutive days
-          await this.addStreak(1)
-        }
-        else if (lastLogin.getTime() < yesterday.getTime()) {
-          // Missed a day - reset streak
-          await this.resetStreak()
-        }
-        // Else: already logged in today - no change
+      else if (lastMidnight.getTime() === yesterday.getTime()) {
+        await this.addStreak(1)
       }
+      else if (lastMidnight.getTime() < yesterday.getTime()) {
+        await this.resetStreak()
+      }
+      // Else: already logged in today
     },
 
     // Add streak and update Firestore
@@ -90,26 +88,27 @@ export const useStreakStore = defineStore('streak', {
 
     // Save the current Streak balance to Firestore
     async saveStreakToFirestore(): Promise<void> {
-      const auth = getAuth()
-      const user: User | null = auth.currentUser
+      try {
+        const { auth, db } = useFirebase()
+        const currentUser = auth.currentUser
 
-      if (user) {
-        const db = getFirestore()
-        const userDocRef = doc(db, 'users', user.uid)
+        // Proper null check
+        if (!currentUser) {
+          console.warn('No authenticated user found - skipping streak save')
+          return // No user logged in -> no function run
+        }
 
-        try {
-          await setDoc(
-            userDocRef,
-            {
-              streak: this.streak, // Save the current streak balance
-              lastLoginDate: this.lastLoginDate,
-            },
-            { merge: true },
-          ) // Merge with existing document data
-        }
-        catch (error: unknown) {
-          console.error('Error saving Streak to Firestore:', error)
-        }
+        await setDoc(
+          doc(db, 'users', currentUser.uid),
+          {
+            streak: this.streak, // Save the current streak balance
+            lastLoginDate: new Date(), // Always update lastLoginDate to now
+          },
+          { merge: true },
+        )
+      } // Merge with existing document data
+      catch (error: unknown) {
+        console.error('Error saving Streak to Firestore:', error)
       }
     },
   },

@@ -1,6 +1,50 @@
 <script setup lang="ts">
+import { useCoinStore } from '@/stores/coinStore'
 // import NumberFlow from '@number-flow/vue'
 import { Coins, ShoppingCart } from 'lucide-vue-next'
+import { useToast } from '~/components/ui/toast/use-toast'
+
+const coinStore = useCoinStore()
+const { toast } = useToast()
+
+// Test functions -> earnReward can be removed later
+// Swap alerts with toast
+async function earnReward() {
+  try {
+    await coinStore.addCoins(100)
+    toast ({
+      title: 'Success',
+      description: '100 coins added successfully!',
+    })
+  }
+  catch {
+    toast ({
+      title: 'Error',
+      description: 'Failed to add coins',
+      variant: 'destructive',
+    })
+  }
+}
+
+async function buyItem(price: number) {
+  if (coinStore.canAfford(price)) {
+    const success = await coinStore.deductCoins(price)
+    if (success) {
+      // Handle successful purchase logic here
+      toast({
+        title: 'Success',
+        description: `Item purchased for ${price} coins!`,
+      })
+    }
+    else {
+      toast({
+        title: 'Error',
+        description: 'Failed to deduct coins',
+        variant: 'destructive',
+      })
+    }
+  }
+}
 </script>
 
 <template>
@@ -11,6 +55,16 @@ import { Coins, ShoppingCart } from 'lucide-vue-next'
       </h2>
       <i class="m-3 text-muted-foreground"><b>Tip: </b>Hover over a quest to see more info</i>
     </div>
+
+    <!-- Coin store test -->
+    <p>Current coins: {{ coinStore.coins }}</p>
+    <Button class="btn btn-primary" @click="earnReward">
+      Earn 100 coins
+    </Button>
+    <Button :disabled="!coinStore.canAfford(1000)" class="btn btn-primary" @click="buyItem(1000)">
+      Buy 1000 coin item
+    </Button>
+
     <!-- Main body under header -->
     <main class="flex flex-1 flex-col gap-4 md:gap-8">
       <!-- Daily quests -->
