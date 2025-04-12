@@ -102,6 +102,7 @@ export function useAuth() {
   }
 
   // User data operations
+  // This function fetches user data from Firestore
   const fetchUserData = async (user: User): Promise<UserData | null> => {
     try {
       const docSnap = await getDoc(getUserDocRef(user.uid))
@@ -121,6 +122,7 @@ export function useAuth() {
     }
   }
 
+  // This function fetches all user data, including XP, streak, and coins
   const fetchAllUserData = async (user: User) => {
     try {
       const [userData] = await Promise.all([

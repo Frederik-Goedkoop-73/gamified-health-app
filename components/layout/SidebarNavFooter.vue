@@ -1,19 +1,30 @@
 <script setup lang="ts">
+import { useAuth } from '@/composables/UseAuth'
+import { usePlayerStore } from '@/stores/playerStore'
+import { useUserStore } from '@/stores/userStore'
 import { useSidebar } from '~/components/ui/sidebar'
+import { AVATAR_PATHS } from '~/types/player'
 
-defineProps<{
-  user: {
-    name: string
-    email: string
-    avatar: string
+const { user, handleSignOut } = useAuth() // Use composable to manage authentication state
+const userStore = useUserStore() // Use Pinia store to manage user data
+const playerStore = usePlayerStore() // Use Pinia store to manage player data
+const { selectedAvatar } = storeToRefs(playerStore)
+
+// Auth: Fetch player data when user is available -> fetch selected avatar
+watch(() => user.value, async (newUser) => {
+  if (newUser) {
+    await Promise.all([
+      userStore.fetchUser(newUser.uid),
+      playerStore.fetchPlayerData(), // No arguments needed, fetches data from Firestore already
+    ])
   }
-}>()
+  else {
+    userStore.clearUser()
+    playerStore.clearPlayerData()
+  }
+}, { immediate: true }) // Fetch user and player data when user changes)
 
 const { isMobile, setOpenMobile } = useSidebar()
-
-function handleLogout() {
-  navigateTo('/login')
-}
 
 const showModalTheme = ref(false)
 </script>
@@ -27,15 +38,17 @@ const showModalTheme = ref(false)
             size="lg"
             class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
           >
-            <Avatar class="h-8 w-8 rounded-lg">
-              <AvatarImage :src="user.avatar" :alt="user.name" />
-              <AvatarFallback class="rounded-lg">
-                {{ user.name.split(' ').map((n) => n[0]).join('') }}
-              </AvatarFallback>
-            </Avatar>
+            <!-- Avatar image -->
+            <div class="relative h-10 w-10 overflow-hidden rounded-md">
+              <img
+                :src="AVATAR_PATHS[selectedAvatar] || AVATAR_PATHS.red"
+                :alt="`Selected avatar: ${selectedAvatar}`"
+                class="h-full w-full object-contain"
+              > <!-- https://tailwindcss.com/docs/object-fit -->
+            </div>
             <div class="grid flex-1 text-left text-sm leading-tight">
-              <span class="truncate font-semibold">{{ user.name }}</span>
-              <span class="truncate text-xs">{{ user.email }}</span>
+              <span class="truncate font-semibold">{{ userStore.username || "Guest" }}</span>
+              <span class="truncate text-xs">{{ userStore.email || "Please login" }}</span>
             </div>
             <Icon name="i-lucide-chevrons-up-down" class="ml-auto size-4" />
           </SidebarMenuButton>
@@ -47,15 +60,17 @@ const showModalTheme = ref(false)
         >
           <DropdownMenuLabel class="p-0 font-normal">
             <div class="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-              <Avatar class="h-8 w-8 rounded-lg">
-                <AvatarImage :src="user.avatar" :alt="user.name" />
-                <AvatarFallback class="rounded-lg">
-                  {{ user.name.split(' ').map((n) => n[0]).join('') }}
-                </AvatarFallback>
-              </Avatar>
+              <!-- Avatar image -->
+              <div class="relative h-10 w-10 overflow-hidden rounded-md">
+                <img
+                  :src="AVATAR_PATHS[selectedAvatar] || AVATAR_PATHS.red"
+                  :alt="`Selected avatar: ${selectedAvatar}`"
+                  class="h-full w-full object-contain"
+                > <!-- https://tailwindcss.com/docs/object-fit -->
+              </div>
               <div class="grid flex-1 text-left text-sm leading-tight">
-                <span class="truncate font-semibold">{{ user.name }}</span>
-                <span class="truncate text-xs">{{ user.email }}</span>
+                <span class="truncate font-semibold">{{ userStore.username || "Guest" }}</span>
+                <span class="truncate text-xs">{{ userStore.email }}</span>
               </div>
             </div>
           </DropdownMenuLabel>
@@ -95,7 +110,7 @@ const showModalTheme = ref(false)
             </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
-          <DropdownMenuItem @click="handleLogout">
+          <DropdownMenuItem @click="handleSignOut">
             <Icon name="i-lucide-log-out" />
             Log out
           </DropdownMenuItem>

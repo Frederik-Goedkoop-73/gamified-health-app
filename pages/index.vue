@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { useAuth } from '@/composables/UseAuth'
 import { useCoinStore } from '@/stores/coinStore'
+import { usePlayerStore } from '@/stores/playerStore'
 import { useStreakStore } from '@/stores/streakStore'
 import { useUserStore } from '@/stores/userStore'
 import { useXPStore } from '@/stores/xpStore'
 import NumberFlow from '@number-flow/vue'
 import { Activity, Coins, User, Zap } from 'lucide-vue-next'
 import { useToast } from '~/components/ui/toast/use-toast'
+import { AVATAR_PATHS } from '~/types/player'
 
 const dataCard = ref({
   totalRevenue: 0,
@@ -46,6 +48,9 @@ const xpStore = useXPStore()
 const coinStore = useCoinStore()
 const streakStore = useStreakStore()
 const userStore = useUserStore()
+const playerStore = usePlayerStore()
+
+const { selectedAvatar } = storeToRefs(playerStore)
 
 // Computed values for number-flow animation
 const progressValue = computed(() => xpStore.xpProgress)
@@ -78,6 +83,20 @@ watch(() => xpStore.showPopup, (show, prevShow) => {
     })
     // Close the popup after showing the toast
     xpStore.closePopup()
+  }
+}, { immediate: true })
+
+// Player: watch for avatar changes
+watch(() => user.value, async (newUser) => {
+  if (newUser) {
+    await Promise.all([
+      userStore.fetchUser(newUser.uid),
+      playerStore.fetchPlayerData(), // No arguments needed, fetches data from Firestore already
+    ])
+  }
+  else {
+    userStore.clearUser()
+    playerStore.clearPlayerData()
   }
 }, { immediate: true })
 
@@ -115,14 +134,8 @@ onMounted(() => {
           Loading user data...
         </div>
 
-        <!-- Authenticated content -->
-        <div v-else-if="user">
-          <h1>Welcome, {{ userStore.username || 'Guest' }}!</h1>
-          <!-- Your protected content here -->
-        </div>
-
-        <!-- Unauthenticated state -->
-        <div v-else>
+        <!-- Unauthenticated content -->
+        <div v-else-if="!user">
           <p>Please sign in to continue</p>
           <button @click="signInWithGoogle">
             Sign in with Google
@@ -169,10 +182,14 @@ onMounted(() => {
         <CardContent>
           <div class="text-2m font-bold">
             <div class="flex items-center gap-4">
-              <Avatar class="size-16">
-                <AvatarImage src="/avatars/avatartion.png" />
-                <AvatarFallback>JD</AvatarFallback>
-              </Avatar>
+              <!-- Avatar image -->
+              <div class="relative h-16 w-16 overflow-hidden rounded-md">
+                <img
+                  :src="AVATAR_PATHS[selectedAvatar] || AVATAR_PATHS.red"
+                  :alt="`Selected avatar: ${selectedAvatar}`"
+                  class="h-full w-full object-contain"
+                > <!-- https://tailwindcss.com/docs/object-fit -->
+              </div>
               <p>Lvl.{{ xpStore.level }}</p>
               <!-- Shadcn Progress Bar -->
               <div class="mt-6 w-full flex flex-col gap-2">

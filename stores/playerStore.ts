@@ -2,16 +2,11 @@ import type { AvatarID, PlayerProgress } from '~/types/player'
 import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { defineStore } from 'pinia'
 import { useFirebase } from '~/server/utils/firebase'
-import { AVATAR_SPRITES } from '~/types/player'
+import { AVATAR_PATHS, DEFAULT_PLAYER_PROGRESS, isAvatarId } from '~/types/player'
 
 export const usePlayerStore = defineStore('player', {
   state: (): PlayerProgress => ({
-    unlockedBadges: [],
-    completedQuests: [],
-    purchasedItems: [],
-    unlockedAvatars: ['default'],
-    selectedAvatar: 'default',
-    selectedTheme: 'light',
+    ...DEFAULT_PLAYER_PROGRESS,
   }),
 
   actions: {
@@ -21,17 +16,32 @@ export const usePlayerStore = defineStore('player', {
       if (!currentUser)
         return
 
+      // Fetch player data from Firestore
       try {
         const docRef = doc(db, 'players', currentUser.uid)
         const docSnap = await getDoc(docRef)
 
         if (docSnap.exists()) {
-          const data = docSnap.data() as PlayerProgress
+          const data = docSnap.data()
 
-          // Ensure default avatar is always unlocked
+          // Process unlocked avatars with type safety
+          const incomingAvatars = (data?.unlockedAvatars || [])
+            .filter((avatar: string): avatar is AvatarID => isAvatarId(avatar))
+
+          // Ensure default avatars are always included
+          const processedAvatars = Array.from(
+            new Set([...incomingAvatars, 'red', 'blue', 'green']),
+          )
+
+          // Validate selected avatar
+          const selectedAvatar = isAvatarId(data?.selectedAvatar)
+            ? data.selectedAvatar
+            : 'red'
+
           this.$patch({
             ...data,
-            unlockedAvatars: [...new Set([...data.unlockedAvatars ?? [], 'default'])],
+            unlockedAvatars: processedAvatars,
+            selectedAvatar,
           })
         }
       }
@@ -58,6 +68,29 @@ export const usePlayerStore = defineStore('player', {
       }
       catch (error) {
         console.error('Error saving player data:', error)
+      }
+    },
+
+    // Clear player data
+    async clearPlayerData(): Promise<void> {
+      const { auth, db } = useFirebase()
+      const currentUser = auth.currentUser
+      if (!currentUser)
+        return
+      try {
+        await setDoc(
+          doc(db, 'players', currentUser.uid),
+          {
+            ...DEFAULT_PLAYER_PROGRESS,
+          },
+          { merge: true },
+        )
+        this.$patch({
+          ...DEFAULT_PLAYER_PROGRESS,
+        })
+      }
+      catch (error) {
+        console.error('Error clearing player store data:', error)
       }
     },
 
@@ -117,9 +150,11 @@ export const usePlayerStore = defineStore('player', {
     hasPurchasedItem: state => (itemId: ShopItemID) =>
       state.purchasedItems.includes(itemId),
 
-    currentAvatarSprite(state): SpritePosition {
-      return AVATAR_SPRITES[state.selectedAvatar] || AVATAR_SPRITES.default
-    },
+    currentAvatarPath: state =>
+      AVATAR_PATHS[state.selectedAvatar] || AVATAR_PATHS.red,
+
+    unlockedAvatarPaths: state =>
+      state.unlockedAvatars.map(id => AVATAR_PATHS[id]),
 
     hasAvatar: state => (avatarId: AvatarID) =>
       state.unlockedAvatars.includes(avatarId),
