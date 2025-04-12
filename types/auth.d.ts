@@ -31,8 +31,13 @@ export interface AuthState {
 
 // Extend Firebase user type if needed
 declare module 'firebase/auth' {
+  interface Auth {
+    sendPasswordResetEmail: (email: string) => Promise<void>
+  }
+
   interface User {
     customField?: string
+    updatePassword: (newPassword: string) => Promise<void>
   }
 }
 

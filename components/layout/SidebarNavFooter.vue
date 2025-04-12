@@ -21,6 +21,7 @@ watch(() => user.value, async (newUser) => {
   else {
     userStore.clearUser()
     playerStore.clearPlayerData()
+    playerStore.setAvatar('red')// Reset to default avatar
   }
 }, { immediate: true }) // Fetch user and player data when user changes)
 

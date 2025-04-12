@@ -1,29 +1,32 @@
 <script setup lang="ts">
 import { useToast } from '@/components/ui/toast/use-toast'
+import { useAuth } from '@/composables/UseAuth'
 import { cn } from '@/lib/utils'
 import { Loader2 } from 'lucide-vue-next'
 import PasswordInput from '~/components/PasswordInput.vue'
 
 const { toast } = useToast()
-const isLoading = ref(false)
-const name = ref('')
-const email = ref('')
-const password = ref('')
+const { username, email, password, register, signInWithGoogle, errMsg, isLoading } = useAuth()
 const confirmPassword = ref('')
-const errMsg = ref('')
-
-const { register, signInWithGoogle } = useAuth()
 
 async function onSubmit(event: Event) {
   event.preventDefault()
   errMsg.value = ''
 
+  // Validate passwords match
   if (password.value !== confirmPassword.value) {
     errMsg.value = 'Passwords do not match'
     return
   }
 
+  // Validate password strength (optional)
+  if (password.value.length < 6) {
+    errMsg.value = 'Password must be at least 6 characters'
+    return
+  }
+
   isLoading.value = true
+
   try {
     await register()
     toast({
@@ -36,7 +39,7 @@ async function onSubmit(event: Event) {
     errMsg.value = error.message || 'Signup failed'
     toast({
       title: 'Error',
-      description: errMsg.value,
+      description: errMsg.value ?? '',
       variant: 'destructive',
     })
   }
@@ -80,7 +83,7 @@ async function handleGoogleSignup() {
           <Label for="name">Username</Label>
           <Input
             id="name"
-            v-model="name"
+            v-model="username"
             placeholder="Enter your username"
             type="text"
             auto-capitalize="none"

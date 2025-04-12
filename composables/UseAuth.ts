@@ -3,6 +3,8 @@ import type { AuthError, UserData } from '~/types/auth'
 import { useNuxtApp } from '#imports'
 import {
   createUserWithEmailAndPassword,
+  sendPasswordResetEmail as firebaseSendPasswordResetEmail,
+  updatePassword as firebaseUpdatePassword,
   GoogleAuthProvider,
   onAuthStateChanged,
   signInWithEmailAndPassword,
@@ -15,6 +17,7 @@ import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { ref } from 'vue'
 import { useFirebase } from '~/server/utils/firebase'
 import { useCoinStore } from '~/stores/coinStore'
+import { usePlayerStore } from '~/stores/playerStore'
 import { useStreakStore } from '~/stores/streakStore'
 import { useUserStore } from '~/stores/userStore'
 import { useXPStore } from '~/stores/xpStore'
@@ -46,6 +49,7 @@ export function useAuth() {
 
   // Stores
   const userStore = useUserStore()
+  const playerStore = usePlayerStore()
   const xpStore = useXPStore()
   const streakStore = useStreakStore()
   const coinStore = useCoinStore()
@@ -130,6 +134,7 @@ export function useAuth() {
         xpStore.fetchXP(),
         streakStore.fetchStreak(),
         coinStore.fetchCoins(),
+        playerStore.fetchPlayerData(),
       ])
       return userData
     }
@@ -293,6 +298,7 @@ export function useAuth() {
       xpStore.$reset()
       streakStore.$reset()
       coinStore.$reset()
+      playerStore.$reset()
       safeNavigate('/')
     }
     catch (err) {
@@ -341,6 +347,40 @@ export function useAuth() {
     }
   }
 
+  // Send password reset email
+  const sendPasswordResetEmail = async (email: string): Promise<boolean> => {
+    return withLoading(async () => {
+      try {
+        await firebaseSendPasswordResetEmail(auth, email)
+        errMsg.value = 'Password reset email sent'
+        return true
+      }
+      catch (error) {
+        handleAuthError(error)
+        return false
+      }
+    })
+  }
+
+  // Update password
+  const updatePassword = async (newPassword: string): Promise<boolean> => {
+    if (!auth.currentUser) {
+      errMsg.value = 'User not authenticated'
+      return false
+    }
+
+    return withLoading(async () => {
+      try {
+        await firebaseUpdatePassword(auth.currentUser!, newPassword)
+        return true
+      }
+      catch (error) {
+        handleAuthError(error)
+        return false
+      }
+    })
+  }
+
   // Auth state listener
   // This listener is triggered when the user's authentication state changes
   // It updates the user state and fetches user data from Firestore
@@ -366,6 +406,9 @@ export function useAuth() {
             xpStore.fetchXP(),
             streakStore.fetchStreak(),
             coinStore.fetchCoins(),
+            playerStore.fetchPlayerData(),
+          // Add any other stores you want to load here
+          // This ensures that all stores are loaded before setting isLoggedIn
           ])
 
           // 4. Update last login AFTER data is loaded
@@ -383,6 +426,7 @@ export function useAuth() {
         xpStore.$reset()
         streakStore.$reset()
         coinStore.$reset()
+        playerStore.$reset()
         isLoggedIn.value = false
       }
     })
@@ -406,6 +450,8 @@ export function useAuth() {
     signInWithGoogle,
     handleSignOut,
     setupUsername,
+    sendPasswordResetEmail,
+    updatePassword,
     getUserDocRef,
   }
 }
