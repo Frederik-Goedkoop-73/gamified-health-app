@@ -14,7 +14,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      firebase: {
+      firebase: { // These are stored in .env file and on netlify (environment variables)
         apiKey: import.meta.env.NUXT_PUBLIC_FIREBASE_API_KEY,
         authDomain: import.meta.env.NUXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
         projectId: import.meta.env.NUXT_PUBLIC_FIREBASE_PROJECT_ID,
