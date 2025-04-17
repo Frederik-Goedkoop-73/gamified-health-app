@@ -24,6 +24,11 @@ export default defineNuxtConfig({
         measurementId: import.meta.env.NUXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
       },
     },
+    fitbit: {
+      clientId: import.meta.env.NUXT_PUBLIC_FITBIT_CLIENT_ID,
+      clientSecret: import.meta.env.NUXT_PUBLIC_FITBIT_CLIENT_SECRET,
+      redirectUri: import.meta.env.NUXT_PUBLIC_FITBIT_REDIRECT_URI,
+    },
   },
 
   plugins: [

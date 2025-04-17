@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import type { FitbitHeart, FitbitProfile, FitbitSleep, FitbitSteps } from '~/types/fitbit'
 import { useAuth } from '@/composables/UseAuth'
+import { useFitbit } from '@/composables/useFitbit'
 import { useCoinStore } from '@/stores/coinStore'
 import { usePlayerStore } from '@/stores/playerStore'
 import { useStreakStore } from '@/stores/streakStore'
@@ -7,6 +9,7 @@ import { useUserStore } from '@/stores/userStore'
 import { useXPStore } from '@/stores/xpStore'
 import NumberFlow from '@number-flow/vue'
 import { Activity, Coins, User, Zap } from 'lucide-vue-next'
+import FitbitAuth from '~/components/auth/FitbitAuth.vue'
 import { useToast } from '~/components/ui/toast/use-toast'
 import { AVATAR_PATHS } from '~/types/player'
 
@@ -39,8 +42,9 @@ const dataRecentSales = [
   },
 ]
 
-// Initialise the auth composable
+// Initialise the composables
 const { user, isLoading, signInWithGoogle } = useAuth()
+const { fetchFitbitData } = useFitbit()
 const { toast } = useToast()
 
 // Initialise the Pinia store
@@ -100,6 +104,23 @@ watch(() => user.value, async (newUser) => {
   }
 }, { immediate: true })
 
+// Fitbit: Fetch user profile data
+const { data: profile } = await useAsyncData<FitbitProfile>('profile', async () => {
+  return await fetchFitbitData('profile') // endpoint "profile"
+})
+
+const { data: steps, pending: pendingSteps, error: errorSteps } = await useAsyncData('steps', async () => {
+  return await fetchFitbitData<FitbitSteps>('activities/steps/date/today/7d')
+})
+
+const { data: sleep, pending: pendingSleep, error: errorSleep } = await useAsyncData('sleep', async () => {
+  return await fetchFitbitData<FitbitSleep>('sleep/date/today')
+})
+
+const { data: heart, pending: pendingHeart, error: errorHeart } = await useAsyncData('heart', async () => {
+  return await fetchFitbitData<FitbitHeart>('activities/heart/date/today/7d')
+})
+
 onMounted(() => {
   dataCard.value = {
     totalRevenue: 45231.89,
@@ -127,6 +148,8 @@ onMounted(() => {
     </div>
     <!-- Main body under header -->
     <main class="flex flex-1 flex-col gap-4 md:gap-8">
+      <FitbitAuth />
+
       <!-- Test new persistence -->
       <div>
         <!-- Loading state -->
@@ -142,6 +165,85 @@ onMounted(() => {
           </button>
         </div>
       </div>
+
+      <!-- Fitbit Authenticated content -->
+      <Card v-if="profile">
+        <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
+          <CardTitle class="text-md font-medium">
+            Fitbit Profile
+          </CardTitle>
+          <User class="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <div class="flex flex-row items-center gap-2">
+            <img
+              :src="profile.user.avatar || 'https://via.placeholder.com/150'"
+              :alt="`Avatar of ${profile.user.displayName}`"
+              class="h-10 w-10 rounded-full"
+            >
+            <p class="text-md font-medium">
+              {{ profile.user.displayName }}
+            </p>
+          </div>
+          <p class="text-sm text-muted-foreground">
+            Email: {{ profile.user.email || 'N/A' }}<br>
+            EncodedId: {{ profile.user.encodedId || 'N/A' }}<br>
+            Full Name: {{ profile.user.fullName || 'N/A' }}<br>
+            Member Since: {{ profile.user.memberSince || 'N/A' }}<br>
+            Height: {{ profile.user.height || 'N/A' }} cm<br>
+            Weight: {{ profile.user.weight || 'N/A' }} kg<br>
+            Age: {{ profile.user.age || 'N/A' }} years<br>
+          </p>
+
+          <!-- Steps -->
+          <div v-if="pendingSteps">
+            Loading steps...
+          </div>
+          <div v-else-if="errorSteps">
+            <p>Failed to load steps.</p>
+          </div>
+          <div v-else-if="steps">
+            <h2>Steps (Last 7 Days)</h2>
+            <ul>
+              <li v-for="day in steps['activities-steps']" :key="day.dateTime">
+                {{ day.dateTime }}: {{ day.value }} steps
+              </li>
+            </ul>
+          </div>
+
+          <!-- Sleep -->
+          <div v-if="pendingSleep">
+            Loading sleep...
+          </div>
+          <div v-else-if="errorSleep">
+            <p>Failed to load sleep data.</p>
+          </div>
+          <div v-else-if="sleep">
+            <h2>Sleep</h2>
+            <ul>
+              <li v-for="night in sleep.sleep" :key="night.dateOfSleep">
+                {{ night.dateOfSleep }}: {{ (night.duration / 3600000).toFixed(1) || 'N/A' }} hours
+              </li>
+            </ul>
+          </div>
+
+          <!-- Heart Rate -->
+          <div v-if="pendingHeart">
+            Loading heart rate...
+          </div>
+          <div v-else-if="errorHeart">
+            <p>Failed to load heart rate.</p>
+          </div>
+          <div v-else-if="heart">
+            <h2>Heart Rate (Last 7 Days)</h2>
+            <ul>
+              <li v-for="day in heart['activities-heart']" :key="day.dateTime">
+                {{ day.dateTime }}: {{ day.value.restingHeartRate || 'N/A' }} bpm
+              </li>
+            </ul>
+          </div>
+        </cardcontent>
+      </Card>
 
       <!-- Profile card -->
       <Card>

@@ -1,29 +1,40 @@
 <script setup lang="ts">
+import type { FitbitHeart, FitbitSleep, FitbitSteps } from '~/types/fitbit'
+import { useFitbit } from '@/composables/useFitbit'
+import { format, parseISO } from 'date-fns'
+
 // import NumberFlow from '@number-flow/vue'
 import { HeartPulse } from 'lucide-vue-next'
 
-const dataCard = ref({
-  totalRevenue: 0,
-  totalRevenueDesc: 0,
-  subscriptions: 0,
-  subscriptionsDesc: 0,
-  sales: 0,
-  salesDesc: 0,
-  activeNow: 0,
-  activeNowDesc: 0,
-})
+// Fetch health data
+const { fetchFitbitData } = useFitbit()
 
-onMounted(() => {
-  dataCard.value = {
-    totalRevenue: 45231.89,
-    totalRevenueDesc: 20.1 / 100,
-    subscriptions: 2350,
-    subscriptionsDesc: 180.5 / 100,
-    sales: 12234,
-    salesDesc: 45 / 100,
-    activeNow: 573,
-    activeNowDesc: 201,
-  }
+// Reactive datasets for charts
+const stepsData = ref<{ date: string, steps: number }[]>([]) // <> fixes TS error so that it doesn't think it's a string
+const heartData = ref<{ date: string, restingHeartRate: number }[]>([])
+const sleepData = ref<{ date: string, sleepHours: number }[]>([])
+
+onMounted(async () => {
+  // Get steps (last 7 days)
+  const steps = await fetchFitbitData<FitbitSteps>('activities/steps/date/today/7d')
+  stepsData.value = steps['activities-steps'].map(day => ({
+    date: format(parseISO(day.dateTime), 'EEE'), // format to day of week
+    steps: Number(day.value),
+  }))
+
+  // Get heart rate (last 7 days)
+  const heart = await fetchFitbitData<FitbitHeart>('activities/heart/date/today/7d')
+  heartData.value = heart['activities-heart'].map(day => ({
+    date: day.dateTime,
+    restingHeartRate: day.value.restingHeartRate || 0, // fallback if missing
+  }))
+
+  // Get sleep (today only for now)
+  const sleep = await fetchFitbitData<FitbitSleep>('sleep/date/today')
+  sleepData.value = sleep.sleep.map(night => ({
+    date: night.dateOfSleep,
+    sleepHours: Number((night.duration / 3600000).toFixed(1)), // ms to hours
+  }))
 })
 </script>
 
@@ -49,15 +60,28 @@ onMounted(() => {
         <CardContent class="flex flex-col items-center justify-between pt-2">
           <Carousel v-slot="{ canScrollNext }" class="relative w-95%">
             <CarouselContent>
-              <CarouselItem v-for="(_, index) in 2" :key="index">
+              <CarouselItem>
                 <div class="p-1">
                   <Card>
                     <CardContent class="flex flex-col items-center justify-center p-6">
-                      <span class="text-4xl font-semibold">{{ index + 1 }}</span><br>
-                      <span class="text-center text-2xl font-semibold">Add different health charts here</span>
-                      <DashboardBarChart />
+                      <span class="text-4xl font-semibold">1</span><br>
+                      <span class="text-center text-2xl font-semibold">Steps this week</span>
+                      <BarChart :data="stepsData" :categories="['steps']" index="date" :rounded-corners="4" />
                     </CardContent>
                   </Card>
+                  Steps this week: {{ stepsData }}
+                </div>
+              </CarouselItem>
+              <CarouselItem>
+                <div class="p-1">
+                  <Card>
+                    <CardContent class="flex flex-col items-center justify-center p-6">
+                      <span class="text-4xl font-semibold">2</span><br>
+                      <span class="text-center text-2xl font-semibold">Sleep this week</span>
+                      <BarChart :data="sleepData" :categories="['sleepHours']" index="date" :rounded-corners="4" />
+                    </CardContent>
+                  </Card>
+                  Sleep this week: {{ sleepData }}
                 </div>
               </CarouselItem>
               <CarouselItem>
@@ -65,10 +89,11 @@ onMounted(() => {
                   <Card>
                     <CardContent class="flex flex-col items-center justify-center p-6">
                       <span class="text-4xl font-semibold">3</span><br>
-                      <span class="text-center text-2xl font-semibold">Add different health charts here</span>
-                      <DashboardLineChart />
+                      <span class="text-center text-2xl font-semibold">Heart rate this week</span>
+                      <LineChart :data="heartData" :categories="['restingHeartRate']" index="date" :rounded-corners="4" />
                     </CardContent>
                   </Card>
+                  Heart rate this week: {{ heartData }}
                 </div>
               </CarouselItem>
             </CarouselContent>
