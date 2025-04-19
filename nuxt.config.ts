@@ -25,9 +25,15 @@ export default defineNuxtConfig({
       },
     },
     fitbit: {
-      clientId: import.meta.env.NUXT_PUBLIC_FITBIT_CLIENT_ID,
-      clientSecret: import.meta.env.NUXT_PUBLIC_FITBIT_CLIENT_SECRET,
-      redirectUri: import.meta.env.NUXT_PUBLIC_FITBIT_REDIRECT_URI,
+      clientId: import.meta.env.NODE_ENV === 'development'
+        ? import.meta.env.NUXT_PUBLIC_FITBIT_CLIENT_ID_DEV
+        : import.meta.env.NUXT_PUBLIC_FITBIT_CLIENT_ID,
+      clientSecret: import.meta.env.NODE_ENV === 'development'
+        ? import.meta.env.NUXT_PUBLIC_FITBIT_CLIENT_SECRET_DEV
+        : import.meta.env.NUXT_PUBLIC_FITBIT_CLIENT_SECRET,
+      redirectUri: import.meta.env.NODE_ENV === 'development'
+        ? import.meta.env.NUXT_PUBLIC_FITBIT_REDIRECT_URI_DEV
+        : import.meta.env.NUXT_PUBLIC_FITBIT_REDIRECT_URI,
     },
   },
 

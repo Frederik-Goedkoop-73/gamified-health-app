@@ -23,7 +23,7 @@ export default defineEventHandler(async (event) => {
 
   // Update the cookies
   setCookie(event, 'fitbit_access_token', tokenResponse.access_token, {
-    httpOnly: true,
+    httpOnly: false, // Otherwise can't be read by client side js
     secure: true, // Use secure cookies in production
     sameSite: 'lax',
     path: '/',
@@ -31,7 +31,7 @@ export default defineEventHandler(async (event) => {
   })
 
   setCookie(event, 'fitbit_refresh_token', tokenResponse.refresh_token, {
-    httpOnly: true,
+    httpOnly: false,
     secure: true, // Use secure cookies in production
     sameSite: 'lax',
     path: '/',

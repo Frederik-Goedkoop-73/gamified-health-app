@@ -47,6 +47,19 @@ const { user, isLoading, signInWithGoogle } = useAuth()
 const { fetchFitbitData } = useFitbit()
 const { toast } = useToast()
 
+// Cookies
+const fitbitToken = useCookie('fitbit_access_token')
+
+// Fitbit reactive values
+const profile = ref<FitbitProfile | null>(null)
+const steps = ref<FitbitSteps['activities-steps']>([])
+const sleep = ref<FitbitSleep['sleep']>([])
+const heart = ref<FitbitHeart['activities-heart']>([])
+
+// Loading and error states
+const fitbit_loading = ref(true)
+const fitbit_error = ref(false)
+
 // Initialise the Pinia store
 const xpStore = useXPStore()
 const coinStore = useCoinStore()
@@ -104,8 +117,40 @@ watch(() => user.value, async (newUser) => {
   }
 }, { immediate: true })
 
+// Fitbit: Fetch access token for loading Fitbit data
+watchEffect(async () => {
+  if (!fitbitToken.value) {
+    fitbit_loading.value = false
+    console.warn('No Fitbit token available:', fitbitToken.value)
+    return
+  }
+
+  try {
+    fitbit_loading.value = true
+
+    const profileData = await fetchFitbitData<FitbitProfile>('profile')
+    const stepsData = await fetchFitbitData<FitbitSteps>('activities/steps/date/today/7d')
+    const heartData = await fetchFitbitData<FitbitHeart>('activities/heart/date/today/7d')
+    const sleepData = await fetchFitbitData<FitbitSleep>('sleep/date/today')
+
+    profile.value = profileData
+    steps.value = stepsData['activities-steps']
+    heart.value = heartData['activities-heart']
+    sleep.value = sleepData.sleep
+
+    fitbit_error.value = false
+  }
+  catch (err) {
+    console.error('Failed to load Fitbit data:', err)
+    fitbit_error.value = true
+  }
+  finally {
+    fitbit_loading.value = false
+  }
+})
+
 // Fitbit: Fetch user profile data
-const { data: profile } = await useAsyncData<FitbitProfile>('profile', async () => {
+/* const { data: profile } = await useAsyncData<FitbitProfile>('profile', async () => {
   return await fetchFitbitData('profile') // endpoint "profile"
 })
 
@@ -119,7 +164,7 @@ const { data: sleep, pending: pendingSleep, error: errorSleep } = await useAsync
 
 const { data: heart, pending: pendingHeart, error: errorHeart } = await useAsyncData('heart', async () => {
   return await fetchFitbitData<FitbitHeart>('activities/heart/date/today/7d')
-})
+}) */
 
 onMounted(() => {
   dataCard.value = {
@@ -167,7 +212,93 @@ onMounted(() => {
       </div>
 
       <!-- Fitbit Authenticated content -->
-      <Card v-if="profile">
+      <Card v-if="!fitbit_loading && !fitbit_error && profile">
+        <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
+          <CardTitle class="text-lg font-semibold">
+            Fitbit Profile
+          </CardTitle>
+          <User class="h-5 w-5 text-muted-foreground" />
+        </CardHeader>
+
+        <CardContent class="flex flex-col gap-4">
+          <!-- Profile Info -->
+          <div class="flex flex-row items-center gap-4">
+            <img
+              :src="profile.user.avatar || 'https://via.placeholder.com/150'"
+              :alt="`Avatar of ${profile.user.displayName}`"
+              class="h-12 w-12 rounded-full object-cover"
+            >
+            <div>
+              <p class="text-lg font-semibold">
+                {{ profile.user.displayName }}
+              </p>
+              <p class="text-sm text-muted-foreground">
+                {{ profile.user.email || 'N/A' }}
+              </p>
+            </div>
+          </div>
+
+          <div class="text-sm text-muted-foreground">
+            <p><strong>Full Name:</strong> {{ profile.user.fullName || 'N/A' }}</p>
+            <p><strong>Member Since:</strong> {{ profile.user.memberSince || 'N/A' }}</p>
+            <p><strong>Height:</strong> {{ profile.user.height || 'N/A' }} cm</p>
+            <p><strong>Weight:</strong> {{ profile.user.weight || 'N/A' }} kg</p>
+            <p><strong>Age:</strong> {{ profile.user.age || 'N/A' }} years</p>
+            <p><strong>EncodedId:</strong> {{ profile.user.encodedId || 'N/A' }}</p>
+          </div>
+
+          <!-- Steps Section -->
+          <div>
+            <h3 class="text-md mb-2 font-semibold">
+              Steps (Last 7 Days)
+            </h3>
+            <ul class="list-disc list-inside text-sm space-y-1">
+              <li v-for="day in steps" :key="day.dateTime">
+                {{ day.dateTime }}: {{ day.value }} steps
+              </li>
+            </ul>
+          </div>
+
+          <!-- Sleep Section -->
+          <div>
+            <h3 class="text-md mb-2 font-semibold">
+              Sleep (Today)
+            </h3>
+            <ul class="list-disc list-inside text-sm space-y-1">
+              <li v-for="night in sleep" :key="night.dateOfSleep">
+                {{ night.dateOfSleep }}: {{ (night.duration / 3600000).toFixed(1) || 'N/A' }} hours
+              </li>
+            </ul>
+          </div>
+
+          <!-- Heart Rate Section -->
+          <div>
+            <h3 class="text-md mb-2 font-semibold">
+              Heart Rate (Last 7 Days)
+            </h3>
+            <ul class="list-disc list-inside text-sm space-y-1">
+              <li v-for="day in heart" :key="day.dateTime">
+                {{ day.dateTime }}: {{ day.value.restingHeartRate || 'N/A' }} bpm
+              </li>
+            </ul>
+          </div>
+        </CardContent>
+      </Card>
+
+      <!-- Loading and Error states -->
+      <div v-else-if="fitbit_loading" class="h-48 flex items-center justify-center">
+        <p class="text-sm text-muted-foreground">
+          Loading Fitbit data...
+        </p>
+      </div>
+
+      <div v-else-if="fitbit_error" class="h-48 flex items-center justify-center">
+        <p class="text-sm text-red-500">
+          Failed to load Fitbit data. Please try reconnecting.
+        </p>
+      </div>
+
+      <!-- <Card v-if="profile">
         <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
           <CardTitle class="text-md font-medium">
             Fitbit Profile
@@ -193,10 +324,10 @@ onMounted(() => {
             Height: {{ profile.user.height || 'N/A' }} cm<br>
             Weight: {{ profile.user.weight || 'N/A' }} kg<br>
             Age: {{ profile.user.age || 'N/A' }} years<br>
-          </p>
+          </p> -->
 
-          <!-- Steps -->
-          <div v-if="pendingSteps">
+      <!-- Steps -->
+      <!-- <div v-if="pendingSteps">
             Loading steps...
           </div>
           <div v-else-if="errorSteps">
@@ -209,10 +340,10 @@ onMounted(() => {
                 {{ day.dateTime }}: {{ day.value }} steps
               </li>
             </ul>
-          </div>
+          </div> -->
 
-          <!-- Sleep -->
-          <div v-if="pendingSleep">
+      <!-- Sleep -->
+      <!-- <div v-if="pendingSleep">
             Loading sleep...
           </div>
           <div v-else-if="errorSleep">
@@ -225,10 +356,10 @@ onMounted(() => {
                 {{ night.dateOfSleep }}: {{ (night.duration / 3600000).toFixed(1) || 'N/A' }} hours
               </li>
             </ul>
-          </div>
+          </div> -->
 
-          <!-- Heart Rate -->
-          <div v-if="pendingHeart">
+      <!-- Heart Rate -->
+      <!-- <div v-if="pendingHeart">
             Loading heart rate...
           </div>
           <div v-else-if="errorHeart">
@@ -243,7 +374,7 @@ onMounted(() => {
             </ul>
           </div>
         </cardcontent>
-      </Card>
+      </Card> -->
 
       <!-- Profile card -->
       <Card>

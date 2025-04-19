@@ -29,7 +29,71 @@ export interface FitbitHeart {
 }
 
 export interface FitbitSleep {
-  sleep: { dateOfSleep: string, duration: number, efficiency: number }[]
+  sleep: SleepLog[]
+}
+
+export interface SleepLog {
+  // General fields
+  dateOfSleep: string
+  duration: number
+  efficiency: number
+  endTime: string
+  infoCode: number
+  isMainSleep: boolean
+  logId: number
+  minutesAfterWakeup: number
+  minutesAsleep: number
+  minutesAwake: number
+  minutesToFallAsleep: number
+  logType: string
+  startTime: string
+  timeInBed: number
+  type: string
+
+  // Stages sleep fields (if available)
+  levels?: {
+    data: {
+      dateTime: string
+      level: 'wake' | 'light' | 'deep' | 'rem'
+      seconds: number
+    }[]
+    shortData: {
+      dateTime: string
+      level: 'wake' | 'light' | 'deep' | 'rem'
+      seconds: number
+    }[]
+    summary: {
+      deep: {
+        count: number
+        minutes: number
+        thirtyDayAvgMinutes: number
+      }
+      light: {
+        count: number
+        minutes: number
+        thirtyDayAvgMinutes: number
+      }
+      rem: {
+        count: number
+        minutes: number
+        thirtyDayAvgMinutes: number
+      }
+      wake: {
+        count: number
+        minutes: number
+        thirtyDayAvgMinutes: number
+      }
+    }
+  }
+
+  // Classic sleep fallback fields
+  awakeCount?: number
+  awakeDuration?: number
+  awakeningsCount?: number
+  minuteData?: {
+    dateTime: string
+    value: 'asleep' | 'awake' | 'restless'
+  }[]
 }
 
 export interface FitbitSteps {
