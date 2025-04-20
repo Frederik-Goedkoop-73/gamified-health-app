@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { FitbitActiveZoneMinutes, FitbitCalories, FitbitHeart, FitbitSleep, FitbitSteps } from '~/types/fitbit'
 import { useFitbit } from '@/composables/useFitbit'
-import { format, parseISO, subDays } from 'date-fns'
+import { format, min, parseISO, subDays } from 'date-fns'
 
 // import NumberFlow from '@number-flow/vue'
 import { HeartPulse } from 'lucide-vue-next'
@@ -125,14 +125,18 @@ watchEffect(async () => {
     const zone = await fetchFitbitData<FitbitActiveZoneMinutes>('activities/active-zone-minutes/date/today/7d')
     zoneData.value = zone['activities-active-zone-minutes'].map(day => ({
       date: format(parseISO(day.dateTime), 'EEE'),
-      minutes: day.value.activeZoneMinutes.fatBurn + day.value.activeZoneMinutes.cardio + day.value.activeZoneMinutes.peak,
+      minutes: Number(day.value.activeZoneMinutes) || 0,
+
+      // Subdivide into zones if available -> later -> you can add more impressive charts
     }))
+
+    console.warn('Zone data:', zoneData.value)
 
     // Fetch calories burned data (last 7 days)
     const calories = await fetchFitbitData<FitbitCalories>('activities/calories/date/today/7d')
     caloriesData.value = calories['activities-calories'].map(day => ({
       date: format(parseISO(day.dateTime), 'EEE'),
-      calories: Number(day.value),
+      calories: Number(day.value) || 0,
     }))
 
     error.value = false
@@ -199,7 +203,7 @@ watchEffect(async () => {
                       <div class="mt-4 text-sm text-muted-foreground">
                         <ul class="space-y-2">
                           <li v-for="night in sleepData" :key="night.date" class="text-left">
-                            <strong>{{ night.date }}:</strong> Slept {{ night.sleepHours }}h (Efficiency: {{ night.efficiency }}%)
+                            <strong>{{ night.date }}:</strong> Slept {{ night.duration }}h (Efficiency: {{ night.efficiency }}%)
                           </li>
                         </ul>
                       </div>
