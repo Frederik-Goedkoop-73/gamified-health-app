@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { FitbitHeart, FitbitSleep, FitbitSteps } from '~/types/fitbit'
+import type { FitbitActiveZoneMinutes, FitbitCalories, FitbitHeart, FitbitSleep, FitbitSteps } from '~/types/fitbit'
 import { useFitbit } from '@/composables/useFitbit'
 import { format, parseISO, subDays } from 'date-fns'
 
@@ -24,6 +24,8 @@ const sleepData = ref<{
     awake: number
   }
 }[]>([])
+const zoneData = ref<{ date: string, minutes: number }[]>([])
+const caloriesData = ref<{ date: string, calories: number }[]>([])
 
 // Access Fitbit token cookie
 const fitbitToken = useCookie('fitbit_access_token')
@@ -118,6 +120,21 @@ watchEffect(async () => {
       }
     })
       .filter(night => night !== null) // remove skipped nights
+
+    // Fetch active zone minutes data (last 7 days)
+    const zone = await fetchFitbitData<FitbitActiveZoneMinutes>('activities/active-zone-minutes/date/today/7d')
+    zoneData.value = zone['activities-active-zone-minutes'].map(day => ({
+      date: format(parseISO(day.dateTime), 'EEE'),
+      minutes: day.value.activeZoneMinutes.fatBurn + day.value.activeZoneMinutes.cardio + day.value.activeZoneMinutes.peak,
+    }))
+
+    // Fetch calories burned data (last 7 days)
+    const calories = await fetchFitbitData<FitbitCalories>('activities/calories/date/today/7d')
+    caloriesData.value = calories['activities-calories'].map(day => ({
+      date: format(parseISO(day.dateTime), 'EEE'),
+      calories: Number(day.value),
+    }))
+
     error.value = false
   }
   catch (err) {
@@ -149,6 +166,8 @@ watchEffect(async () => {
           <CardTitle>Overview</CardTitle>
           <HeartPulse class="h-4 w-4 text-muted-foreground" />
         </CardHeader>
+
+        <!-- Steps chart -->
         <CardContent class="flex flex-col items-center justify-between pt-2">
           <Carousel v-slot="{ canScrollNext }" class="relative w-95%">
             <CarouselContent>
@@ -159,11 +178,17 @@ watchEffect(async () => {
                       <span class="text-4xl font-semibold">1</span><br>
                       <span class="text-center text-2xl font-semibold">Steps this week</span>
                       <BarChart :data="stepsData" :categories="['steps']" index="date" :rounded-corners="4" />
+                      <div class="mt-4 text-sm text-muted-foreground">
+                        Average daily steps: {{ (stepsData.reduce((sum, day) => sum + day.steps, 0) / stepsData.length).toFixed(0) }}<br>
+                        Total weekly steps: {{ stepsData.reduce((sum, day) => sum + day.steps, 0) }}
+                      </div>
                     </CardContent>
                   </Card>
                   Steps this week: {{ stepsData }}
                 </div>
               </CarouselItem>
+
+              <!-- Sleep Chart -->
               <CarouselItem>
                 <div class="p-1">
                   <Card>
@@ -171,6 +196,13 @@ watchEffect(async () => {
                       <span class="text-4xl font-semibold">2</span><br>
                       <span class="text-center text-2xl font-semibold">Sleep this week</span>
                       <BarChart :data="sleepData" :categories="['sleepHours']" index="date" :rounded-corners="4" />
+                      <div class="mt-4 text-sm text-muted-foreground">
+                        <ul class="space-y-2">
+                          <li v-for="night in sleepData" :key="night.date" class="text-left">
+                            <strong>{{ night.date }}:</strong> Slept {{ night.sleepHours }}h (Efficiency: {{ night.efficiency }}%)
+                          </li>
+                        </ul>
+                      </div>
                     </CardContent>
                   </Card>
                   Sleep this week: {{ sleepData }}
@@ -185,6 +217,8 @@ watchEffect(async () => {
                   </ul>
                 </div>
               </CarouselItem>
+
+              <!-- Heart Rate Chart -->
               <CarouselItem>
                 <div class="p-1">
                   <Card>
@@ -192,9 +226,44 @@ watchEffect(async () => {
                       <span class="text-4xl font-semibold">3</span><br>
                       <span class="text-center text-2xl font-semibold">Heart rate this week</span>
                       <LineChart :data="heartData" :categories="['restingHeartRate']" index="date" :rounded-corners="4" />
+                      <div class="mt-4 text-sm text-muted-foreground">
+                        Avg RHR: {{ (heartData.reduce((sum, day) => sum + day.restingHeartRate, 0) / heartData.length).toFixed(0) }} bpm ❤️
+                      </div>
                     </CardContent>
                   </Card>
                   Heart rate this week: {{ heartData }}
+                </div>
+              </CarouselItem>
+
+              <!-- Active Zone Minutes Chart -->
+              <CarouselItem>
+                <div class="p-1">
+                  <Card>
+                    <CardContent class="flex flex-col items-center justify-center gap-4 p-6">
+                      <span class="text-4xl font-semibold">4</span>
+                      <span class="text-center text-2xl font-semibold">Active Zone Minutes</span>
+                      <BarChart :data="zoneData" :categories="['minutes']" index="date" :rounded-corners="4" />
+                      <div class="mt-4 text-sm text-muted-foreground">
+                        Weekly total: {{ zoneData.reduce((sum, day) => sum + day.minutes, 0) }} mins 🏃‍♂️
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </CarouselItem>
+
+              <!-- Calories Burned Chart -->
+              <CarouselItem>
+                <div class="p-1">
+                  <Card>
+                    <CardContent class="flex flex-col items-center justify-center gap-4 p-6">
+                      <span class="text-4xl font-semibold">5</span>
+                      <span class="text-center text-2xl font-semibold">Calories Burned</span>
+                      <BarChart :data="caloriesData" :categories="['calories']" index="date" :rounded-corners="4" />
+                      <div class="mt-4 text-sm text-muted-foreground">
+                        Weekly calories: {{ caloriesData.reduce((sum, day) => sum + day.calories, 0) }} kcal 🔥
+                      </div>
+                    </CardContent>
+                  </Card>
                 </div>
               </CarouselItem>
             </CarouselContent>

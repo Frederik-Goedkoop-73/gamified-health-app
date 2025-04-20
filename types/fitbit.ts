@@ -99,3 +99,23 @@ export interface SleepLog {
 export interface FitbitSteps {
   'activities-steps': { dateTime: string, value: number }[]
 }
+
+export interface FitbitActiveZoneMinutes {
+  'activities-active-zone-minutes': {
+    dateTime: string
+    value: {
+      activeZoneMinutes: {
+        fatBurn: number
+        cardio: number
+        peak: number
+      }
+    }
+  }[]
+}
+
+export interface FitbitCalories {
+  'activities-calories': {
+    dateTime: string
+    value: string
+  }[]
+}
