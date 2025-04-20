@@ -27,7 +27,7 @@ export default defineEventHandler(async (event) => {
   // Store tokens securely (use encrypted cookies or your auth system)
   setCookie(event, 'fitbit_access_token', tokenResponse.access_token, {
     httpOnly: false, // Otherwise can't be read by client side js
-    secure: true, // Use secure cookies in production -> could change to secure: import.meta.env.PROD
+    secure: true, // Use secure cookies in production -> could change to secure: process.env.PROD
     sameSite: 'lax', // Basic CSRF protection
     path: '/', // Available for all routes
     maxAge: tokenResponse.expires_in,

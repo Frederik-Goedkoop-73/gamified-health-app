@@ -227,7 +227,7 @@ watchEffect(async () => {
                       <span class="text-center text-2xl font-semibold">Heart rate this week</span>
                       <LineChart :data="heartData" :categories="['restingHeartRate']" index="date" :rounded-corners="4" />
                       <div class="mt-4 text-sm text-muted-foreground">
-                        Avg RHR: {{ (heartData.reduce((sum, day) => sum + day.restingHeartRate, 0) / heartData.length).toFixed(0) }} bpm ❤️
+                        Avg RHR: {{ (heartData.reduce((sum, day) => sum + day.restingHeartRate, 0) / heartData.length).toFixed(0) }} bpm
                       </div>
                     </CardContent>
                   </Card>
@@ -244,7 +244,7 @@ watchEffect(async () => {
                       <span class="text-center text-2xl font-semibold">Active Zone Minutes</span>
                       <BarChart :data="zoneData" :categories="['minutes']" index="date" :rounded-corners="4" />
                       <div class="mt-4 text-sm text-muted-foreground">
-                        Weekly total: {{ zoneData.reduce((sum, day) => sum + day.minutes, 0) }} mins 🏃‍♂️
+                        Weekly total: {{ zoneData.reduce((sum, day) => sum + day.minutes, 0) }} mins
                       </div>
                     </CardContent>
                   </Card>
@@ -260,7 +260,7 @@ watchEffect(async () => {
                       <span class="text-center text-2xl font-semibold">Calories Burned</span>
                       <BarChart :data="caloriesData" :categories="['calories']" index="date" :rounded-corners="4" />
                       <div class="mt-4 text-sm text-muted-foreground">
-                        Weekly calories: {{ caloriesData.reduce((sum, day) => sum + day.calories, 0) }} kcal 🔥
+                        Weekly calories: {{ caloriesData.reduce((sum, day) => sum + day.calories, 0) }} kcal
                       </div>
                     </CardContent>
                   </Card>

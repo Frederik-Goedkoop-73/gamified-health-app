@@ -1,4 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import process from 'node:process'
+
 export default defineNuxtConfig({
   devtools: { enabled: true },
 
@@ -13,27 +15,31 @@ export default defineNuxtConfig({
   ],
 
   runtimeConfig: {
+    // These are private and should not be exposed to the client
+    // They are stored in .env file and on netlify (environment variables)
+    fitbit: {
+      clientId: process.env.NODE_ENV === 'development'
+        ? process.env.NUXT_FITBIT_CLIENT_ID_DEV
+        : process.env.NUXT_FITBIT_CLIENT_ID,
+      clientSecret: process.env.NODE_ENV === 'development'
+        ? process.env.NUXT_FITBIT_CLIENT_SECRET_DEV
+        : process.env.NUXT_FITBIT_CLIENT_SECRET,
+      redirectUri: process.env.NODE_ENV === 'development'
+        ? process.env.NUXT_FITBIT_REDIRECT_URI_DEV
+        : process.env.NUXT_FITBIT_REDIRECT_URI,
+    },
+
+    // These are public and can be exposed to the client
     public: {
       firebase: { // These are stored in .env file and on netlify (environment variables)
-        apiKey: import.meta.env.NUXT_PUBLIC_FIREBASE_API_KEY,
-        authDomain: import.meta.env.NUXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-        projectId: import.meta.env.NUXT_PUBLIC_FIREBASE_PROJECT_ID,
-        storageBucket: import.meta.env.NUXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-        messagingSenderId: import.meta.env.NUXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-        appId: import.meta.env.NUXT_PUBLIC_FIREBASE_APP_ID,
-        measurementId: import.meta.env.NUXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
+        apiKey: process.env.NUXT_PUBLIC_FIREBASE_API_KEY,
+        authDomain: process.env.NUXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+        projectId: process.env.NUXT_PUBLIC_FIREBASE_PROJECT_ID,
+        storageBucket: process.env.NUXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+        messagingSenderId: process.env.NUXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+        appId: process.env.NUXT_PUBLIC_FIREBASE_APP_ID,
+        measurementId: process.env.NUXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
       },
-    },
-    fitbit: {
-      clientId: import.meta.env.NODE_ENV === 'development'
-        ? import.meta.env.NUXT_PUBLIC_FITBIT_CLIENT_ID_DEV
-        : import.meta.env.NUXT_PUBLIC_FITBIT_CLIENT_ID,
-      clientSecret: import.meta.env.NODE_ENV === 'development'
-        ? import.meta.env.NUXT_PUBLIC_FITBIT_CLIENT_SECRET_DEV
-        : import.meta.env.NUXT_PUBLIC_FITBIT_CLIENT_SECRET,
-      redirectUri: import.meta.env.NODE_ENV === 'development'
-        ? import.meta.env.NUXT_PUBLIC_FITBIT_REDIRECT_URI_DEV
-        : import.meta.env.NUXT_PUBLIC_FITBIT_REDIRECT_URI,
     },
   },
 
