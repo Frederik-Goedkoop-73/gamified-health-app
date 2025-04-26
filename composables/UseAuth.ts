@@ -179,17 +179,29 @@ export function useAuth() {
           password.value,
         )
 
-        await createUserDocument(userCredential.user, {
-          username: username.value.trim(),
-        })
+        const docRef = getUserDocRef(userCredential.user.uid)
+        const docSnap = await getDoc(docRef)
+
+        if (!docSnap.exists()) {
+          // Only create the document if it doesn't exist
+          await setDoc(docRef, {
+            ...DEFAULT_USER_DATA,
+            uid: userCredential.user.uid,
+            email: userCredential.user.email,
+            username: username.value.trim(),
+            profileComplete: !!username.value.trim(),
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            lastLoginDate: new Date(),
+          })
+        }
 
         userStore.setUsername(username.value.trim())
         await fetchAllUserData(userCredential.user)
 
-        // Wait for auth persistence to complete
         await new Promise<void>((resolve) => {
           const unsubscribe = onAuthStateChanged(auth, (user) => {
-            if (user) { // Only resolve when we have a user
+            if (user) {
               unsubscribe()
               resolve()
             }
@@ -229,19 +241,25 @@ export function useAuth() {
 
         // 2. Ensure document exists
         const docRef = doc(db, 'users', user.uid)
-        await setDoc(docRef, {
-          ...DEFAULT_USER_DATA,
-          uid: user.uid,
-          email: user.email || '', // Google email
-          username: user.displayName || 'Anonymous', // Google display name
-          photoURL: user.photoURL || '', // Google profile picture
-          profileComplete: !!user.displayName, // True if name exists
-          lastLoginDate: new Date(), // Update last login date
-        }, { merge: true })
-        // ✅ Creates a new document if it doesn't exist
-
-        // 3. Get fresh snapshot (optional - only needed if you need immediate read-after-write)
-        // const updatedDoc = await getDoc(docRef)
+        const docSnap = await getDoc(docRef)
+        if (!docSnap.exists()) {
+          // Only of the user document does NOT exist
+          await setDoc(docRef, {
+            ...DEFAULT_USER_DATA,
+            uid: user.uid,
+            email: user.email || '', // Google email
+            username: user.displayName || 'Anonymous', // Google display name
+            photoURL: user.photoURL || '', // Google profile picture
+            profileComplete: !!user.displayName, // True if name exists
+            lastLoginDate: new Date(), // Update last login date
+          }, { merge: true })
+        }
+        else {
+          // If user exists, update last login date
+          await setDoc(docRef, {
+            lastLoginDate: new Date(),
+          }, { merge: true })
+        }
 
         // 4. Route based on profile completion
         if (!user.displayName) { // More reliable than checking document
@@ -407,9 +425,12 @@ export function useAuth() {
             streakStore.fetchStreak(),
             coinStore.fetchCoins(),
             playerStore.fetchPlayerData(),
-          // Add any other stores you want to load here
-          // This ensures that all stores are loaded before setting isLoggedIn
+            // Add any other stores you want to load here
+            // This ensures that all stores are loaded before setting isLoggedIn
           ])
+
+          // Check and update streak -> otherwise this code won't be called
+          await streakStore.checkAndUpdateStreak()
 
           // 4. Update last login AFTER data is loaded
           await updateLastLogin(firebaseUser.uid)

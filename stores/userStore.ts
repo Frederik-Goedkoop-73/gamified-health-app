@@ -1,3 +1,6 @@
+// This store manages !static! user data and interactions with Firebase
+// Don't use this store for dynamic data (like XP, streak, etc.)
+
 import type { UserData } from '~/types/auth'
 import { doc, getDoc } from 'firebase/firestore'
 import { defineStore } from 'pinia'
@@ -18,7 +21,19 @@ export const useUserStore = defineStore('user', {
         const docSnap = await getDoc(docRef)
 
         if (docSnap.exists()) {
-          this.data = docSnap.data() as UserData
+          const data = docSnap.data() as UserData
+
+          // Only keep profile-related fields
+          this.data = {
+            uid: data.uid,
+            email: data.email,
+            username: data.username,
+            photoURL: data.photoURL,
+            createdAt: data.createdAt,
+            updatedAt: data.updatedAt,
+            lastLoginDate: data.lastLoginDate,
+            profileComplete: data.profileComplete,
+          }
         }
         else {
           this.data = null
@@ -48,10 +63,6 @@ export const useUserStore = defineStore('user', {
     createdAt: state => state.data?.createdAt || '',
     updatedAt: state => state.data?.updatedAt || '',
     lastLoginDate: state => state.data?.lastLoginDate || '',
-    xp: state => state.data?.xp || '',
-    streak: state => state.data?.streak || '',
-    coins: state => state.data?.coins || '',
     profileComplete: state => state.data?.profileComplete || '',
-    // Add other getters as needed
   },
 })

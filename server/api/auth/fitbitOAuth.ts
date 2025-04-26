@@ -5,6 +5,7 @@ import { Buffer } from 'node:buffer'
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig()
 
+  // Check if the request is a GET request
   const authUrl = new URL('https://www.fitbit.com/oauth2/authorize')
   authUrl.searchParams.append('response_type', 'code')
   authUrl.searchParams.append('client_id', config.fitbit.clientId)

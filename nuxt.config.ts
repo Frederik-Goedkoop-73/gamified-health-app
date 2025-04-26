@@ -18,15 +18,9 @@ export default defineNuxtConfig({
     // These are private and should not be exposed to the client
     // They are stored in .env file and on netlify (environment variables)
     fitbit: {
-      clientId: process.env.NODE_ENV === 'development'
-        ? process.env.NUXT_FITBIT_CLIENT_ID_DEV
-        : process.env.NUXT_FITBIT_CLIENT_ID,
-      clientSecret: process.env.NODE_ENV === 'development'
-        ? process.env.NUXT_FITBIT_CLIENT_SECRET_DEV
-        : process.env.NUXT_FITBIT_CLIENT_SECRET,
-      redirectUri: process.env.NODE_ENV === 'development'
-        ? process.env.NUXT_FITBIT_REDIRECT_URI_DEV
-        : process.env.NUXT_FITBIT_REDIRECT_URI,
+      clientId: process.env.NUXT_FITBIT_CLIENT_ID,
+      clientSecret: process.env.NUXT_FITBIT_CLIENT_SECRET,
+      redirectUri: process.env.NUXT_FITBIT_REDIRECT_URI,
     },
 
     // These are public and can be exposed to the client

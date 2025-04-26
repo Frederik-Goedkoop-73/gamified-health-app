@@ -42,7 +42,7 @@ export const useXPStore = defineStore('xp', {
           const docSnap = await getDoc(userDocRef)
           if (docSnap.exists()) {
             const data = docSnap.data()
-            this.xp = data.xp ?? 0 // Update local state with Firestore data
+            this.xp = data.xp ?? 0// Update local state with Firestore data
             this.totalXP = data.totalXP ?? 0 // Update local state with Firestore data
             this.level = data.level ?? 1 // Update local state with Firestore data
             this.hasAwarded1000XP = data.hasAwarded1000XP ?? false // Update local state with Firestore data
@@ -141,6 +141,9 @@ export const useXPStore = defineStore('xp', {
 
     // Update the player's level based on XP
     updateLevel(): void {
+      if (this.xp <= 0)
+        return // Early exit if XP is 0, so that xp isn't set to 0 on login
+
       let levelsGained = 0
       let remainingXP = this.xp
 
