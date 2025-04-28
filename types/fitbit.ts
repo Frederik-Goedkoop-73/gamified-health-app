@@ -119,3 +119,8 @@ export interface FitbitCalories {
     value: string
   }[]
 }
+
+export interface FitbitSimpleSleepLog {
+  dateOfSleep: string
+  duration: number
+}

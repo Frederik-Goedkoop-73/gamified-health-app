@@ -1,10 +1,81 @@
 <script setup lang="ts">
+import type { FitbitActiveZoneMinutes, FitbitCalories, FitbitSimpleSleepLog, FitbitSteps } from '~/types/fitbit'
+import { useFitbit } from '@/composables/useFitbit'
+// import { useQuestProgress } from '@/composables/useQuestProgress'
 // import NumberFlow from '@number-flow/vue'
 import { Trophy } from 'lucide-vue-next'
+import QuestCard from '~/components/quests/QuestCard.vue'
+import { useQuestStore } from '~/stores/questStore'
 import { useXPStore } from '~/stores/xpStore'
 
+// Store and composables
 const xpStore = useXPStore()
+const questStore = useQuestStore()
+const { fetchFitbitData } = useFitbit()
 
+// const { dailyQuestProgress, weeklyQuestProgress } = useQuestProgress()
+
+// State
+const fitbit_loading = ref(false)
+const fitbit_error = ref(false)
+
+const steps = ref<FitbitSteps['activities-steps']>([])
+const sleep = ref<FitbitSimpleSleepLog[]>([])
+const calories = ref<FitbitCalories['activities-calories']>([])
+const azm = ref<FitbitActiveZoneMinutes['activities-active-zone-minutes']>([])
+
+// Actual PlayerFitbitData we pass to checkQuestProgress
+const fitbitData = computed(() => ({
+  steps: steps.value,
+  sleep: sleep.value,
+  caloriesToday: calories.value.length > 0 ? calories.value[calories.value.length - 1] : { dateTime: '', value: '0' },
+  azmToday: azm.value.length > 0 ? azm.value[azm.value.length - 1] : { dateTime: '', value: { activeZoneMinutes: { fatBurn: 0, cardio: 0, peak: 0 } } },
+}))
+
+// Fetch data
+onMounted(async () => {
+  await questStore.fetchQuests
+  try {
+    fitbit_loading.value = true
+
+    const [
+      stepsRaw,
+      sleepRaw,
+      caloriesRaw,
+      azmRaw,
+    ] = await Promise.all([
+      fetchFitbitData('activities/steps/date/today/7d') as Promise<{ 'activities-steps': { dateTime: string, value: number }[] }>,
+      fetchFitbitData('sleep/date/today') as Promise<{ sleep: { dateOfSleep: string, duration: number }[] }>,
+      fetchFitbitData('activities/calories/date/today/7d') as Promise<{ 'activities-calories': { dateTime: string, value: string }[] }>,
+      fetchFitbitData('activities/active-zone-minutes/date/today/7d') as Promise<{ 'activities-active-zone-minutes': { dateTime: string, value: { activeZoneMinutes: { fatBurn: number, cardio: number, peak: number } } }[] }>,
+    ])
+
+    steps.value = stepsRaw['activities-steps']
+    sleep.value = sleepRaw.sleep.map(night => ({
+      dateOfSleep: night.dateOfSleep,
+      duration: night.duration,
+    }))
+    calories.value = caloriesRaw['activities-calories']
+    azm.value = azmRaw['activities-active-zone-minutes']
+
+    fitbit_loading.value = false
+  }
+  catch (error) {
+    console.error('Error fetching Fitbit data:', error)
+    fitbit_error.value = true
+    fitbit_loading.value = false
+  }
+})
+
+// Calculate progress
+const questProgress = computed(() => {
+  return questStore.dailyQuests.map(quest => ({
+    quest,
+    ...checkQuestProgress(quest, fitbitData.value),
+  }))
+})
+
+// Older scripts -> may be obsolete
 // Ensure totalXP is a valid number
 if (typeof xpStore.totalXP !== 'number' || Number.isNaN(xpStore.totalXP)) {
   xpStore.totalXP = 0
@@ -29,6 +100,14 @@ const daily_3_progress = computed(() => {
     <!-- Main body under header -->
     <main class="flex flex-1 flex-col gap-4 md:gap-8">
       <!-- Daily quests -->
+      <QuestCard
+        v-for="info in questProgress"
+        :key="info.quest.id"
+        :title="info.quest.title"
+        :progress="`${info.progress} / ${info.quest.target} ${info.quest.activity}`"
+        :reward="`+${info.quest.rewardXP} XP`"
+        :completed="info.completed"
+      />
       <Card class="xl:col-span-2">
         <!-- Daily quests -->
         <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
@@ -256,6 +335,18 @@ const daily_3_progress = computed(() => {
           Reset xp
         </Button>
       </div>
+
+      <ul>
+        <li v-for="quest in questStore.dailyQuests" :key="quest.id">
+          {{ quest.title }} - {{ quest.target }}
+        </li>
+        <li class="text-sm text-muted-foreground">
+          ⏳ Daily Reset: <b>{{ questStore.countdownToDailyReset }}</b>
+        </li>
+        <li class="text-sm text-muted-foreground">
+          📅 Weekly Reset: <b>{{ questStore.countdownToWeeklyReset }}</b>
+        </li>
+      </ul>
     </main>
   </div>
 </template>

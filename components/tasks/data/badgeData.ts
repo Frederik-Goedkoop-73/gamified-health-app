@@ -1,5 +1,6 @@
-// ~/data/badgeData.js
-export const badges = [
+import type { Badge } from '~/types/badge'
+
+export const badges: Badge[] = [
   {
     category: 'Marathon Stepper 🚶‍➡️',
     badges: [

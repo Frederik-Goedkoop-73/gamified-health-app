@@ -8,4 +8,5 @@ export interface Quest {
   activity: 'steps' | 'distance' | 'calories' | 'sleep' | 'AZM'
   rewardXP: number
   rewardCoins: number
+  completed: boolean
 }

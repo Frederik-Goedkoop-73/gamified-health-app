@@ -67,6 +67,7 @@ onMounted(async () => {
       fetchFitbitData<FitbitCalories>('activities/calories/date/today/7d'),
     ])
 
+    // Card data
     profile.value = profileRaw
     steps.value = stepsRaw['activities-steps']
     heart.value = heartRaw['activities-heart']
