@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import type { IconName } from '@/components/health/HealthCarouselDots.vue'
 import type { FitbitActiveZoneMinutes, FitbitCalories, FitbitHeart, FitbitProfile, FitbitSleep, FitbitSteps } from '~/types/fitbit'
+
 import BarChart from '@/components/dashboard/BarChart.vue'
 import LineChart from '@/components/dashboard/LineChart.vue'
 // Charts
@@ -33,6 +35,7 @@ const zoneData = ref<{ date: string, minutes: number }[]>([])
 const caloriesData = ref<{ date: string, calories: number }[]>([])
 const chartData = ref<{
   title: string
+  icon: IconName
   chartComponent: any
   chartProps: Record<string, any>
   footerText: string
@@ -99,33 +102,38 @@ onMounted(async () => {
     chartData.value = [
       {
         title: 'Steps this week',
+        icon: 'Footprints',
         chartComponent: BarChart,
         chartProps: { data: stepsData.value, categories: ['steps'], index: 'date' },
         footerText: `Avg Steps: ${(stepsData.value.reduce((s, d) => s + d.steps, 0) / stepsData.value.length).toFixed(0)}`,
       },
       {
         title: 'Sleep this week',
+        icon: 'MoonStar',
         chartComponent: BarChart,
         chartProps: { data: sleepData.value, categories: ['sleepHours'], index: 'date' },
         footerText: `Avg Sleep: ${(sleepData.value.reduce((s, d) => s + d.sleepHours, 0) / sleepData.value.length).toFixed(1)}h`,
       },
       {
-        title: 'Heart Rate',
-        chartComponent: LineChart,
-        chartProps: { data: heartData.value, categories: ['restingHeartRate'], index: 'date' },
-        footerText: `Avg HR: ${(heartData.value.reduce((s, d) => s + d.restingHeartRate, 0) / heartData.value.length).toFixed(0)} bpm`,
-      },
-      {
         title: 'Zone Minutes',
+        icon: 'Zap',
         chartComponent: BarChart,
         chartProps: { data: zoneData.value, categories: ['minutes'], index: 'date' },
         footerText: `Total Minutes: ${zoneData.value.reduce((s, d) => s + d.minutes, 0)}`,
       },
       {
         title: 'Calories Burned',
+        icon: 'Flame',
         chartComponent: BarChart,
         chartProps: { data: caloriesData.value, categories: ['calories'], index: 'date' },
         footerText: `Calories: ${caloriesData.value.reduce((s, d) => s + d.calories, 0)} kcal`,
+      },
+      {
+        title: 'Heart Rate',
+        icon: 'HeartPulse',
+        chartComponent: LineChart,
+        chartProps: { data: heartData.value, categories: ['restingHeartRate'], index: 'date' },
+        footerText: `Avg HR: ${(heartData.value.reduce((s, d) => s + d.restingHeartRate, 0) / heartData.value.length).toFixed(0)} bpm`,
       },
     ]
 
@@ -192,33 +200,38 @@ async function syncChartData() {
     chartData.value = [
       {
         title: 'Steps this week',
+        icon: 'Footprints',
         chartComponent: BarChart,
         chartProps: { data: stepsData.value, categories: ['steps'], index: 'date' },
         footerText: `Avg Steps: ${(stepsData.value.reduce((s, d) => s + d.steps, 0) / stepsData.value.length).toFixed(0)}`,
       },
       {
         title: 'Sleep this week',
+        icon: 'MoonStar',
         chartComponent: BarChart,
         chartProps: { data: sleepData.value, categories: ['sleepHours'], index: 'date' },
         footerText: `Avg Sleep: ${(sleepData.value.reduce((s, d) => s + d.sleepHours, 0) / sleepData.value.length).toFixed(1)}h`,
       },
       {
-        title: 'Heart Rate',
-        chartComponent: LineChart,
-        chartProps: { data: heartData.value, categories: ['restingHeartRate'], index: 'date' },
-        footerText: `Avg HR: ${(heartData.value.reduce((s, d) => s + d.restingHeartRate, 0) / heartData.value.length).toFixed(0)} bpm`,
-      },
-      {
         title: 'Zone Minutes',
+        icon: 'Zap',
         chartComponent: BarChart,
         chartProps: { data: zoneData.value, categories: ['minutes'], index: 'date' },
         footerText: `Total Minutes: ${zoneData.value.reduce((s, d) => s + d.minutes, 0)}`,
       },
       {
         title: 'Calories Burned',
+        icon: 'Flame',
         chartComponent: BarChart,
         chartProps: { data: caloriesData.value, categories: ['calories'], index: 'date' },
         footerText: `Calories: ${caloriesData.value.reduce((s, d) => s + d.calories, 0)} kcal`,
+      },
+      {
+        title: 'Heart Rate',
+        icon: 'HeartPulse',
+        chartComponent: LineChart,
+        chartProps: { data: heartData.value, categories: ['restingHeartRate'], index: 'date' },
+        footerText: `Avg HR: ${(heartData.value.reduce((s, d) => s + d.restingHeartRate, 0) / heartData.value.length).toFixed(0)} bpm`,
       },
     ]
   }
@@ -238,7 +251,7 @@ async function syncChartData() {
         Health Stats
       </h2>
       <div class="flex items-center space-x-2">
-        <BaseDateRangePicker /> <!-- Change to range calendar: RangeCalendar -->
+        <!-- <BaseDateRangePicker /> --> <!-- Change to range calendar: RangeCalendar -->
         <!-- <Button>Download</Button> -->
         <Button :disabled="isSyncing" class="flex items-center gap-2" @click="syncChartData">
           <span v-if="!isSyncing">Sync Latest Data</span>
@@ -248,7 +261,13 @@ async function syncChartData() {
     </div>
     <!-- Main body under header -->
     <main class="flex flex-1 flex-col gap-4 md:gap-8">
-      <HealthChartCarousel :charts="chartData" />
+      <HealthChartCarousel v-if="!fitbit_loading && !fitbit_error && profile" :charts="chartData" />
+      <div v-else-if="fitbit_loading" class="h-48 flex items-center justify-center">
+        <p class="text-sm text-muted-foreground">
+          Loading charts...
+        </p>
+      </div>
+      <AuthConnectAccounts v-else />
 
       <HealthProfile
         v-if="!fitbit_loading && !fitbit_error && profile" :profile="profile" :steps="steps" :sleep="sleep"

@@ -13,6 +13,7 @@ export interface CarouselProps {
 
 export interface CarouselEmits {
   (e: 'init-api', payload: CarouselApi): void
+  (e: 'slide-changed', index: number): void
 }
 
 export interface WithClassAsProps {

@@ -12,70 +12,63 @@ defineProps<{
 <template>
   <Card>
     <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
-      <CardTitle class="text-lg font-semibold">
-        Fitbit Profile
+      <CardTitle class="text-xl font-bold">
+        Fitbit Profile Overview
       </CardTitle>
     </CardHeader>
 
-    <CardContent class="flex flex-col gap-4">
+    <CardContent class="flex flex-col gap-6">
       <!-- Profile Info -->
-      <div class="flex flex-row items-center gap-4">
-        <img
-          :src="profile.user.avatar || 'https://via.placeholder.com/150'"
-          :alt="`Avatar of ${profile.user.displayName}`"
-          class="h-12 w-12 rounded-full object-cover"
-        >
-        <div>
+      <div class="flex flex-row items-center gap-4 border-b pb-4">
+        <div class="flex flex-col">
           <p class="text-lg font-semibold">
             {{ profile.user.displayName }}
-          </p>
-          <p class="text-sm text-muted-foreground">
-            {{ profile.user.email || 'N/A' }}
           </p>
         </div>
       </div>
 
-      <div class="text-sm text-muted-foreground">
-        <p><strong>Full Name:</strong> {{ profile.user.fullName || 'N/A' }}</p>
-        <p><strong>Member Since:</strong> {{ profile.user.memberSince || 'N/A' }}</p>
-        <p><strong>Height:</strong> {{ profile.user.height || 'N/A' }} cm</p>
-        <p><strong>Weight:</strong> {{ profile.user.weight || 'N/A' }} kg</p>
-        <p><strong>Age:</strong> {{ profile.user.age || 'N/A' }} years</p>
-        <p><strong>EncodedId:</strong> {{ profile.user.encodedId || 'N/A' }}</p>
+      <!-- User Details -->
+      <div class="grid grid-cols-2 gap-4 text-sm">
+        <p><span class="font-medium">Full Name:</span> {{ profile.user.fullName || 'N/A' }}</p>
+        <p><span class="font-medium">Age:</span> {{ profile.user.age || 'N/A' }} years</p>
+        <p><span class="font-medium">Height:</span> {{ profile.user.height || 'N/A' }} cm</p>
+        <p><span class="font-medium">Weight:</span> {{ profile.user.weight || 'N/A' }} kg</p>
       </div>
 
       <!-- Steps Section -->
       <div>
-        <h3 class="text-md mb-2 font-semibold">
+        <h3 class="mb-2 text-lg font-semibold">
           Steps (Last 7 Days)
         </h3>
-        <ul class="list-disc list-inside text-sm space-y-1">
+        <ul class="text-sm text-muted-foreground space-y-1">
           <li v-for="day in steps" :key="day.dateTime">
-            {{ day.dateTime }}: {{ day.value }} steps
+            <span class="font-medium">{{ day.dateTime }}:</span> {{ day.value }} steps
           </li>
         </ul>
       </div>
 
       <!-- Sleep Section -->
       <div>
-        <h3 class="text-md mb-2 font-semibold">
+        <h3 class="mb-2 text-lg font-semibold">
           Sleep (Today)
         </h3>
-        <ul class="list-disc list-inside text-sm space-y-1">
+        <ul class="text-sm text-muted-foreground space-y-1">
           <li v-for="night in sleep" :key="night.dateOfSleep">
-            {{ night.dateOfSleep }}: {{ (night.duration / 3600000).toFixed(1) || 'N/A' }} hours
+            <span class="font-medium">{{ night.dateOfSleep }}:</span>
+            {{ (night.duration / 3600000).toFixed(1) || 'N/A' }} hours
           </li>
         </ul>
       </div>
 
       <!-- Heart Rate Section -->
       <div>
-        <h3 class="text-md mb-2 font-semibold">
+        <h3 class="mb-2 text-lg font-semibold">
           Heart Rate (Last 7 Days)
         </h3>
-        <ul class="list-disc list-inside text-sm space-y-1">
+        <ul class="text-sm text-muted-foreground space-y-1">
           <li v-for="day in heart" :key="day.dateTime">
-            {{ day.dateTime }}: {{ day.value.restingHeartRate || 'N/A' }} bpm
+            <span class="font-medium">{{ day.dateTime }}:</span>
+            {{ day.value.restingHeartRate || 'N/A' }} bpm
           </li>
         </ul>
       </div>
