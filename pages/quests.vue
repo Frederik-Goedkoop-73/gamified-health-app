@@ -34,7 +34,7 @@ const fitbitData = computed(() => ({
 
 // Fetch data
 onMounted(async () => {
-  await questStore.fetchQuests
+  await questStore.fetchQuests()
   try {
     fitbit_loading.value = true
 
