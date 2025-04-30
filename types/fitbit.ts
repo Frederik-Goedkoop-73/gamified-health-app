@@ -28,6 +28,11 @@ export interface FitbitHeart {
   'activities-heart': { dateTime: string, value: any }[]
 }
 
+export interface FitbitSimpleSleepLog {
+  dateOfSleep: string
+  duration: number
+}
+
 export interface FitbitSleep {
   sleep: SleepLog[]
 }
@@ -104,11 +109,9 @@ export interface FitbitActiveZoneMinutes {
   'activities-active-zone-minutes': {
     dateTime: string
     value: {
-      activeZoneMinutes: {
-        fatBurn: number
-        cardio: number
-        peak: number
-      }
+      fatBurnActiveZoneMinutes?: number
+      cardioActiveZoneMinutes?: number
+      peakActiveZoneMinutes?: number
     }
   }[]
 }
@@ -118,9 +121,4 @@ export interface FitbitCalories {
     dateTime: string
     value: string
   }[]
-}
-
-export interface FitbitSimpleSleepLog {
-  dateOfSleep: string
-  duration: number
 }

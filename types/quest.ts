@@ -1,12 +1,12 @@
 export interface Quest {
   id: string
-  /* icon: string */
   title: string
-  /* description: string */
   type: 'daily' | 'weekly'
+  activity: 'steps' | 'sleep' | 'calories' | 'AZM'
   target: number
-  activity: 'steps' | 'distance' | 'calories' | 'sleep' | 'AZM'
   rewardXP: number
   rewardCoins: number
-  completed: boolean
+  completed?: boolean
+  difficulty?: 'normal' | 'hard' | 'legendary'
+  icon: 'Footprints' | 'MoonStar' | 'HeartPulse' | 'Flame' | 'Zap'
 }
