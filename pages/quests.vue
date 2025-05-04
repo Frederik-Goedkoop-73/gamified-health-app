@@ -5,6 +5,7 @@ import { format, subDays } from 'date-fns'
 // import NumberFlow from '@number-flow/vue'
 import { Trophy } from 'lucide-vue-next'
 import QuestCard from '~/components/quests/QuestCard.vue'
+import { getDatesThisWeek } from '~/lib/getDatesThisWeek'
 import { useQuestStore } from '~/stores/questStore'
 import { useQuestProgress } from '../composables/useQuestProgress'
 
@@ -21,21 +22,6 @@ const steps = ref<FitbitSteps['activities-steps']>([])
 const sleep = ref<FitbitSimpleSleepLog[]>([])
 const calories = ref<FitbitCalories['activities-calories']>([])
 const azm = ref<FitbitActiveZoneMinutes['activities-active-zone-minutes']>([])
-
-// Helper for getting dates -> for sleep data and azm
-function getDatesThisWeek(): string[] {
-  const today = new Date()
-  const startOfWeek = new Date(today)
-  startOfWeek.setDate(today.getDate() - today.getDay() + 1) // Monday
-
-  const days: string[] = []
-  for (let i = 0; i < 7; i++) {
-    const date = new Date(startOfWeek)
-    date.setDate(startOfWeek.getDate() + i)
-    days.push(format(date, 'yyyy-MM-dd'))
-  }
-  return days
-}
 
 // Computed data structure for quest checking
 const fitbitData = computed(() => ({

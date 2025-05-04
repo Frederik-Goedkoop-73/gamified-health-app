@@ -11,6 +11,7 @@ import HealthLoader from '@/components/health/HealthLoader.vue'
 import HealthProfile from '@/components/health/HealthProfile.vue'
 import { useFitbit } from '@/composables/useFitbit'
 import { format, parseISO } from 'date-fns'
+import { getDatesThisWeek } from '~/lib/getDatesThisWeek'
 
 // import NumberFlow from '@number-flow/vue'
 // import { HeartPulse } from 'lucide-vue-next'
@@ -40,19 +41,6 @@ const chartData = ref<{
   chartProps: Record<string, any>
   footerText: string
 }[]>([])
-
-// Week helper function
-function getDatesThisWeek(): string[] {
-  const today = new Date()
-  const startOfWeek = new Date(today)
-  startOfWeek.setDate(today.getDate() - today.getDay() + 1) // Monday
-
-  return Array.from({ length: 7 }, (_, i) => {
-    const d = new Date(startOfWeek)
-    d.setDate(startOfWeek.getDate() + i)
-    return format(d, 'yyyy-MM-dd')
-  })
-}
 
 // Sleep hours min format helper function
 function formatTotalSleep(data: { sleepHours: number }[]): string {

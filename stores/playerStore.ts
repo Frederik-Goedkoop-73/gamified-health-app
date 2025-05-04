@@ -3,7 +3,7 @@
 import type { AvatarID } from '~/components/tasks/data/avatarData'
 import type { PlayerProgress } from '~/types/player'
 import type { Quest } from '~/types/quest'
-import type { shopItem } from '~/types/shop'
+import type { ShopItem } from '~/types/shop'
 
 import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { defineStore } from 'pinia'
@@ -134,7 +134,7 @@ export const usePlayerStore = defineStore('player', {
     },
 
     // Shop
-    purchaseItem(itemId: shopItem): void {
+    purchaseItem(itemId: ShopItem): void {
       if (!this.purchasedItems.includes(itemId)) {
         this.purchasedItems.push(itemId)
         this.savePlayerData()
@@ -154,7 +154,7 @@ export const usePlayerStore = defineStore('player', {
     hasCompletedQuest: state => (questId: Quest) =>
       state.completedQuests.includes(questId),
 
-    hasPurchasedItem: state => (itemId: shopItem) =>
+    hasPurchasedItem: state => (itemId: ShopItem) =>
       state.purchasedItems.includes(itemId),
 
     currentAvatarPath: state =>
