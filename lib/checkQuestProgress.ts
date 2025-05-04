@@ -1,5 +1,6 @@
 import type { FitbitActiveZoneMinutes, FitbitCalories, FitbitSimpleSleepLog, FitbitSteps } from '@/types/fitbit'
 import type { Quest } from '@/types/quest'
+import { useQuestStore } from '~/stores/questStore'
 
 interface PlayerFitbitData {
   steps: FitbitSteps['activities-steps']
@@ -9,6 +10,7 @@ interface PlayerFitbitData {
 }
 
 export function checkQuestProgress(quest: Quest, data: PlayerFitbitData) {
+  const questStore = useQuestStore()
   let currentProgress = 0
 
   const isWeekly = quest.type === 'weekly'
@@ -59,6 +61,11 @@ export function checkQuestProgress(quest: Quest, data: PlayerFitbitData) {
   }
 
   const isCompleted = currentProgress >= quest.target
+
+  // ✅ Only complete quest once
+  if (isCompleted && !quest.completed) {
+    questStore.completeQuest(quest.id, isWeekly ? 'weekly' : 'daily')
+  }
 
   const percentage = quest.target > 0
     ? Math.min((currentProgress / quest.target) * 100, 100)

@@ -6,7 +6,9 @@ export interface Quest {
   target: number
   rewardXP: number
   rewardCoins: number
-  completed?: boolean
-  difficulty?: 'normal' | 'hard' | 'legendary'
+  difficulty: 'normal' | 'hard' | 'legendary'
   icon: 'Footprints' | 'MoonStar' | 'HeartPulse' | 'Flame' | 'Zap'
+
+  completed?: boolean
+  claimed?: boolean
 }

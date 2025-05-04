@@ -1,9 +1,8 @@
-<!-- components/AvatarSelector.vue -->
 <script setup lang="ts">
 import { useAuth } from '@/composables/UseAuth'
 import { usePlayerStore } from '@/stores/playerStore'
 import { useUserStore } from '@/stores/userStore'
-import { AVATAR_PATHS, type AvatarID } from '~/types/player'
+import { AVATAR_PATHS, type AvatarID } from '~/components/tasks/data/avatarData'
 
 const { user, signInWithGoogle } = useAuth() // Use composable to manage authentication state
 const userStore = useUserStore() // Use Pinia store to manage user data

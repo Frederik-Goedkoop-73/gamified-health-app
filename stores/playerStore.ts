@@ -1,8 +1,15 @@
-import type { AvatarID, PlayerProgress } from '~/types/player'
+// Remove badges, shopitems, quests -> modulate in other stores
+// This one's for avatars
+import type { AvatarID } from '~/components/tasks/data/avatarData'
+import type { PlayerProgress } from '~/types/player'
+import type { Quest } from '~/types/quest'
+import type { shopItem } from '~/types/shop'
+
 import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { defineStore } from 'pinia'
+import { AVATAR_PATHS, isAvatarId } from '~/components/tasks/data/avatarData'
 import { useFirebase } from '~/server/utils/firebase'
-import { AVATAR_PATHS, DEFAULT_PLAYER_PROGRESS, isAvatarId } from '~/types/player'
+import { DEFAULT_PLAYER_PROGRESS } from '~/types/player'
 
 export const usePlayerStore = defineStore('player', {
   state: (): PlayerProgress => ({
@@ -119,7 +126,7 @@ export const usePlayerStore = defineStore('player', {
     },
 
     // Quests
-    completeQuest(questId: QuestID): void {
+    completeQuest(questId: Quest): void {
       if (!this.completedQuests.includes(questId)) {
         this.completedQuests.push(questId)
         this.savePlayerData()
@@ -127,7 +134,7 @@ export const usePlayerStore = defineStore('player', {
     },
 
     // Shop
-    purchaseItem(itemId: ShopItemID): void {
+    purchaseItem(itemId: shopItem): void {
       if (!this.purchasedItems.includes(itemId)) {
         this.purchasedItems.push(itemId)
         this.savePlayerData()
@@ -144,10 +151,10 @@ export const usePlayerStore = defineStore('player', {
     hasBadge: state => (badgeId: BadgeID) =>
       state.unlockedBadges.includes(badgeId),
 
-    hasCompletedQuest: state => (questId: QuestID) =>
+    hasCompletedQuest: state => (questId: Quest) =>
       state.completedQuests.includes(questId),
 
-    hasPurchasedItem: state => (itemId: ShopItemID) =>
+    hasPurchasedItem: state => (itemId: shopItem) =>
       state.purchasedItems.includes(itemId),
 
     currentAvatarPath: state =>

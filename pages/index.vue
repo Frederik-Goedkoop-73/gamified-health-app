@@ -8,8 +8,8 @@ import { useXPStore } from '@/stores/xpStore'
 import NumberFlow from '@number-flow/vue'
 import { Activity, Coins, User, Zap } from 'lucide-vue-next'
 import ConnectAccounts from '~/components/auth/ConnectAccounts.vue'
+import { AVATAR_PATHS } from '~/components/tasks/data/avatarData'
 import { useToast } from '~/components/ui/toast/use-toast'
-import { AVATAR_PATHS } from '~/types/player'
 
 const dataCard = ref({
   totalRevenue: 0,
@@ -121,10 +121,6 @@ onMounted(() => {
       <h2 class="text-2xl font-bold tracking-tight">
         Dashboard
       </h2>
-      <div class="flex items-center space-x-2">
-        <BaseDateRangePicker />
-        <!-- <Button>Download</Button> -->
-      </div>
     </div>
     <!-- Main body under header -->
     <main class="flex flex-1 flex-col gap-4 md:gap-8">
@@ -193,65 +189,6 @@ onMounted(() => {
               </div>
 
               <p>Lvl.{{ xpStore.level + 1 }}</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      <!-- Devtools -->
-      <Card>
-        <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
-          <CardTitle class="text-md font-medium">
-            <NuxtLink to="/profile" class="text-md cursor-pointer font-medium">
-              Devtools
-            </NuxtLink>
-          </CardTitle>
-          <User class="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div class="flex-container justify">
-            <div class="mt-4 flex flex-row flex-wrap justify-center gap-4">
-              <Button class="min-w-60 w-32%" @click="xpStore.addXP(10)">
-                Gain 10 XP
-              </Button>
-              <Button class="min-w-60 w-32%" @click="xpStore.addXP(100)">
-                Gain 100 XP
-              </Button>
-              <Button class="min-w-60 w-32%" @click="xpStore.addXP(1000)">
-                Gain 1000 XP
-              </Button>
-            </div>
-            <div class="mt-4 flex flex-row flex-wrap justify-center gap-4">
-              <Button class="min-w-60 w-32%" @click="streakStore.addStreak(1)">
-                Gain 1 streak
-              </Button>
-              <Button class="min-w-60 w-32%" @click="streakStore.addStreak(10)">
-                Gain 10
-                streak
-              </Button>
-              <Button class="min-w-60 w-32%" @click="streakStore.addStreak(100)">
-                Gain 100
-                streak
-              </Button>
-            </div>
-            <div class="mt-4 flex flex-row flex-wrap justify-center gap-4">
-              <Button class="min-w-60 w-32%" @click="coinStore.addCoins(10)">
-                Gain 10 coins
-              </Button>
-              <Button class="min-w-60 w-32%" @click="coinStore.addCoins(100)">
-                Gain 100 coins
-              </Button>
-              <Button class="min-w-60 w-32%" @click="coinStore.addCoins(1000)">
-                Gain 1000 coins
-              </Button>
-            </div>
-            <div class="mt-4 flex flex-row items-center justify-center">
-              <Button
-                class="w-100% bg-rose-600 lg:w-32% md:w-70% hover:bg-rose-500"
-                @click="xpStore.resetXP(); streakStore.resetStreak(); coinStore.resetCoins()"
-              >
-                Reset all
-              </Button>
             </div>
           </div>
         </CardContent>

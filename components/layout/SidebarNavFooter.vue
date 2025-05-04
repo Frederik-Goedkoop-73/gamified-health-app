@@ -2,8 +2,8 @@
 import { useAuth } from '@/composables/UseAuth'
 import { usePlayerStore } from '@/stores/playerStore'
 import { useUserStore } from '@/stores/userStore'
+import { AVATAR_PATHS } from '~/components/tasks/data/avatarData'
 import { useSidebar } from '~/components/ui/sidebar'
-import { AVATAR_PATHS } from '~/types/player'
 
 const { user, handleSignOut } = useAuth() // Use composable to manage authentication state
 const userStore = useUserStore() // Use Pinia store to manage user data

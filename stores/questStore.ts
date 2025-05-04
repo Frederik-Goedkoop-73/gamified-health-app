@@ -170,6 +170,25 @@ export const useQuestStore = defineStore('quest', () => {
     startWeeklyCountdown()
   }
 
+  function getQuestById(id: string): Quest | undefined {
+    return [...dailyQuests.value, ...weeklyQuests.value].find(q => q.id === id)
+  }
+
+  async function markQuestAsClaimed(id: string) {
+    const quest = getQuestById(id)
+    if (!quest || quest.claimed)
+      return
+
+    quest.claimed = true
+    await saveQuests() // persist to Firestore
+  }
+
+  const unclaimedCount = computed(() => {
+    return [...dailyQuests.value, ...weeklyQuests.value]
+      .filter(q => q.completed && !q.claimed)
+      .length
+  })
+
   return {
     dailyQuests,
     weeklyQuests,
@@ -180,5 +199,8 @@ export const useQuestStore = defineStore('quest', () => {
     fetchQuests,
     completeQuest,
     startCountdown,
+    getQuestById,
+    markQuestAsClaimed,
+    unclaimedCount, // Optional since it will only load after we visit quest page
   }
 })

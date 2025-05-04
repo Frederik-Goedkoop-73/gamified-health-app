@@ -6,11 +6,9 @@ import { format, subDays } from 'date-fns'
 import { Trophy } from 'lucide-vue-next'
 import QuestCard from '~/components/quests/QuestCard.vue'
 import { useQuestStore } from '~/stores/questStore'
-import { useXPStore } from '~/stores/xpStore'
 import { useQuestProgress } from '../composables/useQuestProgress'
 
 // Stores
-const xpStore = useXPStore()
 const questStore = useQuestStore()
 const { fetchFitbitData } = useFitbit()
 
@@ -138,17 +136,23 @@ const { dailyQuestProgress, weeklyQuestProgress } = useQuestProgress(fitbitData)
           <!-- Add daily quests here -->
           <QuestCard
             v-for="info in dailyQuestProgress"
+            :id="info.quest.id"
             :key="info.quest.id"
             :title="info.quest.title"
             :progress-text="`${info.progress} / ${info.quest.target} ${info.quest.activity}`"
-            :reward="`+${info.quest.rewardXP} XP`"
+            :rewardxp="`+${info.quest.rewardXP} XP`"
+            :rewardcoins="info.quest.rewardCoins"
             :completed="info.completed"
+            :claimed="info.quest.claimed ?? false"
             :percentage="info.percentage"
             :tooltip="`${info.quest.title.toLowerCase()} before 24:00`"
             :difficulty="info.quest.difficulty ?? 'normal'"
             :icon="info.quest.icon"
           />
         </CardContent>
+        <CardFooter class="text-s text-muted-foreground font-semibold">
+          New daily quests in: &nbsp;<strong> {{ questStore.countdownToDailyReset }}</strong>
+        </CardFooter>
         <hr>
 
         <!-- Weekly quests -->
@@ -160,44 +164,24 @@ const { dailyQuestProgress, weeklyQuestProgress } = useQuestProgress(fitbitData)
           <!-- Add weekly quests here -->
           <QuestCard
             v-for="info in weeklyQuestProgress"
+            :id="info.quest.id"
             :key="info.quest.id"
             :title="info.quest.title"
             :progress-text="`${info.progress} / ${info.quest.target} ${info.quest.activity}`"
-            :reward="`+${info.quest.rewardXP} XP`"
+            :rewardxp="`+${info.quest.rewardXP} XP`"
+            :rewardcoins="info.quest.rewardCoins"
             :completed="info.completed"
+            :claimed="info.quest.claimed ?? false"
             :percentage="info.percentage"
             :tooltip="`${info.quest.title.toLowerCase()} before Sunday 24:00`"
             :difficulty="info.quest.difficulty ?? 'normal'"
             :icon="info.quest.icon"
           />
         </cardcontent>
+        <CardFooter class="text-s text-muted-foreground font-semibold">
+          New weekly quests in: &nbsp;<strong>{{ questStore.countdownToWeeklyReset }}</strong>
+        </CardFooter>
       </Card>
-      <div class="flex justify-center gap-5">
-        <Button class="mb-5 w-50" @click="xpStore.addXP(500);">
-          Add 500 xp
-        </Button>
-        <Button class="mb-5 w-50 bg-rose-600 hover:bg-rose-500" @click="xpStore.resetXP();">
-          Reset xp
-        </Button>
-      </div>
-
-      <ul>
-        <li v-for="quest in questStore.dailyQuests" :key="quest.id">
-          {{ quest.title }} - {{ quest.target }}
-        </li>
-        <li class="text-sm text-muted-foreground">
-          ⏳ Daily Reset: <b>{{ questStore.countdownToDailyReset }}</b>
-        </li>
-        <li class="text-sm text-muted-foreground">
-          📅 Weekly Reset: <b>{{ questStore.countdownToWeeklyReset }}</b>
-        </li>
-        <hr>
-        <li>
-          AZM Today: {{ fitbitData.azmToday }}
-          <hr>
-          AZM: {{ fitbitData.AZM }}
-        </li>
-      </ul>
     </main>
   </div>
 </template>

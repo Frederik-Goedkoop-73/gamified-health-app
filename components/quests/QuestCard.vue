@@ -1,18 +1,30 @@
 <script setup lang="ts">
 import { Progress } from '@/components/ui/progress'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { Flame, Footprints, HeartPulse, MoonStar, Zap } from 'lucide-vue-next'
+import { Coins, Flame, Footprints, HeartPulse, MoonStar, Zap } from 'lucide-vue-next'
+import { useClaimQuest } from '~/composables/useClaimQuest'
 
-defineProps<{
+const props = defineProps<{
+  id: string
   title: string
   progressText: string
-  reward: string
+  rewardxp: string
+  rewardcoins: number
   completed: boolean
+  claimed: boolean
   percentage: number
   tooltip: string
   difficulty: 'normal' | 'hard' | 'legendary'
   icon: 'Footprints' | 'MoonStar' | 'HeartPulse' | 'Flame' | 'Zap'
 }>()
+
+const { claimQuest } = useClaimQuest()
+
+function handleClick() {
+  if (props.completed && !props.claimed) {
+    claimQuest(props.id)
+  }
+}
 
 const icons = {
   Footprints,
@@ -29,7 +41,9 @@ const icons = {
       <TooltipTrigger as-child>
         <Card
           class="relative min-w-48 w-100 p-4 transition hover:scale-105"
-          :class="completed ? 'bg-secondary text-muted-foreground' : 'bg-background'"
+          :class="[completed && !claimed ? 'bg-secondary text-muted-foreground' : 'bg-background',
+                   claimed ? 'bg-muted text-muted-foreground opacity-60 cursor-default' : 'bg-background']"
+          @click="handleClick"
         >
           <!-- Icon top-left -->
           <component
@@ -64,18 +78,30 @@ const icons = {
             <p class="text-xs text-muted-foreground">
               {{ progressText }}
             </p>
-            <p class="text-sm text-primary font-semibold">
-              {{ reward }}
+            <p class="text-sm font-semibold">
+              {{ rewardxp }}
+            </p>
+            <p class="flex flex-row gap-2 text-sm font-semibold">
+              +{{ rewardcoins }} <Coins class="size-4 text-yellow-500" />
             </p>
           </CardContent>
 
           <!-- Completion check -->
-          <div
-            v-if="completed"
-            class="absolute bottom-2 right-2 text-lg text-green-500"
+          <Badge
+            v-if="completed && !claimed"
+            class="absolute bottom-2 right-2 cursor-pointer text-sm"
           >
-            ✅
-          </div>
+            Completed, click to claim reward ✅
+          </Badge>
+
+          <!-- Completion check -->
+          <Badge
+            v-if="claimed"
+            variant="secondary"
+            class="absolute bottom-2 right-2 text-sm font-semibold"
+          >
+            🎉 Claimed 🎉
+          </Badge>
         </Card>
       </TooltipTrigger>
       <TooltipContent class="text-sm text-muted-foreground">
