@@ -1,5 +1,3 @@
-// Remove badges, shopitems, quests -> modulate in other stores
-// This one's for avatars
 import type { AvatarID } from '~/components/tasks/data/avatarData'
 import type { PlayerProgress } from '~/types/player'
 import type { Quest } from '~/types/quest'

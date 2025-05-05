@@ -70,3 +70,9 @@ const dir = computed(() => textDirection.value === 'rtl' ? 'rtl' : 'ltr')
     <Sonner class="pointer-events-auto" />
   </ConfigProvider>
 </template>
+
+<style>
+* {
+  touch-action: manipulation;
+} /* Disables zooming on double-tap */
+</style>
