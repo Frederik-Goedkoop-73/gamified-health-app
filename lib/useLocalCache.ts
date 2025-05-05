@@ -9,7 +9,7 @@ export function useLocalCache<T>(key: string, ttlMs: number) {
       const isValid = Date.now() - timestamp < ttlMs
       return isValid ? data : null
     }
-    catch (error) {
+    catch {
       console.warn('Invalid cache format for', key)
       return null
     }

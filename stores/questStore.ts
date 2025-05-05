@@ -26,8 +26,13 @@ export const useQuestStore = defineStore('quest', () => {
     const playerDoc = doc(db, 'players', user.uid)
     const snapshot = await getDoc(playerDoc)
 
-    const today = format(new Date(), 'yyyy-MM-dd')
-    const startOfWeek = format(new Date(), 'yyyy-ww')
+    const now = new Date()
+    const today = format(now, 'yyyy-MM-dd')
+
+    const lastMonday = new Date(now)
+    lastMonday.setDate(now.getDate() - ((now.getDay() + 6) % 7)) // Get last Monday
+    lastMonday.setHours(0, 0, 0, 0)
+    const mondayKey = lastMonday.toISOString()
 
     if (snapshot.exists()) {
       const data = snapshot.data()
@@ -39,12 +44,12 @@ export const useQuestStore = defineStore('quest', () => {
       if (dailyQuestsGeneratedAt.value !== today)
         await generateNewDailyQuests(today)
 
-      if (weeklyQuestsGeneratedAt.value !== startOfWeek)
-        await generateNewWeeklyQuests(startOfWeek)
+      if (weeklyQuestsGeneratedAt.value !== mondayKey)
+        await generateNewWeeklyQuests(mondayKey)
     }
     else {
       await generateNewDailyQuests(today)
-      await generateNewWeeklyQuests(startOfWeek)
+      await generateNewWeeklyQuests(mondayKey)
     }
 
     startCountdown()
@@ -66,19 +71,19 @@ export const useQuestStore = defineStore('quest', () => {
     }, { merge: true })
   }
 
-  async function generateNewWeeklyQuests(startOfWeek: string) {
+  async function generateNewWeeklyQuests(mondayKey: string) {
     const { auth, db } = useFirebase()
     const user = auth.currentUser
     if (!user)
       return
 
     weeklyQuests.value = getRandomQuests(weeklyQuestsArray, 5).map(q => ({ ...q, completed: false }))
-    weeklyQuestsGeneratedAt.value = startOfWeek
+    weeklyQuestsGeneratedAt.value = mondayKey
 
     const playerDoc = doc(db, 'players', user.uid)
     await setDoc(playerDoc, {
       weeklyQuests: weeklyQuests.value,
-      weeklyQuestsGeneratedAt: startOfWeek,
+      weeklyQuestsGeneratedAt: mondayKey,
     }, { merge: true })
   }
 
@@ -87,7 +92,6 @@ export const useQuestStore = defineStore('quest', () => {
     const quest = questList.find(q => q.id === questId)
     if (quest)
       quest.completed = true
-
     await saveQuests()
   }
 
@@ -121,44 +125,40 @@ export const useQuestStore = defineStore('quest', () => {
         return
       }
 
-      if (diffHours >= 1) {
-        countdownToDailyReset.value = `${diffHours}h`
-      }
-      else {
-        countdownToDailyReset.value = `${diffMinutes}m`
-      }
+      countdownToDailyReset.value = diffHours >= 1 ? `${diffHours}h` : `${diffMinutes}m`
     }
 
     updateCountdown()
     setInterval(updateCountdown, 60000)
   }
 
+  let hasResetThisWeek = false
+
   function startWeeklyCountdown() {
     const updateCountdown = () => {
       const now = new Date()
-      const nextSunday = new Date()
-      nextSunday.setDate(now.getDate() + (7 - now.getDay()))
-      nextSunday.setHours(23, 59, 0, 0)
+      const nextMonday = new Date(now)
+      const day = now.getDay()
+      const daysUntilMonday = (8 - day) % 7 || 7
+      nextMonday.setDate(now.getDate() + daysUntilMonday)
+      nextMonday.setHours(0, 0, 0, 0)
 
-      const diffMs = nextSunday.getTime() - now.getTime()
+      const diffMs = nextMonday.getTime() - now.getTime()
+
+      if (diffMs <= 60000 && !hasResetThisWeek) {
+        hasResetThisWeek = true
+        fetchQuests()
+      }
+
       const diffMinutes = Math.floor(diffMs / (1000 * 60))
       const diffHours = Math.floor(diffMinutes / 60)
       const diffDays = Math.floor(diffHours / 24)
 
-      if (diffMs <= 0) {
-        fetchQuests()
-        return
-      }
-
-      if (diffDays >= 1) {
+      if (diffDays >= 1)
         countdownToWeeklyReset.value = `${diffDays}d`
-      }
-      else if (diffHours >= 1) {
+      else if (diffHours >= 1)
         countdownToWeeklyReset.value = `${diffHours}h`
-      }
-      else {
-        countdownToWeeklyReset.value = `${diffMinutes}m`
-      }
+      else countdownToWeeklyReset.value = `${diffMinutes}m`
     }
 
     updateCountdown()
@@ -178,15 +178,12 @@ export const useQuestStore = defineStore('quest', () => {
     const quest = getQuestById(id)
     if (!quest || quest.claimed)
       return
-
     quest.claimed = true
-    await saveQuests() // persist to Firestore
+    await saveQuests()
   }
 
   const unclaimedCount = computed(() => {
-    return [...dailyQuests.value, ...weeklyQuests.value]
-      .filter(q => q.completed && !q.claimed)
-      .length
+    return [...dailyQuests.value, ...weeklyQuests.value].filter(q => q.completed && !q.claimed).length
   })
 
   return {
@@ -201,6 +198,6 @@ export const useQuestStore = defineStore('quest', () => {
     startCountdown,
     getQuestById,
     markQuestAsClaimed,
-    unclaimedCount, // Optional since it will only load after we visit quest page
+    unclaimedCount,
   }
 })

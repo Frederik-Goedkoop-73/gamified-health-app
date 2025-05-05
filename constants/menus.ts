@@ -8,13 +8,11 @@ export const navMenu: NavMenu[] = [
         title: 'Home',
         icon: 'i-lucide-home',
         link: '/',
-        new: true,
       },
       {
         title: 'Health',
         icon: 'i-lucide-heart',
         link: '/health',
-        new: true,
       },
       {
         title: 'Quests',
@@ -40,7 +38,6 @@ export const navMenu: NavMenu[] = [
         title: 'Profile',
         icon: 'i-lucide-user',
         link: '/profile',
-        new: true,
       },
     ],
   },

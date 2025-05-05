@@ -1,103 +1,48 @@
 <script setup lang="ts">
-import type { FitbitActiveZoneMinutes, FitbitCalories, FitbitSimpleSleepLog, FitbitSleep, FitbitSteps } from '~/types/fitbit'
-import { useFitbit } from '@/composables/useFitbit'
-import { format, subDays } from 'date-fns'
 // import NumberFlow from '@number-flow/vue'
 import { Trophy } from 'lucide-vue-next'
 import QuestCard from '~/components/quests/QuestCard.vue'
-import { getDatesThisWeek } from '~/lib/getDatesThisWeek'
+import { useFitbitCachedData } from '~/composables/useFitbitCachedData'
 import { useQuestStore } from '~/stores/questStore'
 import { useQuestProgress } from '../composables/useQuestProgress'
 
 // Stores
 const questStore = useQuestStore()
-const { fetchFitbitData } = useFitbit()
+const {
+  fitbit_loading,
+  fetchData,
+  steps,
+  sleep,
+  calories,
+  azm,
+} = useFitbitCachedData()
 
-// State
-const fitbit_loading = ref(false)
-const fitbit_error = ref(false)
+onMounted(async () => {
+  await fetchData()
+  await questStore.fetchQuests()
+})
 
-// Creates a reactive variable where type is the expected data structure and initialValue by default
-const steps = ref<FitbitSteps['activities-steps']>([])
-const sleep = ref<FitbitSimpleSleepLog[]>([])
-const calories = ref<FitbitCalories['activities-calories']>([])
-const azm = ref<FitbitActiveZoneMinutes['activities-active-zone-minutes']>([])
-
-// Computed data structure for quest checking
 const fitbitData = computed(() => ({
-  steps: steps.value,
-  sleep: sleep.value,
-  calories: calories.value,
-  AZM: azm.value,
+  steps: steps.value ?? [],
+  sleep: (sleep.value ?? []).map(({ dateOfSleep, duration }) => ({ dateOfSleep, duration })),
+  calories: calories.value ?? [],
+  AZM: azm.value ?? [],
   caloriesToday: calories.value.at(-1) ?? { dateTime: '', value: '0' },
   azmToday: azm.value.at(-1) ?? {
     dateTime: '',
-    value: { activeZoneMinutes: { fatBurn: 0, cardio: 0, peak: 0 } },
+    value: { fatBurnActiveZoneMinutes: 0, cardioActiveZoneMinutes: 0, peakActiveZoneMinutes: 0 },
   },
 }))
 
-// Fetch data
-onMounted(async () => {
-  await questStore.fetchQuests()
-  try {
-    fitbit_loading.value = true
-
-    // 1. Fetch weekly-range data
-    const [stepsRaw, caloriesRaw, azmRaw] = await Promise.all([
-      fetchFitbitData('activities/steps/date/today/7d') as Promise<FitbitSteps>,
-      fetchFitbitData('activities/calories/date/today/7d') as Promise<FitbitCalories>,
-      fetchFitbitData('activities/active-zone-minutes/date/today/7d') as Promise<FitbitActiveZoneMinutes>,
-    ])
-
-    steps.value = stepsRaw['activities-steps']
-    calories.value = caloriesRaw['activities-calories']
-
-    // Normalize AZM to ensure 7-day coverage
-    const rawAZM = azmRaw['activities-active-zone-minutes']
-    const azmMap = new Map(rawAZM.map(entry => [entry.dateTime, entry]))
-
-    const today = new Date()
-    const daysThisWeek = Array.from({ length: 7 }, (_, i) =>
-      format(subDays(today, 6 - i), 'yyyy-MM-dd'))
-
-    azm.value = daysThisWeek.map((date) => {
-      const raw = azmMap.get(date)
-
-      return {
-        dateTime: date,
-        value: {
-          fatBurnActiveZoneMinutes: raw?.value.fatBurnActiveZoneMinutes ?? 0,
-          cardioActiveZoneMinutes: raw?.value.cardioActiveZoneMinutes ?? 0,
-          peakActiveZoneMinutes: raw?.value.peakActiveZoneMinutes ?? 0,
-        },
-      }
-    })
-
-    // 2. Fetch daily sleep data for current week
-    const datesThisWeek = getDatesThisWeek()
-    const sleepResponses = await Promise.all(
-      datesThisWeek.map(date =>
-        fetchFitbitData<FitbitSleep>(`sleep/date/${date}`),
-      ),
-    )
-
-    const allSleep: FitbitSimpleSleepLog[] = sleepResponses.flatMap(resp =>
-      resp.sleep.map(({ dateOfSleep, duration }) => ({ dateOfSleep, duration })),
-    )
-
-    sleep.value = allSleep
-
-    fitbit_loading.value = false
-  }
-  catch (err) {
-    console.error('Error fetching Fitbit data:', err)
-    fitbit_error.value = true
-    fitbit_loading.value = false
-  }
-})
-
 // Quest progress
 const { dailyQuestProgress, weeklyQuestProgress } = useQuestProgress(fitbitData)
+
+async function syncChartData() {
+  const { clear } = useLocalCache('fitbit-weekly', 0)
+  clear() // Clear the existing cache
+
+  await fetchData() // Refetch and repopulate cache
+}
 </script>
 
 <template>
@@ -107,6 +52,12 @@ const { dailyQuestProgress, weeklyQuestProgress } = useQuestProgress(fitbitData)
         Quests
       </h2>
       <i class="m-3 text-muted-foreground"><b>Tip: </b>Hover over a quest to see more info</i>
+      <div class="flex items-center space-x-2">
+        <Button class="flex items-center gap-2" @click="syncChartData">
+          <span v-if="!fitbit_loading">Sync Latest Data</span>
+          <span v-else>Syncing...</span>
+        </Button>
+      </div>
     </div>
     <!-- Main body under header -->
     <main class="flex flex-1 flex-col gap-4 md:gap-8">
