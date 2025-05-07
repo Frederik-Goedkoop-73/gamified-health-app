@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // import NumberFlow from '@number-flow/vue'
-import type { AvatarShopItem, BannerShopItem, ShopItem, ThemeShopItem } from '~/types/shop'
+import type { AvatarShopItem, BannerShopItem, ThemeShopItem } from '~/types/shop'
 
 import { usePlayerStore } from '@/stores/playerStore'
 import { ShoppingCart } from 'lucide-vue-next'
@@ -71,7 +71,7 @@ function handleBuyTheme(item: ThemeShopItem) {
               :color="item.color"
               :price="item.price"
               :on-buy="() => handleBuyBanner(item)"
-              :bought="playerStore.purchasedItems.some((i:ShopItem) => i.id === item.id)"
+              :bought="playerStore.unlockedBanners.includes(item.id)"
             />
           </div>
         </CardContent>
@@ -93,7 +93,7 @@ function handleBuyTheme(item: ThemeShopItem) {
               :color="item.color"
               :price="item.price"
               :on-buy="() => handleBuyTheme(item)"
-              :bought="playerStore.purchasedItems.some((i:ShopItem) => i.id === item.id)"
+              :bought="playerStore.unlockedThemes.includes(item.id)"
             />
           </div>
         </CardContent>

@@ -16,7 +16,7 @@ useHead({
     { key: 'theme-color', name: 'theme-color', content: color },
   ],
   link: [
-    { rel: 'icon', href: '/favicon.ico' },
+    { rel: 'icon', href: '/athletics.png' },
   ],
   htmlAttrs: {
     lang: 'en',
@@ -27,19 +27,19 @@ useHead({
   },
 })
 
-const title = 'KUL Health Monitor v2'
-const description = 'This dashboard, built with Nuxt, Shadcn UI, and UnoCSS. It includes a dark mode toggle and is optimized for performance and data efficiency.'
+const title = 'KUL Health Monitor'
+const description = 'This website is a thesis project of the University of Leuven. This study aims to examine the effects of gamification on wearable technology UX.'
 
 useSeoMeta({
   title,
   description,
   ogTitle: title,
   ogDescription: description,
-  ogUrl: 'https://dashboard.dianprata.com',
-  ogImage: 'https://nuxt-shadcn-dashboard.vercel.app/social-card.png',
+  ogUrl: 'https://kul-health-monitor.netlify.app/',
+  ogImage: '~/public/ogImage.webp',
   twitterTitle: title,
   twitterDescription: description,
-  twitterImage: 'https://nuxt-shadcn-dashboard.vercel.app/social-card.png',
+  twitterImage: '~/public/ogImage.web',
   twitterCard: 'summary_large_image',
 })
 
@@ -74,5 +74,7 @@ const dir = computed(() => textDirection.value === 'rtl' ? 'rtl' : 'ltr')
 <style>
 * {
   touch-action: manipulation;
-} /* Disables zooming on double-tap */
+}
+
+/* Disables zooming on double-tap */
 </style>

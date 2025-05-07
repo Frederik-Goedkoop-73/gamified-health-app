@@ -1,4 +1,6 @@
 import type { AvatarID } from '~/components/tasks/data/avatarData'
+import type { BannerID } from '~/components/tasks/data/bannerData'
+import type { ThemeID } from '~/components/tasks/data/themeData'
 import type { PlayerProgress } from '~/types/player'
 import type { Quest } from '~/types/quest'
 import type { ShopItem } from '~/types/shop'
@@ -6,6 +8,8 @@ import type { ShopItem } from '~/types/shop'
 import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { defineStore } from 'pinia'
 import { AVATAR_PATHS, isAvatarId } from '~/components/tasks/data/avatarData'
+import { isBannerId } from '~/components/tasks/data/bannerData'
+import { isThemeId } from '~/components/tasks/data/themeData'
 import { useFirebase } from '~/server/utils/firebase'
 import { DEFAULT_PLAYER_PROGRESS } from '~/types/player'
 
@@ -29,6 +33,7 @@ export const usePlayerStore = defineStore('player', {
         if (docSnap.exists()) {
           const data = docSnap.data()
 
+          // Avatars
           // Process unlocked avatars with type safety
           const incomingAvatars = (data?.unlockedAvatars || [])
             .filter((avatar: string): avatar is AvatarID => isAvatarId(avatar))
@@ -43,10 +48,38 @@ export const usePlayerStore = defineStore('player', {
             ? data.selectedAvatar
             : 'red'
 
+          // Banners
+          const incomingBanners = (data?.unlockedBanners || [])
+            .filter((banner: string): banner is BannerID => isBannerId(banner))
+
+          const processedBanners = Array.from(
+            new Set([...incomingBanners, 'none']),
+          )
+
+          const selectedBanner = isBannerId(data?.selectedBanner)
+            ? data.selectedBanner
+            : 'none'
+
+          // Themes
+          const incomingThemes = (data?.unlockedThemes || [])
+            .filter((theme: string): theme is ThemeID => isThemeId(theme))
+
+          const processedThemes = Array.from(
+            new Set([...incomingThemes, 'zinc']),
+          )
+
+          const selectedTheme = isThemeId(data?.selectedTheme)
+            ? data.selectedTheme
+            : 'zinc'
+
           this.$patch({
             ...data,
             unlockedAvatars: processedAvatars,
+            unlockedBanners: processedBanners,
+            unlockedThemes: processedThemes,
             selectedAvatar,
+            selectedBanner,
+            selectedTheme,
           })
         }
       }
@@ -115,6 +148,36 @@ export const usePlayerStore = defineStore('player', {
       }
     },
 
+    // Banners
+    unlockBanner(bannerId: BannerID): void {
+      if (!this.unlockedBanners.includes(bannerId)) {
+        this.unlockedBanners.push(bannerId)
+        this.savePlayerData()
+      }
+    },
+
+    setBanner(bannerId: BannerID): void {
+      if (this.unlockedBanners.includes(bannerId)) {
+        this.selectedBanner = bannerId
+        this.savePlayerData()
+      }
+    },
+
+    // Themes
+    unlockTheme(themeId: ThemeID): void {
+      if (!this.unlockedThemes.includes(themeId)) {
+        this.unlockedThemes.push(themeId)
+        this.savePlayerData()
+      }
+    },
+
+    setTheme(themeId: ThemeID): void {
+      if (this.unlockedThemes.includes(themeId)) {
+        this.selectedTheme = themeId
+        this.savePlayerData()
+      }
+    },
+
     // Badges
     unlockBadge(badgeId: BadgeID): void {
       if (!this.unlockedBadges.includes(badgeId)) {
@@ -138,13 +201,7 @@ export const usePlayerStore = defineStore('player', {
         this.savePlayerData()
       }
     },
-
-    setTheme(themeId: string): void {
-      this.selectedTheme = themeId
-      this.savePlayerData()
-    },
   },
-
   getters: {
     hasBadge: state => (badgeId: BadgeID) =>
       state.unlockedBadges.includes(badgeId),

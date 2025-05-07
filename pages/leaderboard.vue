@@ -2,6 +2,8 @@
 import { collection, getDocs } from 'firebase/firestore'
 import { onMounted, ref } from 'vue'
 import { AVATAR_PATHS, isAvatarId } from '~/components/tasks/data/avatarData'
+import { isBannerId } from '~/components/tasks/data/bannerData'
+import { getBannerInlineStyle } from '~/composables/useBannerStyle'
 import { useFirebase } from '~/server/utils/firebase'
 
 interface LeaderboardEntry {
@@ -9,6 +11,7 @@ interface LeaderboardEntry {
   username: string
   xp: number
   avatar: string
+  banner: string
 }
 
 const { db } = useFirebase()
@@ -43,6 +46,7 @@ onMounted(async () => {
       username: userData.username || 'Unknown',
       xp: userData.totalXP,
       avatar: AVATAR_PATHS[selectedAvatar],
+      banner: playerData.selectedBanner || 'none',
     })
   }
 
@@ -66,9 +70,9 @@ onMounted(async () => {
     <div v-else>
       <div class="space-y-4">
         <div
-          v-for="(player, index) in topPlayers"
-          :key="player.uid"
-          class="flex items-center justify-between border rounded-lg bg-secondary p-4 shadow-sm"
+          v-for="(player, index) in topPlayers" :key="player.uid"
+          class="flex items-center justify-between border-4 rounded-lg p-4 shadow-sm"
+          :style="isBannerId(player.banner) ? getBannerInlineStyle(player.banner) : undefined"
         >
           <div class="flex items-center gap-4">
             <span class="w-6 text-right text-xl font-bold">{{ index + 1 }}</span>

@@ -47,15 +47,15 @@ export const shopAvatars: AvatarShopItem[] = [
 
 export const shopBanners: BannerShopItem[] = [
   // Steps - Normal, Hard, Legendary
-  { id: 'orange', title: 'Orange', type: 'banner', price: 100, color: '#f97317' },
-  { id: 'green', title: 'Green', type: 'banner', price: 100, color: '#15a34a' },
-  { id: 'red', title: 'Red', type: 'banner', price: 100, color: '#dc2627' },
+  { id: 'orange', title: 'Orange', type: 'banner', price: 100, color: 'orange' },
+  { id: 'green', title: 'Green', type: 'banner', price: 100, color: 'green' },
+  { id: 'red', title: 'Red', type: 'banner', price: 100, color: 'red' },
 
-  { id: 'blue', title: 'Blue', type: 'banner', price: 200, color: '#2563eb' },
-  { id: 'rose', title: 'Rose', type: 'banner', price: 200, color: '#e11e48' },
+  { id: 'blue', title: 'Blue', type: 'banner', price: 200, color: 'blue' },
+  { id: 'rose', title: 'Rose', type: 'banner', price: 200, color: 'rose' },
 
-  { id: 'violet', title: 'Violet', type: 'banner', price: 500, color: '#7c3aed' },
-  { id: 'yellow', title: 'Yellow', type: 'banner', price: 1000, color: '#facb14' },
+  { id: 'violet', title: 'Violet', type: 'banner', price: 500, color: 'violet' },
+  { id: 'yellow', title: 'Yellow', type: 'banner', price: 1000, color: 'yellow' },
 
   { id: 'bronze', title: 'Bronze', type: 'banner', price: 2500, color: 'bronze' },
   { id: 'silver', title: 'Silver', type: 'banner', price: 5000, color: 'silver' },

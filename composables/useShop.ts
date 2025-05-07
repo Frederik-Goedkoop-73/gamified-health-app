@@ -29,8 +29,11 @@ export function useShop() {
       if (item.type === 'avatar') {
         playerStore.unlockAvatar(item.id)
       }
-      else if (item.type === 'banner' || item.type === 'theme') {
-        playerStore.purchaseItem(item)
+      else if (item.type === 'banner') {
+        playerStore.unlockBanner(item.id)
+      }
+      else {
+        playerStore.unlockTheme(item.id)
       }
 
       return true

@@ -111,9 +111,6 @@ async function syncChartData() {
     </div>
     <!-- Main body under header -->
     <main class="flex flex-1 flex-col gap-4 md:gap-8">
-      <!-- Render loading/error state immediately -->
-      <HealthLoader v-if="fitbit_loading || fitbit_error" :loading="fitbit_loading" :error="fitbit_error" />
-
       <!-- Everything below only renders client-side after hydration -->
       <client-only>
         <HealthChartCarousel v-if="!fitbit_loading && !fitbit_error && profile" :charts="chartData" />
@@ -129,6 +126,8 @@ async function syncChartData() {
           :heart="[]"
         />
       </client-only>
+      <!-- Render loading/error state immediately -->
+      <HealthLoader v-if="fitbit_loading || fitbit_error" :loading="fitbit_loading" :error="fitbit_error" />
     </main>
   </div>
 </template>

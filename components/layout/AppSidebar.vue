@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { NavGroup, NavLink, NavSectionTitle } from '~/types/nav'
-import { add } from 'date-fns'
 import { GraduationCap } from 'lucide-vue-next'
 import { navMenu, navMenuBottom } from '~/constants/menus'
 
@@ -9,16 +8,6 @@ function resolveNavItemComponent(item: NavLink | NavGroup | NavSectionTitle): an
     return resolveComponent('LayoutSidebarNavGroup')
 
   return resolveComponent('LayoutSidebarNavLink')
-}
-
-const user: {
-  name: string
-  email: string
-  avatar: string
-} = {
-  name: 'User123',
-  email: 'user123@gmail.com',
-  avatar: '/avatars/avatartion.png',
 }
 
 const { sidebar } = useAppSettings()
@@ -61,7 +50,7 @@ function openKULWebsiteInNewTab() {
       </SidebarGroup>
     </SidebarContent>
     <SidebarFooter>
-      <LayoutSidebarNavFooter :user="user" />
+      <LayoutSidebarNavFooter />
     </SidebarFooter>
     <SidebarRail />
   </Sidebar>

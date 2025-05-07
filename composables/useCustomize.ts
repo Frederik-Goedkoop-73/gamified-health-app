@@ -1,4 +1,5 @@
 import { type Theme, themes } from '@/lib/registry/themes'
+import { usePlayerStore } from '@/stores/playerStore'
 
 interface Config {
   theme?: Theme['name']
@@ -20,8 +21,11 @@ export function useCustomize() {
   const theme = computed(() => config.value.theme)
   const radius = computed(() => config.value.radius)
 
+  const playerStore = usePlayerStore()
+
   function setTheme(themeName: Theme['name']) {
     config.value.theme = themeName
+    playerStore.setTheme(themeName)
   }
 
   function setRadius(newRadius: number) {

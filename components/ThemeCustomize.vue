@@ -5,10 +5,6 @@ const { theme, radius, setTheme, setRadius } = useCustomize()
 
 type Color =
   | 'zinc'
-  | 'slate'
-  | 'stone'
-  | 'gray'
-  | 'neutral'
   | 'red'
   | 'rose'
   | 'orange'
@@ -25,10 +21,6 @@ const allColors: Color[] = [
   'green',
   'orange',
   'red',
-  'slate',
-  'stone',
-  'gray',
-  'neutral',
   'yellow',
   'violet',
 ]

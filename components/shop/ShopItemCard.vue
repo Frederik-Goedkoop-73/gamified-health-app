@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { Coins } from 'lucide-vue-next'
+import { getBannerInlineStyle } from '~/composables/useBannerStyle'
+import { isBannerId } from '../tasks/data/bannerData'
 
-defineProps<{
+const props = defineProps<{
   name: string
   image?: string
   type: 'avatar' | 'banner' | 'theme'
@@ -11,6 +13,12 @@ defineProps<{
   onBuy: () => void
   bought?: boolean
 }>()
+
+const bannerId = computed(() =>
+  typeof props.color === 'string' && isBannerId(props.color) ? props.color : undefined,
+)
+
+const bannerStyle = computed(() => bannerId.value ? getBannerInlineStyle(bannerId.value) : undefined)
 </script>
 
 <template>
@@ -49,23 +57,7 @@ defineProps<{
       <div
         v-if="type === 'banner'"
         class="h-40 w-full flex items-center gap-4 border-4 rounded-lg bg-secondary px-4 py-2"
-        :style="{
-          borderImage: color && ['bronze', 'silver', 'gold', 'platinum'].includes(color)
-            ? `linear-gradient(135deg, ${
-              color === 'bronze'
-                ? '#cc9c6f, #edbc8f, #ce835a '
-                : color === 'silver'
-                  ? '#a5aab4, #e0e2e7, #a8adb6'
-                  : color === 'gold'
-                    ? '#faaf1e, #fdd950, #dc9821'
-                    : '#57c1d0, #7fdbe4, #779cbf' // platinum
-            }) 1`
-            : '',
-          borderStyle: color && ['bronze', 'silver', 'gold', 'platinum'].includes(color) ? 'solid' : '',
-          borderColor: color,
-          borderWidth: '4px',
-        }"
-        :class="{ 'border:animate-pulse': color === 'bronze' || 'silver' || 'gold' || 'platnium' }"
+        :style="bannerStyle"
       >
         <div class="h-16 w-16 rounded-full bg-primary/30" />
         <div class="flex-1 space-y-2">
@@ -77,7 +69,7 @@ defineProps<{
       <!-- Themes -->
       <div
         v-else-if="type === 'theme'"
-        class="h-24 w-24 border rounded-xl"
+        class="h-16 w-16 border rounded-full"
         :style="{ backgroundColor: color }"
       />
 
