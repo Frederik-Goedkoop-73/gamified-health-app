@@ -122,3 +122,10 @@ export interface FitbitCalories {
     value: string
   }[]
 }
+
+export interface FitbitDistance {
+  'activities-distance': Array<{
+    dateTime: string
+    value: string // it’s a string number like "3.41"
+  }>
+}

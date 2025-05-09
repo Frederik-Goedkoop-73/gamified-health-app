@@ -27,6 +27,7 @@ const {
   caloriesData,
   heartData,
   rawSleep,
+  distanceData,
 } = useFitbitCachedData()
 
 onMounted(async () => {
@@ -46,7 +47,14 @@ const chartData = computed(() => [
     icon: 'Footprints' as IconName,
     chartComponent: BarChart,
     chartProps: { data: stepsData.value, categories: ['steps'], index: 'date' },
-    footerText: `Total Steps: ${stepsData.value.reduce((s, d) => s + d.steps, 0)}`,
+    footerText: `Total Steps: ${stepsData.value.reduce((s, d) => s + d.steps, 0)} steps`,
+  },
+  {
+    title: 'Distance (km) this week',
+    icon: 'Ruler' as IconName,
+    chartComponent: BarChart,
+    chartProps: { data: distanceData.value, categories: ['distance'], index: 'date' },
+    footerText: `Total Distance: ${distanceData.value.reduce((s, d) => s + d.distance, 0)} km`,
   },
   {
     title: 'Sleep this week',
@@ -68,7 +76,7 @@ const chartData = computed(() => [
     icon: 'Zap' as IconName,
     chartComponent: BarChart,
     chartProps: { data: zoneData.value, categories: ['minutes'], index: 'date' },
-    footerText: `Total Minutes: ${zoneData.value.reduce((s, d) => s + d.minutes, 0)}`,
+    footerText: `Total Minutes: ${zoneData.value.reduce((s, d) => s + d.minutes, 0)} m`,
   },
   {
     title: 'Calories Burned',
@@ -82,7 +90,13 @@ const chartData = computed(() => [
     icon: 'HeartPulse' as IconName,
     chartComponent: LineChart,
     chartProps: { data: heartData.value, categories: ['restingHeartRate'], index: 'date' },
-    footerText: `Avg HR: ${(heartData.value.reduce((s, d) => s + d.restingHeartRate, 0) / heartData.value.length).toFixed(0)} bpm`,
+    footerText: `Avg HR: ${(
+      heartData.value
+        .filter(d => d.restingHeartRate >= 10)
+        .reduce((s, d) => s + d.restingHeartRate, 0)
+        / Math.max(1, heartData.value.filter(d => d.restingHeartRate >= 10).length)
+    ).toFixed(0)} bpm`,
+
   },
 ])
 

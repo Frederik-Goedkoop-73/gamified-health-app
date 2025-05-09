@@ -26,7 +26,7 @@ function openKULWebsiteInNewTab() {
         class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
         @click="openKULWebsiteInNewTab"
       >
-        <div class="aspect-square size-8 flex items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+        <div class="aspect-square size-8 flex items-center justify-center rounded-lg bg-primary text-sidebar-primary-foreground">
           <GraduationCap class="size-6" />
         </div>
         <div class="grid flex-1 text-left text-sm leading-tight">
@@ -36,7 +36,6 @@ function openKULWebsiteInNewTab() {
           <span class="truncate text-xs">Health Monitor</span>
         </div>
       </SidebarMenuButton>
-      <Search />
     </SidebarHeader>
     <SidebarContent>
       <SidebarGroup v-for="(nav, indexGroup) in navMenu" :key="indexGroup">

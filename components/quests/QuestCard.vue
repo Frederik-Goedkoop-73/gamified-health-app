@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Progress } from '@/components/ui/progress'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { Coins, Flame, Footprints, HeartPulse, MoonStar, Zap } from 'lucide-vue-next'
+import { Coins, Flame, Footprints, HeartPulse, MoonStar, Ruler, Zap } from 'lucide-vue-next'
 import { useClaimQuest } from '~/composables/useClaimQuest'
 
 const props = defineProps<{
@@ -15,7 +15,7 @@ const props = defineProps<{
   percentage: number
   tooltip: string
   difficulty: 'normal' | 'hard' | 'legendary'
-  icon: 'Footprints' | 'MoonStar' | 'HeartPulse' | 'Flame' | 'Zap'
+  icon: 'Footprints' | 'Ruler' | 'MoonStar' | 'HeartPulse' | 'Flame' | 'Zap'
 }>()
 
 const { claimQuest } = useClaimQuest()
@@ -28,6 +28,7 @@ function handleClick() {
 
 const icons = {
   Footprints,
+  Ruler,
   MoonStar,
   HeartPulse,
   Flame,

@@ -61,7 +61,7 @@ export const useQuestStore = defineStore('quest', () => {
     if (!user)
       return
 
-    dailyQuests.value = getRandomQuests(dailyQuestsArray, 3).map(q => ({ ...q, completed: false }))
+    dailyQuests.value = getRandomQuests(dailyQuestsArray, 'daily', dailyQuests.value).map(q => ({ ...q, completed: false }))
     dailyQuestsGeneratedAt.value = today
 
     const playerDoc = doc(db, 'players', user.uid)
@@ -77,7 +77,7 @@ export const useQuestStore = defineStore('quest', () => {
     if (!user)
       return
 
-    weeklyQuests.value = getRandomQuests(weeklyQuestsArray, 5).map(q => ({ ...q, completed: false }))
+    weeklyQuests.value = getRandomQuests(weeklyQuestsArray, 'weekly', weeklyQuests.value).map(q => ({ ...q, completed: false }))
     weeklyQuestsGeneratedAt.value = mondayKey
 
     const playerDoc = doc(db, 'players', user.uid)

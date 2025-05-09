@@ -1,6 +1,7 @@
 import type {
   FitbitActiveZoneMinutes,
   FitbitCalories,
+  FitbitDistance,
   FitbitHeart,
   FitbitProfile,
   FitbitSleep,
@@ -32,6 +33,7 @@ export function useFitbitCachedData() {
       caloriesData: ref([]),
       heartData: ref([]),
       rawSleep: ref([]),
+      distanceData: ref([]),
 
       // Quests
       steps: ref([]),
@@ -39,6 +41,7 @@ export function useFitbitCachedData() {
       sleep: ref([]),
       calories: ref([]),
       azm: ref([]),
+      distance: ref([]),
     }
   }
 
@@ -53,6 +56,7 @@ export function useFitbitCachedData() {
   const caloriesData = ref<any[]>([])
   const heartData = ref<any[]>([])
   const rawSleep = ref<FitbitSleep['sleep']>([])
+  const distanceData = ref<any[]>([])
 
   // For quests
   const steps = ref<FitbitSteps['activities-steps']>([])
@@ -60,6 +64,7 @@ export function useFitbitCachedData() {
   const sleep = ref<FitbitSleep['sleep']>([])
   const calories = ref<FitbitCalories['activities-calories']>([])
   const azm = ref<FitbitActiveZoneMinutes['activities-active-zone-minutes']>([])
+  const distance = ref<FitbitDistance['activities-distance']>([])
 
   const { get: getCache, set: setCache } = useLocalCache<any>(CACHE_KEY, CACHE_TTL)
   const { fetchFitbitData } = useFitbit()
@@ -75,6 +80,7 @@ export function useFitbitCachedData() {
       caloriesData.value = cached.caloriesData
       heartData.value = cached.heartData
       rawSleep.value = cached.rawSleep
+      distanceData.value = cached.distanceData
 
       // quests
       steps.value = cached.steps
@@ -82,6 +88,7 @@ export function useFitbitCachedData() {
       sleep.value = cached.sleep
       calories.value = cached.calories
       azm.value = cached.azm
+      distance.value = cached.distance
 
       fitbit_loading.value = false
       return
@@ -96,12 +103,14 @@ export function useFitbitCachedData() {
         heartRaw,
         zoneRaw,
         caloriesRaw,
+        distanceRaw,
       ] = await Promise.all([
         fetchFitbitData<FitbitProfile>('profile'),
         fetchFitbitData<FitbitSteps>('activities/steps/date/today/7d'),
         fetchFitbitData<FitbitHeart>('activities/heart/date/today/7d'),
         fetchFitbitData<FitbitActiveZoneMinutes>('activities/active-zone-minutes/date/today/7d'),
         fetchFitbitData<FitbitCalories>('activities/calories/date/today/7d'),
+        fetchFitbitData<FitbitDistance>('activities/distance/date/today/7d'),
       ])
 
       const weekDates = getDatesThisWeek()
@@ -120,11 +129,13 @@ export function useFitbitCachedData() {
       sleep.value = sleepResponses.flatMap(resp => resp.sleep).filter(d => d.dateOfSleep >= startKey)
       calories.value = caloriesRaw['activities-calories'].filter(d => d.dateTime >= startKey)
       azm.value = zoneRaw['activities-active-zone-minutes'].filter(d => d.dateTime >= startKey)
+      distance.value = distanceRaw['activities-distance'].filter(d => d.dateTime >= startKey)
 
       const stepsMap = new Map(steps.value.map(e => [e.dateTime, e]))
       const sleepMap = new Map(sleep.value.map(n => [n.dateOfSleep, n]))
       const zoneMap = new Map(azm.value.map(e => [e.dateTime, e]))
       const calorieMap = new Map(calories.value.map(e => [e.dateTime, e]))
+      const distanceMap = new Map(distance.value.map(e => [e.dateTime, e]))
 
       stepsData.value = weekDates.map(date => ({
         date: format(parseISO(date), 'EEE'),
@@ -166,6 +177,16 @@ export function useFitbitCachedData() {
         restingHeartRate: day.value.restingHeartRate || 0,
       }))
 
+      distanceData.value = weekDates.map((date) => {
+        const entry = distanceMap.get(date)
+        const rawValue = entry ? Number(entry.value) : 0
+        const rounded = Number(rawValue.toFixed(2))
+        return {
+          date: format(parseISO(date), 'EEE'),
+          distance: rounded,
+        }
+      })
+
       setCache({
         // Health
         profile: profile.value,
@@ -175,6 +196,7 @@ export function useFitbitCachedData() {
         caloriesData: caloriesData.value,
         heartData: heartData.value,
         rawSleep: rawSleep.value,
+        distanceData: distanceData.value,
 
         // Quests
         steps: steps.value,
@@ -182,12 +204,10 @@ export function useFitbitCachedData() {
         sleep: sleep.value,
         calories: calories.value,
         azm: azm.value,
+        distance: distance.value,
       })
 
       fitbit_error.value = false
-      console.error('Steps:', stepsData.value)
-      console.error('Sleep:', sleepData.value)
-      console.error('Profile:', profile.value)
     }
     catch (e) {
       console.error('Fitbit data fetch error:', e)
@@ -208,11 +228,13 @@ export function useFitbitCachedData() {
     sleep,
     calories,
     azm,
+    distance,
     stepsData,
     sleepData,
     zoneData,
     caloriesData,
     heartData,
     rawSleep,
+    distanceData,
   }
 }

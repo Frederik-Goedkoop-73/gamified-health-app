@@ -14,10 +14,36 @@ export const navMenu: NavMenu[] = [
         icon: 'i-lucide-heart',
         link: '/health',
       },
+    ],
+  },
+  {
+    heading: 'Progression',
+    items: [
+      {
+        title: 'Campaign',
+        icon: 'i-lucide-map-pinned',
+        link: '/campaign',
+        new: true,
+      },
       {
         title: 'Quests',
         icon: 'i-lucide-trophy',
         link: '/quests',
+      },
+      {
+        title: 'Badges',
+        icon: 'i-lucide-award',
+        link: '/badges',
+      },
+    ],
+  },
+  {
+    heading: 'Social',
+    items: [
+      {
+        title: 'Profile',
+        icon: 'i-lucide-user',
+        link: '/profile',
       },
       {
         title: 'Shop',
@@ -25,23 +51,13 @@ export const navMenu: NavMenu[] = [
         link: '/shop',
       },
       {
-        title: 'Badges',
-        icon: 'i-lucide-award',
-        link: '/badges',
-      },
-      {
         title: 'Leaderboard',
         icon: 'i-lucide-crown',
         link: '/leaderboard',
       },
-      {
-        title: 'Profile',
-        icon: 'i-lucide-user',
-        link: '/profile',
-      },
     ],
   },
-  {
+  /* {
     heading: 'More',
     items: [
       {
@@ -82,8 +98,8 @@ export const navMenu: NavMenu[] = [
         ],
       },
     ],
-  },
-  {
+  }, */
+  /* {
     heading: 'Dev pages',
     items: [
       {
@@ -375,7 +391,7 @@ export const navMenu: NavMenu[] = [
         ],
       },
     ],
-  },
+  }, */
 ]
 
 export const navMenuBottom: NavMenuItems = [

@@ -12,6 +12,7 @@ const {
   fitbit_loading,
   fetchData,
   steps,
+  distance,
   sleep,
   calories,
   azm,
@@ -24,6 +25,10 @@ onMounted(async () => {
 
 const fitbitData = computed(() => ({
   steps: steps.value ?? [],
+  distance: (distance.value ?? []).map(({ dateTime, value }) => ({
+    dateTime,
+    value: Number(Number(value).toFixed(2)),
+  })),
   sleep: (sleep.value ?? []).map(({ dateOfSleep, duration }) => ({ dateOfSleep, duration })),
   calories: calories.value ?? [],
   AZM: azm.value ?? [],
@@ -76,7 +81,7 @@ async function syncChartData() {
             :id="info.quest.id"
             :key="info.quest.id"
             :title="info.quest.title"
-            :progress-text="`${info.progress} / ${info.quest.target} ${info.quest.activity}`"
+            :progress-text="`${info.progress} / ${info.quest.target} ${info.quest.unit}`"
             :rewardxp="`+${info.quest.rewardXP} XP`"
             :rewardcoins="info.quest.rewardCoins"
             :completed="info.completed"
@@ -104,7 +109,7 @@ async function syncChartData() {
             :id="info.quest.id"
             :key="info.quest.id"
             :title="info.quest.title"
-            :progress-text="`${info.progress} / ${info.quest.target} ${info.quest.activity}`"
+            :progress-text="`${info.progress} / ${info.quest.target} ${info.quest.unit}`"
             :rewardxp="`+${info.quest.rewardXP} XP`"
             :rewardcoins="info.quest.rewardCoins"
             :completed="info.completed"

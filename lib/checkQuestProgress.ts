@@ -1,4 +1,4 @@
-import type { FitbitActiveZoneMinutes, FitbitCalories, FitbitSimpleSleepLog, FitbitSteps } from '@/types/fitbit'
+import type { FitbitActiveZoneMinutes, FitbitCalories, FitbitDistance, FitbitSimpleSleepLog, FitbitSteps } from '@/types/fitbit'
 import type { Quest } from '@/types/quest'
 import { useQuestStore } from '~/stores/questStore'
 
@@ -7,6 +7,7 @@ interface PlayerFitbitData {
   sleep: FitbitSimpleSleepLog[]
   calories: FitbitCalories['activities-calories'] // We only want data at index 0
   AZM: FitbitActiveZoneMinutes['activities-active-zone-minutes']
+  distance: FitbitDistance['activities-distance']
 }
 
 export function checkQuestProgress(quest: Quest, data: PlayerFitbitData) {
@@ -21,6 +22,13 @@ export function checkQuestProgress(quest: Quest, data: PlayerFitbitData) {
         currentProgress = data.steps.reduce((sum, s) => sum + Number(s.value), 0)
       else
         currentProgress = data.steps.length > 0 ? Number(data.steps[data.steps.length - 1].value) : 0
+      break
+
+    case 'distance':
+      if (isWeekly)
+        currentProgress = data.distance.reduce((sum, d) => sum + Number(d.value), 0)
+      else
+        currentProgress = data.distance.length > 0 ? Number(data.distance[data.distance.length - 1].value) : 0
       break
 
     case 'sleep':
@@ -50,9 +58,9 @@ export function checkQuestProgress(quest: Quest, data: PlayerFitbitData) {
       else if (data.AZM.length > 0) {
         const v = data.AZM.at(-1)!.value
         currentProgress
-            = (v.fatBurnActiveZoneMinutes ?? 0)
-              + (v.cardioActiveZoneMinutes ?? 0)
-              + (v.peakActiveZoneMinutes ?? 0)
+          = (v.fatBurnActiveZoneMinutes ?? 0)
+            + (v.cardioActiveZoneMinutes ?? 0)
+            + (v.peakActiveZoneMinutes ?? 0)
       }
       break
 

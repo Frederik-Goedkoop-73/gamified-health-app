@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { Flame, Footprints, HeartPulse, MoonStar, Zap } from 'lucide-vue-next'
+import { Flame, Footprints, HeartPulse, MoonStar, Ruler, Zap } from 'lucide-vue-next'
 
 // Define icon names properly
-export type IconName = 'Footprints' | 'MoonStar' | 'HeartPulse' | 'Flame' | 'Zap'
+export type IconName = 'Footprints' | 'Ruler' | 'MoonStar' | 'HeartPulse' | 'Flame' | 'Zap'
 
 const _props = defineProps<{
   icons: IconName[]
@@ -15,6 +15,7 @@ const emits = defineEmits<{
 
 const iconsMap = {
   Footprints,
+  Ruler,
   MoonStar,
   HeartPulse,
   Flame,
