@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { IconName } from '~/components/health/HealthCarouselDots.vue'
+import type { IconName } from '~/components/health/HealthCarouselTabs.vue'
 import BarChart from '@/components/dashboard/BarChart.vue'
 import LineChart from '@/components/dashboard/LineChart.vue'
 // Charts
@@ -41,6 +41,7 @@ function formatTotalSleep(data: { sleepHours: number }[]): string {
   const minutes = totalMinutes % 60
   return `${hours}h${minutes.toString().padStart(2, '0')}m`
 }
+
 const chartData = computed(() => [
   {
     title: 'Steps this week',
@@ -115,8 +116,6 @@ async function syncChartData() {
         Health Stats
       </h2>
       <div class="flex items-center space-x-2">
-        <!-- <BaseDateRangePicker /> --> <!-- Change to range calendar: RangeCalendar -->
-        <!-- <Button>Download</Button> -->
         <Button class="flex items-center gap-2" @click="syncChartData">
           <span v-if="!fitbit_loading">Sync Latest Data</span>
           <span v-else>Syncing...</span>

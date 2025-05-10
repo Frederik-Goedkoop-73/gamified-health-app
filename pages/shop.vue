@@ -1,14 +1,17 @@
 <script setup lang="ts">
-// import NumberFlow from '@number-flow/vue'
 import type { AvatarShopItem, BannerShopItem, ThemeShopItem } from '~/types/shop'
 
+import { useCoinStore } from '@/stores/coinStore'
 import { usePlayerStore } from '@/stores/playerStore'
-import { ShoppingCart } from 'lucide-vue-next'
+import NumberFlow from '@number-flow/vue'
+import { Coins, ShoppingCart } from 'lucide-vue-next'
+import ShopCarousel from '~/components/shop/ShopCarousel.vue'
 import { shopAvatars, shopBanners, shopThemes } from '~/components/tasks/data/shopData'
 import { useShop } from '~/composables/useShop'
 
 const { buyItem } = useShop()
 const playerStore = usePlayerStore()
+const coinStore = useCoinStore()
 
 function handleBuyItem(item: AvatarShopItem) {
   buyItem(item)
@@ -21,6 +24,8 @@ function handleBuyBanner(item: BannerShopItem) {
 function handleBuyTheme(item: ThemeShopItem) {
   buyItem(item)
 }
+
+const coinValue = computed(() => coinStore.coins)
 </script>
 
 <template>
@@ -29,9 +34,24 @@ function handleBuyTheme(item: ThemeShopItem) {
       <h2 class="text-2xl font-bold tracking-tight">
         Shop
       </h2>
+      <div>
+        <div class="flex flex-row items-center gap-2">
+          <h3 class="flex flex-row items-center gap-2 text-muted-foreground">
+            <strong>Balance: </strong>
+            <NumberFlow
+              :value="coinValue"
+            />
+          </h3>
+          <Coins
+            class="size-4 text-yellow-500"
+          />
+        </div>
+      </div>
     </div>
 
     <main class="flex flex-1 flex-col gap-4 md:gap-8">
+      <ShopCarousel />
+
       <Card class="xl:col-span-2">
         <!-- 🧍‍♂️ Avatars -->
         <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">

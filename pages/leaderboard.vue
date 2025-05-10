@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { collection, getDocs } from 'firebase/firestore'
+import { Zap } from 'lucide-vue-next'
 import { onMounted, ref } from 'vue'
 import { AVATAR_PATHS, isAvatarId } from '~/components/tasks/data/avatarData'
 import { isBannerId } from '~/components/tasks/data/bannerData'
@@ -12,6 +13,8 @@ interface LeaderboardEntry {
   xp: number
   avatar: string
   banner: string
+  streak: number
+  theme: string
 }
 
 const { db } = useFirebase()
@@ -41,12 +44,18 @@ onMounted(async () => {
       ? playerData.selectedAvatar
       : 'red'
 
+    const selectedTheme = typeof playerData.selectedTheme === 'string'
+      ? playerData.selectedTheme
+      : 'zinc'
+
     allEntries.push({
       uid,
       username: userData.username || 'Unknown',
       xp: userData.totalXP,
+      streak: typeof userData.streak === 'number' ? userData.streak : 0,
       avatar: AVATAR_PATHS[selectedAvatar],
       banner: playerData.selectedBanner || 'none',
+      theme: selectedTheme,
     })
   }
 
@@ -55,6 +64,18 @@ onMounted(async () => {
   otherPlayers.value = allEntries.slice(10)
   loading.value = false
 })
+
+/* For streak badge colors */
+const themeColors: Record<string, string> = {
+  zinc: 'bg-[#17181a] dark:bg-white text-white dark:text-black',
+  orange: 'bg-[#f97317] text-white',
+  green: 'bg-[#15a34a] text-white dark:text-black',
+  red: 'bg-[#dc2627] text-white',
+  blue: 'bg-[#2563eb] text-white dark:text-black',
+  rose: 'bg-[#e11e48] text-white',
+  violet: 'bg-[#7c3aed] text-white',
+  yellow: 'bg-[#facb14] text-black dark:text-black',
+}
 </script>
 
 <template>
@@ -71,15 +92,26 @@ onMounted(async () => {
       <div class="space-y-4">
         <div
           v-for="(player, index) in topPlayers" :key="player.uid"
-          class="flex items-center justify-between border-4 rounded-lg p-4 shadow-sm"
+          class="relative flex items-center justify-between border-4 rounded-lg p-4 shadow-sm"
           :style="isBannerId(player.banner) ? getBannerInlineStyle(player.banner) : undefined"
         >
+          <!-- Streak badge -->
+          <div
+            v-if="player.streak !== 0"
+            class="absolute right--5 top--2 flex items-center gap-1 rounded px-2 py-0.5 text-sm font-bold shadow"
+            :class="themeColors[player.theme] || themeColors.zinc"
+          >
+            {{ player.streak }}
+            <Zap class="size-4" />
+          </div>
+
+          <!-- Main card content -->
           <div class="flex items-center gap-4">
             <span class="w-6 text-right text-xl font-bold">{{ index + 1 }}</span>
             <img :src="player.avatar" alt="avatar" class="h-20 w-20 justify-self-center object-contain">
             <span class="font-semibold">{{ player.username }}</span>
           </div>
-          <span class="text-sm text-muted-foreground">{{ player.xp }} XP</span>
+          <span class="text-sm text-muted-foreground">{{ player.xp.toLocaleString('en-US') }} XP</span>
         </div>
       </div>
     </div>

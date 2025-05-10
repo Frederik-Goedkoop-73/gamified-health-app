@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { IconName } from './HealthCarouselDots.vue'
+import type { IconName } from './HealthCarouselTabs.vue'
 import { HeartPulse } from 'lucide-vue-next'
-import HealthCarouselDots from './HealthCarouselDots.vue'
+import HealthCarouselTabs from './HealthCarouselTabs.vue'
 import HealthChartCard from './HealthChartCard.vue'
 
 defineProps<{
@@ -36,7 +36,7 @@ function onSlideChanged(newIndex: number) {
       <HeartPulse class="h-4 w-4 text-muted-foreground" />
     </CardHeader>
     <CardContent class="flex flex-col items-center justify-center p-6">
-      <HealthCarouselDots
+      <HealthCarouselTabs
         :icons="charts.map(chart => chart.icon)"
         :current="currentSlide"
         @update:current=" (i: number) => goToSlide(i)"

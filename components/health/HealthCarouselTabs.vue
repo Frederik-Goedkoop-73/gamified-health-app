@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useIconColorClass } from '@/composables/useIconColorClass'
 import { Flame, Footprints, HeartPulse, MoonStar, Ruler, Zap } from 'lucide-vue-next'
 
 // Define icon names properly
@@ -22,6 +23,8 @@ const iconsMap = {
   Zap,
 } as const
 
+const { iconColorClass } = useIconColorClass()
+
 function resolveIcon(name: IconName) {
   return iconsMap[name]
 }
@@ -34,7 +37,7 @@ function resolveIcon(name: IconName) {
       :key="index"
       class="h-10 w-10 flex items-center justify-center p-0 transition-colors transition-transform duration-300 ease-in-out"
       :class="[
-        current === index ? 'bg-primary text-secondary' : 'bg-muted text-muted-foreground',
+        current === index ? ['bg-primary', iconColorClass] : 'bg-muted text-muted-foreground hover:!bg-primary/20',
       ]"
       @click="emits('update:current', index)"
     >

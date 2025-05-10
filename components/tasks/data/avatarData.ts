@@ -165,6 +165,72 @@ export const AVATAR_PATHS: Record<AvatarID, string> = {
   herobrime: '/story-avatars/mobs/herobrime.png',
 }
 
+export const DEFAULT_AVATARS = ['red', 'blue', 'green'] as const
+export const SHOP_AVATARS = [
+  'alumn',
+  'amblyoid',
+  'august',
+  'automaton',
+  'bronco',
+  'belon',
+  'corsair',
+  'cranium',
+  'djinn',
+  'exonaut',
+  'feline',
+  'hawker',
+  'jedi',
+  'kitty',
+  'marauder',
+  'mulk',
+  'ninja',
+  'occultist',
+  'paragon',
+  'specs',
+  'sultan',
+  'trooper',
+] as const
+
+export const PREMIUM_AVATARS = {
+  broforce: ['rambro', 'lucifer', 'broku'] as const,
+  helloKitty: ['hi_kitty', 'hello_bunny', 'palmolive'] as const,
+  sega: ['robo_sunic'] as const,
+}
+
+export const STORY_AVATARS = {
+  pacman: ['packman', 'orange_ghost', 'cyan_ghost', 'red_ghost', 'vulnerable_ghost'] as const,
+  minecraft: ['steven', 'axel', 'crieper', 'skeleton', 'urbanite'] as const,
+  mario: ['lario', 'muigi', 'plum', 'joshi', 'tode'] as const,
+  sonic: ['sunic', 'tail', 'aimy', 'nukkels', 'super_sunic'] as const,
+  adventureTime: ['fill', 'jack', 'princess_chewingum', 'GMO', 'chunky_space_princess'] as const,
+  mobs: [
+    'cow',
+    'sheep',
+    'pig',
+    'zombee',
+    'endman',
+    'goonba',
+    'boser',
+    'smeggman',
+    'silhouette',
+    'snow_king',
+    'xans',
+    'private',
+    'herobrime',
+  ] as const,
+}
+
+export const ALL_PREMIUM_AVATARS = Object.values(PREMIUM_AVATARS).flat()
+
+export const ALL_STORY_AVATARS = Object.values(STORY_AVATARS).flat()
+
+export const AVATAR_CATEGORIES = {
+  default: DEFAULT_AVATARS,
+  shop: SHOP_AVATARS,
+  premium: PREMIUM_AVATARS,
+  story: STORY_AVATARS,
+}
+
 export function getAvatarIds(): AvatarID[] {
   return Object.keys(AVATAR_PATHS) as AvatarID[]
 }
