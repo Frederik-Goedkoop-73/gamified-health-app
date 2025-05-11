@@ -6,40 +6,64 @@ import { useStreakStore } from '@/stores/streakStore'
 import { useUserStore } from '@/stores/userStore'
 import { useXPStore } from '@/stores/xpStore'
 import NumberFlow from '@number-flow/vue'
-import { Activity, Coins, User, Zap } from 'lucide-vue-next'
+import { Coins, FileText, Trophy, User, Zap } from 'lucide-vue-next'
 import ConnectAccounts from '~/components/auth/ConnectAccounts.vue'
+import HealthSummaryCard from '~/components/health/HealthSummaryCard.vue'
+import QuestCard from '~/components/quests/QuestCard.vue'
 import { AVATAR_PATHS } from '~/components/tasks/data/avatarData'
 import { isBannerId } from '~/components/tasks/data/bannerData'
 import { useToast } from '~/components/ui/toast/use-toast'
+import { useFitbitCachedData } from '~/composables/useFitbitCachedData'
+import { useQuestProgress } from '~/composables/useQuestProgress'
+import { useQuestStore } from '~/stores/questStore'
 
-const dataCard = ref({
-  totalRevenue: 0,
-  totalRevenueDesc: 0,
-  subscriptions: 0,
-  subscriptionsDesc: 0,
-  sales: 0,
-  salesDesc: 0,
-  activeNow: 0,
-  activeNowDesc: 0,
+const {
+  stepsData,
+  distanceData,
+  sleepData,
+  heartData,
+  zoneData,
+  caloriesData,
+  steps,
+  distance,
+  sleep,
+  calories,
+  azm,
+  fetchData,
+} = useFitbitCachedData()
+
+const totalSteps = computed(() => stepsData.value.reduce((s, d) => s + d.steps, 0))
+const totalDistance = computed(() =>
+  Math.floor(distanceData.value.reduce((sum, d) => sum + d.distance, 0)),
+)
+const totalCalories = computed(() => caloriesData.value.reduce((sum, d) => sum + d.calories, 0))
+const totalAZM = computed(() => zoneData.value.reduce((sum, d) => sum + d.minutes, 0))
+const avgSleep = computed(() => {
+  const total = sleepData.value.reduce((sum, d) => sum + d.sleepHours, 0)
+  return (total / sleepData.value.length).toFixed(1)
+})
+const avgHeartRate = computed(() => {
+  const filtered = heartData.value.filter(d => d.restingHeartRate >= 10)
+  const sum = filtered.reduce((s, d) => s + d.restingHeartRate, 0)
+  const avg = sum / Math.max(1, filtered.length)
+  return avg.toFixed(0)
 })
 
-const dataRecentSales = [
-  {
-    name: 'Daily 1',
-    email: 'Walk 10k steps',
-    amount: 100,
+const fitbitData = computed(() => ({
+  steps: steps.value ?? [],
+  distance: (distance.value ?? []).map(({ dateTime, value }) => ({
+    dateTime,
+    value: Number(Number(value).toFixed(2)),
+  })),
+  sleep: (sleep.value ?? []).map(({ dateOfSleep, duration }) => ({ dateOfSleep, duration })),
+  calories: calories.value ?? [],
+  AZM: azm.value ?? [],
+  caloriesToday: calories.value.at(-1) ?? { dateTime: '', value: '0' },
+  azmToday: azm.value.at(-1) ?? {
+    dateTime: '',
+    value: { fatBurnActiveZoneMinutes: 0, cardioActiveZoneMinutes: 0, peakActiveZoneMinutes: 0 },
   },
-  {
-    name: 'Daily 2',
-    email: 'Ride 10 km',
-    amount: 200,
-  },
-  {
-    name: 'Daily 3',
-    email: 'Run 5 km',
-    amount: 500,
-  },
-]
+}))
 
 // Initialise the composables
 const { user } = useAuth()
@@ -60,6 +84,8 @@ const xpProgressValue = computed(() => xpStore.xp)
 const xpToNextLevelValue = computed(() => xpStore.totalXpNeededForNextLevel)
 const streakValue = computed(() => streakStore.streak)
 const coinValue = computed(() => coinStore.coins)
+const questStore = useQuestStore()
+const { dailyQuestProgress } = useQuestProgress(fitbitData)
 
 // Function for checking if values aren't 0 -> styling
 const streakIsPositive = (streakValue: number) => streakValue > 0
@@ -112,17 +138,9 @@ watch(() => user.value, async (newUser) => {
   }
 }, { immediate: true })
 
-onMounted(() => {
-  dataCard.value = {
-    totalRevenue: 45231.89,
-    totalRevenueDesc: 20.1 / 100,
-    subscriptions: 2350,
-    subscriptionsDesc: 180.5 / 100,
-    sales: 12234,
-    salesDesc: 45 / 100,
-    activeNow: 573,
-    activeNowDesc: 201,
-  }
+onMounted(async () => {
+  await fetchData()
+  await questStore.fetchQuests()
 })
 </script>
 
@@ -153,9 +171,7 @@ onMounted(() => {
                   'text-muted-foreground': streakValue === 0,
                 }"
               />
-              <NumberFlow
-                :value="streakValue"
-              />
+              <NumberFlow :value="streakValue" />
             </div>
             <!-- Coin value -->
             <div class="flex flex-row items-center gap-2">
@@ -165,9 +181,7 @@ onMounted(() => {
                   'text-muted-foreground': coinValue === 0,
                 }"
               />
-              <NumberFlow
-                :value="coinValue"
-              />
+              <NumberFlow :value="coinValue" />
             </div>
           </div>
           <User class="h-4 w-4 text-muted-foreground" />
@@ -178,23 +192,19 @@ onMounted(() => {
               <!-- Avatar image -->
               <div class="relative h-16 w-16 overflow-hidden rounded-md">
                 <img
-                  :src="AVATAR_PATHS[selectedAvatar] || AVATAR_PATHS.red"
-                  :alt="`Selected avatar: ${selectedAvatar}`"
-                  class="h-full w-full object-contain"
-                > <!-- https://tailwindcss.com/docs/object-fit -->
+                  :src="AVATAR_PATHS[selectedAvatar] || AVATAR_PATHS.red" :alt="`Selected avatar: ${selectedAvatar}`"
+                  width="64" height="64" class="h-16 w-16 object-contain" loading="eager"
+                >
+                <!-- https://tailwindcss.com/docs/object-fit class="h-full w-full object-contain" -->
               </div>
               <p>Lvl.{{ xpStore.level }}</p>
               <!-- Shadcn Progress Bar -->
               <div class="mt-6 w-full flex flex-col gap-2">
                 <Progress v-model="progressValue" />
                 <p class="flex justify-center text-xs text-muted-foreground font-normal">
-                  <NumberFlow
-                    :value="xpProgressValue" suffix=" XP"
-                  />
+                  <NumberFlow :value="xpProgressValue" suffix=" XP" />
                   &nbsp;/&nbsp;
-                  <NumberFlow
-                    :value="xpToNextLevelValue" suffix=" XP"
-                  />
+                  <NumberFlow :value="xpToNextLevelValue" suffix=" XP" />
                 </p>
               </div>
 
@@ -206,131 +216,74 @@ onMounted(() => {
 
       <!-- Grid 2 card underneath -->
       <div class="grid gap-4 overflow-clip lg:grid-cols-2 xl:grid-cols-3 md:gap-8">
-        <!-- Graph card -->
-        <Card class="xl:col-span-2">
-          <CardHeader>
-            <CardTitle>Overview</CardTitle>
+        <!-- Health card -->
+        <Card>
+          <CardHeader class="flex flex-row items-center justify-between pb-6 space-y-0">
+            <CardTitle>This Week's Health Summary</CardTitle>
+            <FileText class="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent class="flex justify-center pl-2">
-            <DashboardBarChart class="max-w-97%" />
+          <CardContent class="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4 text-center text-black dark:text-white">
+            <HealthSummaryCard
+              title="Steps"
+              :value="totalSteps"
+              suffix=" steps"
+              icon="Footprints"
+            />
+            <HealthSummaryCard
+              title="Distance"
+              :value="totalDistance"
+              suffix=" km"
+              icon="Ruler"
+            />
+            <HealthSummaryCard
+              title="Avg Sleep"
+              :value="totalAZM"
+              suffix=" h"
+              :sleep="avgSleep"
+              icon="MoonStar"
+            />
+            <HealthSummaryCard
+              title="Calories Burned"
+              :value="totalCalories"
+              suffix=" kcal"
+              icon="Flame"
+            />
+            <HealthSummaryCard
+              title="Active Zone Minutes"
+              :value="totalAZM"
+              suffix=" min"
+              icon="Zap"
+            />
+            <HealthSummaryCard
+              title="Avg Heart Rate"
+              :value="totalAZM"
+              suffix=" bpm"
+              :sleep="avgHeartRate"
+              icon="HeartPulse"
+            />
           </CardContent>
         </Card>
 
         <!-- Daily quests card -->
-        <Card>
-          <CardHeader>
+        <Card class="flex flex-col justify-between xl:col-span-2">
+          <CardHeader class="flex flex-row items-center justify-between pb-4 space-y-0">
             <CardTitle>Daily Quests</CardTitle>
+            <Trophy class="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent class="grid gap-8">
-            <Card v-for="recentSales in dataRecentSales" :key="recentSales.name" class="flex items-center gap-4 p-4">
-              <div class="hidden h-9 w-9 sm:flex">
-                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0" /><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" /><g id="SVGRepo_iconCarrier"> <path d="M18.5 6C19.8807 6 21 4.88071 21 3.5C21 2.11929 19.8807 1 18.5 1C17.1193 1 16 2.11929 16 3.5C16 4.88071 17.1193 6 18.5 6Z" fill="hsl(var(--primary))" /> <path d="M9.49967 3.9377L7.47 5.20625C7.11268 5.42957 7 5.79894 7 6.19575C7 6.98119 7.86395 7.46003 8.53 7.04375L10.4185 5.86341C10.7689 5.64441 11.218 5.66348 11.5485 5.91141L13 7L9.29261 10.7074C9.09787 10.9021 8.91955 11.1126 8.75947 11.3367L6.94614 13.8754C6.683 14.2438 6.20519 14.3894 5.78129 14.2305L3.21008 13.2663C2.7942 13.1103 2.3257 13.2614 2.07933 13.631C1.76802 14.098 1.92419 14.7314 2.41688 15.0001L4.88909 16.3486C6.12269 17.0215 7.65806 16.7479 8.58338 15.6904L10.5 13.5L12.3001 16.0201C12.7307 16.623 12.7928 17.4144 12.4615 18.077L10.7236 21.5528C10.3912 22.2177 10.8746 23 11.618 23C12.0887 23 12.5417 22.9167 12.7764 22.4472L14.7476 18.5049C15.2149 17.5701 15.1622 16.4595 14.6083 15.5732L13 13L16 10L17.3722 10.9148C18.6066 11.7378 19.9731 11.6756 21.3162 11.2279C21.7813 11.0729 22 10.6447 22 10.1805C22 9.56252 21.4451 9.09248 20.8356 9.19407C20.1453 9.30911 19.1462 9.69488 18.6352 9.01366C16.9655 6.78731 14.9948 5.21933 12.5466 3.85922C11.5923 3.32907 10.4254 3.35913 9.49967 3.9377Z" fill="hsl(var(--primary))" /> </g></svg>
-              </div>
-              <div class="grid gap-1">
-                <p class="text-md font-medium leading-none">
-                  {{ recentSales.name }}
-                </p>
-                <p class="text-sm text-muted-foreground">
-                  {{ recentSales.email }}
-                </p>
-              </div>
-              <div class="ml-auto font-medium">
-                <NumberFlow
-                  :value="recentSales.amount"
-                  prefix="+ " suffix="xp"
-                />
-              </div>
-            </Card>
+          <CardContent class="flex grow-2 flex-col justify-between gap-4 pt-2">
+            <QuestCard
+              v-for="info in dailyQuestProgress" :id="info.quest.id" :key="info.quest.id"
+              :title="info.quest.title" :progress-text="`${info.progress} / ${info.quest.target} ${info.quest.unit}`"
+              :rewardxp="`+${info.quest.rewardXP} XP`" :rewardcoins="info.quest.rewardCoins" :completed="info.completed"
+              :claimed="info.quest.claimed ?? false" :percentage="info.percentage"
+              :tooltip="`${info.quest.title.toLowerCase()} before 24:00`"
+              :difficulty="info.quest.difficulty ?? 'normal'" :icon="info.quest.icon"
+              :dashboard="true"
+            />
           </CardContent>
-        </Card>
-      </div>
-
-      <hr>
-
-      <!-- Other dashboard cards -> may be deleted -->
-      <div class="grid gap-4 lg:grid-cols-4 md:grid-cols-2 md:gap-8">
-        <Card>
-          <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle class="text-sm font-medium">
-              Heart beat increase
-            </CardTitle>
-            <Activity class="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div class="text-2xl font-bold">
-              <NumberFlow
-                :value="20"
-                prefix="+" suffix=" bpm"
-              />
-            </div>
-            <p class="text-xs text-muted-foreground">
-              <NumberFlow
-                :value="dataCard.totalRevenueDesc" prefix="+"
-                :format="{ style: 'percent', minimumFractionDigits: 1 }"
-              />
-              from last month
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle class="text-sm font-medium">
-              Heart beat increase
-            </CardTitle>
-            <Activity class="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div class="text-2xl font-bold">
-              <NumberFlow
-                :value="15"
-                prefix="+" suffix=" bpm"
-              />
-            </div>
-            <p class="text-xs text-muted-foreground">
-              <NumberFlow
-                :value="dataCard.subscriptionsDesc" prefix="+"
-                :format="{ style: 'percent', minimumFractionDigits: 1 }"
-              /> from last month
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle class="text-sm font-medium">
-              Heart beat increase
-            </CardTitle>
-            <Activity class="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div class="text-2xl font-bold">
-              <NumberFlow
-                :value="30"
-                prefix="+" suffix=" bpm"
-              />
-            </div>
-            <p class="text-xs text-muted-foreground">
-              <NumberFlow
-                :value="dataCard.salesDesc" prefix="+"
-                :format="{ style: 'percent', minimumFractionDigits: 1 }"
-              /> from last month
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle class="text-sm font-medium">
-              Heart beat increase
-            </CardTitle>
-            <Activity class="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div class="text-2xl font-bold">
-              <NumberFlow :value="30" prefix="-" suffix=" bpm" />
-            </div>
-            <p class="text-xs text-muted-foreground">
-              <NumberFlow :value="12" prefix="-" /> since last hour
-            </p>
-          </CardContent>
+          <CardFooter class="text-s text-muted-foreground font-semibold">
+            New daily quests in: <strong>&nbsp;{{ questStore.countdownToDailyReset }}</strong>
+          </CardFooter>
         </Card>
       </div>
     </main>

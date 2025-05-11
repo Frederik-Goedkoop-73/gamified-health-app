@@ -409,10 +409,10 @@ export function useAuth() {
       if (firebaseUser) {
         try {
         // 1. FIRST load user data before updating stores
-          const userData = await fetchUserData(firebaseUser)
+          const docSnap = await getDoc(getUserDocRef(firebaseUser.uid))
 
           // 2. Only set defaults if NO data exists
-          if (!userData) {
+          if (!docSnap.exists()) {
             await createUserDocument(firebaseUser, {
               username: firebaseUser.displayName || 'Anonymous',
             // Preserve existing data with merge: true

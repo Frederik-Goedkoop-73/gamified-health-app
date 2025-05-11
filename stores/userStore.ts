@@ -2,7 +2,7 @@
 // Don't use this store for dynamic data (like XP, streak, etc.)
 
 import type { UserData } from '~/types/auth'
-import { doc, getDoc } from 'firebase/firestore'
+import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { defineStore } from 'pinia'
 import { useFirebase } from '~/server/utils/firebase' // This composable allows you to access Firebase services
 
@@ -44,7 +44,26 @@ export const useUserStore = defineStore('user', {
       }
     },
 
-    setUsername(username: string): void {
+    async updateUsername(newUsername: string): Promise<void> {
+      const { db } = useFirebase()
+      if (!this.data?.uid)
+        return
+
+      const userRef = doc(db, 'users', this.data.uid)
+
+      try {
+        await setDoc(userRef, {
+          username: newUsername,
+          updatedAt: new Date().toISOString(), // optional
+        }, { merge: true })
+        this.data.username = newUsername
+      }
+      catch (error) {
+        console.error('Failed to update username:', error)
+      }
+    },
+
+    setUsername(username: string) {
       if (this.data) {
         this.data.username = username
       }

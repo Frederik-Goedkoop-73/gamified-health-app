@@ -16,6 +16,7 @@ const props = defineProps<{
   tooltip: string
   difficulty: 'normal' | 'hard' | 'legendary'
   icon: 'Footprints' | 'Ruler' | 'MoonStar' | 'HeartPulse' | 'Flame' | 'Zap'
+  dashboard?: boolean
 }>()
 
 const { claimQuest } = useClaimQuest()
@@ -41,9 +42,10 @@ const icons = {
     <Tooltip>
       <TooltipTrigger as-child>
         <Card
-          class="relative min-w-48 w-100 p-4 transition hover:scale-105"
+          class="relative min-w-48 p-4 transition"
           :class="[completed && !claimed ? 'bg-secondary text-muted-foreground' : 'bg-background',
-                   claimed ? 'bg-muted text-muted-foreground opacity-60 cursor-default' : 'bg-background']"
+                   claimed ? 'bg-muted text-muted-foreground opacity-60 cursor-default' : 'bg-background',
+                   dashboard ? 'w-full hover:scale-102 h-full' : 'w-100 hover:scale-105']"
           @click="handleClick"
         >
           <!-- Icon top-left -->
@@ -74,7 +76,7 @@ const icons = {
           <hr class="my-1 w-full border-muted">
 
           <!-- Progress and Reward -->
-          <CardContent class="flex flex-col items-center justify-center gap-1 pt-1">
+          <CardContent class="flex flex-col items-center justify-center gap-1 pt-5">
             <Progress :model-value="percentage" class="h-1 w-full" />
             <p class="text-xs text-muted-foreground">
               {{ progressText }}

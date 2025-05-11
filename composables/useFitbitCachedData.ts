@@ -224,11 +224,17 @@ export function useFitbitCachedData() {
     await fetchData()
   }
 
+  async function clearFitbitCache() {
+    const { clear } = useLocalCache(CACHE_KEY, 0)
+    clear()
+  }
+
   return {
     fitbit_loading,
     fitbit_error,
     fetchData,
     clearCacheAndFetch,
+    clearFitbitCache,
     profile,
     steps,
     heart,

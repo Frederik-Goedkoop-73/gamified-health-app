@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import type { AvatarShopItem, BannerShopItem, ThemeShopItem } from '~/types/shop'
 import { usePlayerStore } from '@/stores/playerStore'
-
 import { ShoppingCart } from 'lucide-vue-next'
+
 import { PREMIUM_AVATARS, PROFILE_AVATARS, STORY_AVATARS } from '~/components/tasks/data/avatarData'
 import { shopBanners, shopThemes } from '~/components/tasks/data/shopData'
 import { useCustomize } from '~/composables/useCustomize'
 import ProfileCarouselTabs from './ProfileCarouselTabs.vue'
 import ProfileItemCard from './ProfileItemCard.vue'
+import ProfileSettings from './ProfileSettings.vue'
 
 // State and Logic
 const playerStore = usePlayerStore()
@@ -36,8 +37,6 @@ function goToSlide(index: number) {
 function onSlideChanged(index: number) {
   currentSlide.value = index
 }
-
-const colorMode = useColorMode()
 
 const slideTitles = ['Avatars', 'Banners', 'Themes']
 const currentTitle = computed(() => slideTitles[currentSlide.value])
@@ -203,81 +202,7 @@ const currentTitle = computed(() => slideTitles[currentSlide.value])
 
           <!-- Slide 4: Settings -->
           <CarouselItem>
-            <div class="mx-auto max-w-sm flex flex-col items-center gap-6 py-4 text-center text-muted-foreground">
-              <!-- Change Username -->
-              <div class="w-full space-y-2">
-                <label for="username" class="block text-sm font-medium">Change Username</label>
-                <input
-                  id="username"
-                  v-model="usernameInput"
-                  type="text"
-                  placeholder="Enter new username"
-                  class="w-full border border-input rounded-md bg-background px-3 py-2 text-sm text-foreground shadow-sm focus:outline-none focus:ring-1 focus:ring-primary"
-                >
-                <button
-                  class="mt-1 w-full rounded-md bg-primary px-3 py-2 text-white transition hover:bg-primary/90"
-                  @click="updateUsername"
-                >
-                  Save
-                </button>
-              </div>
-
-              <!-- Theme toggle -->
-              <div class="space-y-1.5">
-                <Label>Theme</Label>
-                <div class="grid grid-cols-3 gap-2">
-                  <Button
-                    class="justify-center gap-2"
-                    variant="outline"
-                    :class="{ 'border-primary border-2': colorMode.preference === 'light' }"
-                    @click="colorMode.preference = 'light'"
-                  >
-                    <Icon name="i-ph-sun-dim-duotone" size="16" />
-                    <span class="text-xs capitalize">Light</span>
-                  </Button>
-                  <Button
-                    class="justify-center gap-2"
-                    variant="outline"
-                    :class="{ 'border-primary border-2': colorMode.preference === 'dark' }"
-                    @click="colorMode.preference = 'dark'"
-                  >
-                    <Icon name="i-ph-moon-stars-duotone" size="16" />
-                    <span class="text-xs capitalize">Dark</span>
-                  </Button>
-                  <Button
-                    class="justify-center gap-2"
-                    variant="outline"
-                    :class="{ 'border-primary border-2': colorMode.preference === 'system' }"
-                    @click="colorMode.preference = 'system'"
-                  >
-                    <Icon name="i-lucide-monitor" size="16" />
-                    <span class="text-xs capitalize">System</span>
-                  </Button>
-                </div>
-              </div>
-
-              <!-- Log out button -->
-              <div class="w-full">
-                <button
-                  class="w-full rounded-md bg-destructive px-3 py-2 text-white transition hover:bg-destructive/90"
-                  @click="logout"
-                >
-                  Log out
-                </button>
-              </div>
-
-              <!-- Joke ad button -->
-              <div>
-                <a
-                  href="https://youtu.be/0fv1qATRl1c?si=SQv3rN83k_36R1Nm"
-                  target="_blank"
-                  rel="noopener"
-                  class="text-sm underline hover:text-primary"
-                >
-                  Watch ad for coins
-                </a>
-              </div>
-            </div>
+            <ProfileSettings />
           </CarouselItem>
         </CarouselContent>
       </Carousel>

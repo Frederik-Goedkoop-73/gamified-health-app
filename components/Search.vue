@@ -52,9 +52,6 @@ function handleSelectLink(link: string) {
       <CommandSeparator />
 
       <CommandGroup heading="Progression">
-        <CommandItem value="Campaigb" @select="handleSelectLink('/campaign')">
-          Campaign
-        </CommandItem>
         <CommandItem value="Quests" @select="handleSelectLink('/quests')">
           Quests
         </CommandItem>

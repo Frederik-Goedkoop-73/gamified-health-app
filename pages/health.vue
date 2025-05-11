@@ -6,15 +6,7 @@ import LineChart from '@/components/dashboard/LineChart.vue'
 import HealthChartCarousel from '@/components/health/HealthChartCarousel.vue'
 import HealthLoader from '@/components/health/HealthLoader.vue'
 
-import HealthProfile from '@/components/health/HealthProfile.vue'
 import { useFitbitCachedData } from '@/composables/useFitbitCachedData'
-
-// import NumberFlow from '@number-flow/vue'
-// import { HeartPulse } from 'lucide-vue-next'
-
-/* 
-const fitbitToken = useCookie('fitbit_access_token')
-const { fetchFitbitData } = useFitbit() */
 
 const {
   fitbit_loading,
@@ -26,7 +18,6 @@ const {
   zoneData,
   caloriesData,
   heartData,
-  rawSleep,
   distanceData,
 } = useFitbitCachedData()
 
@@ -55,7 +46,7 @@ const chartData = computed(() => [
     icon: 'Ruler' as IconName,
     chartComponent: BarChart,
     chartProps: { data: distanceData.value, categories: ['distance'], index: 'date' },
-    footerText: `Total Distance: ${distanceData.value.reduce((s, d) => s + d.distance, 0)} km`,
+    footerText: `Total Distance: ${Math.floor(distanceData.value.reduce((s, d) => s + d.distance, 0))} km`,
   },
   {
     title: 'Sleep this week',
@@ -134,11 +125,6 @@ async function syncChartData() {
           </p>
         </div>
         <AuthConnectAccounts v-else />
-
-        <HealthProfile
-          v-if="!fitbit_loading && profile" :profile="profile" :steps="[]" :sleep="rawSleep"
-          :heart="[]"
-        />
       </client-only>
       <!-- Render loading/error state immediately -->
       <HealthLoader v-if="fitbit_loading || fitbit_error" :loading="fitbit_loading" :error="fitbit_error" />

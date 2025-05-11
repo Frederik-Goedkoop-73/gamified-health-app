@@ -19,12 +19,12 @@ export const navMenu: NavMenu[] = [
   {
     heading: 'Progression',
     items: [
-      {
+      /*       {
         title: 'Campaign',
         icon: 'i-lucide-map-pinned',
         link: '/campaign',
         new: true,
-      },
+      }, */
       {
         title: 'Quests',
         icon: 'i-lucide-trophy',

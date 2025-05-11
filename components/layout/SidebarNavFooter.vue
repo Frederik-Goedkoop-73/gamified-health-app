@@ -4,8 +4,9 @@ import { usePlayerStore } from '@/stores/playerStore'
 import { useUserStore } from '@/stores/userStore'
 import { AVATAR_PATHS } from '~/components/tasks/data/avatarData'
 import { useSidebar } from '~/components/ui/sidebar'
+import { useLogout } from '~/composables/useLogout'
 
-const { user, handleSignOut } = useAuth() // Use composable to manage authentication state
+const { user } = useAuth() // Use composable to manage authentication state
 const userStore = useUserStore() // Use Pinia store to manage user data
 const playerStore = usePlayerStore() // Use Pinia store to manage player data
 const { selectedAvatar } = storeToRefs(playerStore)
@@ -25,9 +26,9 @@ watch(() => user.value, async (newUser) => {
   }
 }, { immediate: true }) // Fetch user and player data when user changes)
 
-const { isMobile, setOpenMobile } = useSidebar()
+const { isMobile } = useSidebar()
 
-const showModalTheme = ref(false)
+const { logout } = useLogout()
 </script>
 
 <template>
@@ -49,9 +50,7 @@ const showModalTheme = ref(false)
             </div>
             <div class="grid flex-1 text-left text-sm leading-tight">
               <span class="truncate font-semibold">{{ userStore.username || "Guest" }}</span>
-              <span class="truncate text-xs">{{ userStore.email || "Please login" }}</span>
             </div>
-            <Icon name="i-lucide-chevrons-up-down" class="ml-auto size-4" />
           </SidebarMenuButton>
         </DropdownMenuTrigger>
         <DropdownMenuContent
@@ -76,20 +75,7 @@ const showModalTheme = ref(false)
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuGroup>
-            <DropdownMenuItem as-child>
-              <NuxtLink to="/settings" @click="setOpenMobile(false)">
-                <Icon name="i-lucide-settings" />
-                Settings
-              </NuxtLink>
-            </DropdownMenuItem>
-            <DropdownMenuItem @click="showModalTheme = true">
-              <Icon name="i-lucide-paintbrush" />
-              Theme
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem @click="handleSignOut">
+          <DropdownMenuItem @click="logout">
             <Icon name="i-lucide-log-out" />
             Log out
           </DropdownMenuItem>
@@ -97,18 +83,6 @@ const showModalTheme = ref(false)
       </DropdownMenu>
     </SidebarMenuItem>
   </SidebarMenu>
-
-  <Dialog v-model:open="showModalTheme">
-    <DialogContent>
-      <DialogHeader>
-        <DialogTitle>Customize</DialogTitle>
-        <DialogDescription class="text-xs text-muted-foreground">
-          Customize & Preview in Real Time
-        </DialogDescription>
-      </DialogHeader>
-      <ThemeCustomize />
-    </DialogContent>
-  </Dialog>
 </template>
 
 <style scoped>
