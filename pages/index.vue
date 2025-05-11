@@ -9,6 +9,7 @@ import NumberFlow from '@number-flow/vue'
 import { Activity, Coins, User, Zap } from 'lucide-vue-next'
 import ConnectAccounts from '~/components/auth/ConnectAccounts.vue'
 import { AVATAR_PATHS } from '~/components/tasks/data/avatarData'
+import { isBannerId } from '~/components/tasks/data/bannerData'
 import { useToast } from '~/components/ui/toast/use-toast'
 
 const dataCard = ref({
@@ -63,6 +64,16 @@ const coinValue = computed(() => coinStore.coins)
 // Function for checking if values aren't 0 -> styling
 const streakIsPositive = (streakValue: number) => streakValue > 0
 const coinIsPositive = (coinValue: number) => coinValue > 0
+
+// Computed values for profile banner
+const bannerId = computed(() =>
+  typeof playerStore.selectedBanner === 'string' && isBannerId(playerStore.selectedBanner)
+    ? playerStore.selectedBanner
+    : undefined,
+)
+const bannerStyle = computed(() =>
+  bannerId.value ? getBannerInlineStyle(bannerId.value) : undefined,
+)
 
 // Auth: Fetch additional data when user is available
 watch(() => user.value, async (newUser) => {
@@ -125,9 +136,8 @@ onMounted(() => {
     <!-- Main body under header -->
     <main class="flex flex-1 flex-col gap-4 md:gap-8">
       <ConnectAccounts />
-
       <!-- Profile card -->
-      <Card>
+      <Card :style="bannerStyle">
         <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
           <CardTitle class="text-md font-medium">
             <NuxtLink to="/profile" class="text-md cursor-pointer font-medium">

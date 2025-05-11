@@ -42,12 +42,9 @@ const fitbitData = computed(() => ({
 // Quest progress
 const { dailyQuestProgress, weeklyQuestProgress } = useQuestProgress(fitbitData)
 
-async function syncChartData() {
-  const { clear } = useLocalCache('fitbit-weekly', 0)
-  clear() // Clear the existing cache
-
-  await fetchData() // Refetch and repopulate cache
-}
+// For data fetch on sync button click
+const fitbit = useFitbitCachedData()
+const clearCacheAndFetch = fitbit.clearCacheAndFetch!
 </script>
 
 <template>
@@ -56,9 +53,8 @@ async function syncChartData() {
       <h2 class="text-2xl font-bold tracking-tight">
         Quests
       </h2>
-      <i class="m-3 text-muted-foreground"><b>Tip: </b>Hover over a quest to see more info</i>
       <div class="flex items-center space-x-2">
-        <Button class="flex items-center gap-2" @click="syncChartData">
+        <Button class="flex items-center gap-2" @click="() => clearCacheAndFetch()">
           <span v-if="!fitbit_loading">Sync Latest Data</span>
           <span v-else>Syncing...</span>
         </Button>

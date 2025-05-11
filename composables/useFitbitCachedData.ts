@@ -218,10 +218,17 @@ export function useFitbitCachedData() {
     }
   }
 
+  async function clearCacheAndFetch() {
+    const { clear } = useLocalCache(CACHE_KEY, 0)
+    clear()
+    await fetchData()
+  }
+
   return {
     fitbit_loading,
     fitbit_error,
     fetchData,
+    clearCacheAndFetch,
     profile,
     steps,
     heart,

@@ -1,3 +1,5 @@
+import type { AvatarShopItem } from '~/types/shop'
+
 export type AvatarID =
   | 'red' // Default avatars
   | 'blue' // Default avatars
@@ -165,7 +167,53 @@ export const AVATAR_PATHS: Record<AvatarID, string> = {
   herobrime: '/story-avatars/mobs/herobrime.png',
 }
 
+export const shopAvatars: AvatarShopItem[] = [
+  // common
+  { id: 'alumn', title: 'Alumn', type: 'avatar', price: 50, rarity: 'common', path: AVATAR_PATHS.alumn },
+  { id: 'august', title: 'August', type: 'avatar', price: 50, rarity: 'common', path: AVATAR_PATHS.august },
+  { id: 'belon', title: 'Belon', type: 'avatar', price: 50, rarity: 'common', path: AVATAR_PATHS.belon },
+  { id: 'specs', title: 'Specs', type: 'avatar', price: 50, rarity: 'common', path: AVATAR_PATHS.specs },
+  { id: 'trooper', title: 'Trooper', type: 'avatar', price: 50, rarity: 'common', path: AVATAR_PATHS.trooper },
+
+  { id: 'bronco', title: 'Bronco', type: 'avatar', price: 100, rarity: 'common', path: AVATAR_PATHS.bronco },
+  { id: 'corsair', title: 'Corsair', type: 'avatar', price: 100, rarity: 'common', path: AVATAR_PATHS.corsair },
+  { id: 'hawker', title: 'Hawker', type: 'avatar', price: 100, rarity: 'common', path: AVATAR_PATHS.hawker },
+  { id: 'marauder', title: 'Marauder', type: 'avatar', price: 100, rarity: 'common', path: AVATAR_PATHS.marauder },
+
+  // rare
+  { id: 'kitty', title: 'Kitty', type: 'avatar', price: 200, rarity: 'rare', path: AVATAR_PATHS.kitty },
+
+  { id: 'amblyoid', title: 'Amblyoid', type: 'avatar', price: 500, rarity: 'rare', path: AVATAR_PATHS.amblyoid, levelrequired: 10 },
+  { id: 'automaton', title: 'Automaton', type: 'avatar', price: 500, rarity: 'rare', path: AVATAR_PATHS.automaton, levelrequired: 10 },
+  { id: 'djinn', title: 'Djinn', type: 'avatar', price: 500, rarity: 'rare', path: AVATAR_PATHS.djinn, levelrequired: 10 },
+  { id: 'exonaut', title: 'Exonaut', type: 'avatar', price: 500, rarity: 'rare', path: AVATAR_PATHS.exonaut, levelrequired: 10 },
+  { id: 'feline', title: 'Feline', type: 'avatar', price: 500, rarity: 'rare', path: AVATAR_PATHS.feline, levelrequired: 10 },
+  { id: 'ninja', title: 'Ninja', type: 'avatar', price: 500, rarity: 'rare', path: AVATAR_PATHS.ninja, levelrequired: 10 },
+  { id: 'paragon', title: 'Paragon', type: 'avatar', price: 500, rarity: 'rare', path: AVATAR_PATHS.paragon, levelrequired: 10 },
+
+  // epic
+  { id: 'jedi', title: 'Jedi', type: 'avatar', price: 1000, rarity: 'epic', path: AVATAR_PATHS.jedi, levelrequired: 20 },
+  { id: 'occultist', title: 'Occultist', type: 'avatar', price: 1000, rarity: 'epic', path: AVATAR_PATHS.occultist, levelrequired: 20 },
+  { id: 'mulk', title: 'Mulk', type: 'avatar', price: 1000, rarity: 'epic', path: AVATAR_PATHS.mulk, levelrequired: 20 },
+
+  { id: 'cranium', title: 'Cranium', type: 'avatar', price: 2000, rarity: 'epic', path: AVATAR_PATHS.cranium, levelrequired: 25 },
+
+  { id: 'rambro', title: 'Rambro', type: 'avatar', price: 2500, rarity: 'epic', path: AVATAR_PATHS.rambro, levelrequired: 30 },
+  { id: 'hi_kitty', title: 'Hi Kitty', type: 'avatar', price: 2500, rarity: 'epic', path: AVATAR_PATHS.hi_kitty, levelrequired: 30 },
+
+  { id: 'lucifer', title: 'Lucifer', type: 'avatar', price: 5000, rarity: 'epic', path: AVATAR_PATHS.lucifer, levelrequired: 35 },
+  { id: 'hello_bunny', title: 'Hello Bunny', type: 'avatar', price: 5000, rarity: 'epic', path: AVATAR_PATHS.hello_bunny, levelrequired: 35 },
+
+  // legendary 
+  { id: 'robo_sunic', title: 'Robo Sunic', type: 'avatar', price: 10000, rarity: 'legendary', path: AVATAR_PATHS.robo_sunic, levelrequired: 40 },
+  { id: 'broku', title: 'Broku', type: 'avatar', price: 10000, rarity: 'legendary', path: AVATAR_PATHS.broku, levelrequired: 50 },
+  { id: 'palmolive', title: 'Palmolive', type: 'avatar', price: 10000, rarity: 'legendary', path: AVATAR_PATHS.palmolive, levelrequired: 50 },
+
+]
+
 export const DEFAULT_AVATARS = ['red', 'blue', 'green'] as const
+export type DefaultAvatarID = typeof DEFAULT_AVATARS[number]
+
 export const SHOP_AVATARS = [
   'alumn',
   'amblyoid',
@@ -189,20 +237,20 @@ export const SHOP_AVATARS = [
   'specs',
   'sultan',
   'trooper',
-] as const
+] as AvatarID[]
 
 export const PREMIUM_AVATARS = {
-  broforce: ['rambro', 'lucifer', 'broku'] as const,
-  helloKitty: ['hi_kitty', 'hello_bunny', 'palmolive'] as const,
-  sega: ['robo_sunic'] as const,
+  broforce: ['rambro', 'lucifer', 'broku'] as AvatarID[],
+  helloKitty: ['hi_kitty', 'hello_bunny', 'palmolive'] as AvatarID[],
+  sega: ['robo_sunic'] as AvatarID[],
 }
 
 export const STORY_AVATARS = {
-  pacman: ['packman', 'orange_ghost', 'cyan_ghost', 'red_ghost', 'vulnerable_ghost'] as const,
-  minecraft: ['steven', 'axel', 'crieper', 'skeleton', 'urbanite'] as const,
-  mario: ['lario', 'muigi', 'plum', 'joshi', 'tode'] as const,
-  sonic: ['sunic', 'tail', 'aimy', 'nukkels', 'super_sunic'] as const,
-  adventureTime: ['fill', 'jack', 'princess_chewingum', 'GMO', 'chunky_space_princess'] as const,
+  pacman: ['packman', 'orange_ghost', 'cyan_ghost', 'red_ghost', 'vulnerable_ghost'] as AvatarID[],
+  minecraft: ['steven', 'axel', 'crieper', 'skeleton', 'urbanite'] as AvatarID[],
+  mario: ['lario', 'muigi', 'plum', 'joshi', 'tode'] as AvatarID[],
+  sonic: ['sunic', 'tail', 'aimy', 'nukkels', 'super_sunic'] as AvatarID[],
+  adventureTime: ['fill', 'jack', 'princess_chewingum', 'GMO', 'chunky_space_princess'] as AvatarID[],
   mobs: [
     'cow',
     'sheep',
@@ -217,10 +265,65 @@ export const STORY_AVATARS = {
     'xans',
     'private',
     'herobrime',
-  ] as const,
+  ] as AvatarID[],
 }
 
-export const ALL_PREMIUM_AVATARS = Object.values(PREMIUM_AVATARS).flat()
+// New type to extend AvatarShopItem
+export interface ProfileAvatarItem extends AvatarShopItem {
+  category: 'default' | 'shop' | 'premium' | 'story'
+  subcategory?: keyof typeof PREMIUM_AVATARS | keyof typeof STORY_AVATARS
+}
+
+export const PROFILE_AVATARS: ProfileAvatarItem[] = [
+  // Default
+  ...DEFAULT_AVATARS.map(id => ({
+    id,
+    title: id.charAt(0).toUpperCase() + id.slice(1),
+    type: 'avatar',
+    rarity: 'common',
+    price: 0,
+    levelrequired: 1,
+    path: AVATAR_PATHS[id],
+    category: 'default',
+  } as const)),
+
+  // Shop
+  ...shopAvatars.map(avatar => ({
+    ...avatar,
+    category: 'shop' as const,
+  })),
+
+  // Premium
+  ...Object.entries(PREMIUM_AVATARS).flatMap(([subcategory, ids]) =>
+    ids.map((id) => {
+      const item = shopAvatars.find(a => a.id === id)
+      if (!item)
+        throw new Error(`Missing premium avatar in shopAvatars: ${id}`)
+      return {
+        ...item,
+        category: 'premium' as const,
+        subcategory: subcategory as keyof typeof PREMIUM_AVATARS,
+      }
+    }),
+  ),
+
+  // Story
+  ...Object.entries(STORY_AVATARS).flatMap(([subcategory, ids]) =>
+    ids.map(id => ({
+      id,
+      title: id.charAt(0).toUpperCase() + id.slice(1),
+      type: 'avatar',
+      rarity: 'common',
+      price: 0,
+      levelrequired: 1,
+      path: AVATAR_PATHS[id],
+      category: 'story',
+      subcategory: subcategory as keyof typeof STORY_AVATARS,
+    } as const)),
+  ),
+]
+
+/* export const ALL_PREMIUM_AVATARS = Object.values(PREMIUM_AVATARS).flat()
 
 export const ALL_STORY_AVATARS = Object.values(STORY_AVATARS).flat()
 
@@ -229,7 +332,7 @@ export const AVATAR_CATEGORIES = {
   shop: SHOP_AVATARS,
   premium: PREMIUM_AVATARS,
   story: STORY_AVATARS,
-}
+} */
 
 export function getAvatarIds(): AvatarID[] {
   return Object.keys(AVATAR_PATHS) as AvatarID[]

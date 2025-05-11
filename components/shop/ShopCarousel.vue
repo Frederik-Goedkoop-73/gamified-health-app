@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import type { AvatarShopItem, BannerShopItem, ThemeShopItem } from '~/types/shop'
 import { usePlayerStore } from '@/stores/playerStore'
+import { useXPStore } from '@/stores/xpStore'
 
 import { ShoppingCart } from 'lucide-vue-next'
-import { shopAvatars, shopBanners, shopThemes } from '~/components/tasks/data/shopData'
+import { PREMIUM_AVATARS, SHOP_AVATARS, shopAvatars } from '~/components/tasks/data/avatarData'
+import { shopBanners, shopThemes } from '~/components/tasks/data/shopData'
 import { useShop } from '~/composables/useShop'
 import ShopCarouselTabs from './ShopCarouselTabs.vue'
 import ShopItemCard from './ShopItemCard.vue'
@@ -11,6 +13,7 @@ import ShopItemCard from './ShopItemCard.vue'
 // State and Logic
 const { buyItem } = useShop()
 const playerStore = usePlayerStore()
+const xpStore = useXPStore()
 const currentSlide = ref(0)
 const carouselRef = ref<any>(null)
 
@@ -59,24 +62,51 @@ const currentTitle = computed(() => slideTitles[currentSlide.value])
         <CarouselContent>
           <!-- Slide 1: Avatars -->
           <CarouselItem>
-            <div class="grid grid-cols-1 gap-4 lg:grid-cols-3 sm:grid-cols-2">
+            <h3 class="text-lg text-muted-foreground font-semibold capitalize">
+              The Universal Athletes
+            </h3>
+            <div class="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-4 p-2">
               <ShopItemCard
-                v-for="item in shopAvatars"
+                v-for="item in shopAvatars.filter(a => SHOP_AVATARS.includes(a.id))"
                 :key="item.id"
                 :name="item.title"
                 :type="item.type"
                 :image="item.path"
                 :price="item.price"
                 :rarity="item.rarity"
+                :levelrequired="item.levelrequired"
                 :on-buy="() => handleBuyAvatar(item)"
                 :bought="playerStore.unlockedAvatars.includes(item.id)"
               />
+            </div>
+            <div v-for="(ids, category) in PREMIUM_AVATARS" :key="category">
+              <hr class="my-4">
+              <h3 v-if="xpStore.level < 30" class="text-lg text-muted-foreground font-semibold capitalize">
+                ? ? ?
+              </h3>
+              <h3 v-else class="text-lg text-muted-foreground font-semibold capitalize">
+                {{ category === 'helloKitty' ? 'Hello Kitty' : category }}
+              </h3>
+              <div class="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-4 p-2">
+                <ShopItemCard
+                  v-for="item in shopAvatars.filter(a => ids.includes(a.id))"
+                  :key="item.id"
+                  :name="item.title"
+                  :type="item.type"
+                  :image="item.path"
+                  :price="item.price"
+                  :rarity="item.rarity"
+                  :levelrequired="item.levelrequired"
+                  :on-buy="() => handleBuyAvatar(item)"
+                  :bought="playerStore.unlockedAvatars.includes(item.id)"
+                />
+              </div>
             </div>
           </CarouselItem>
 
           <!-- Slide 2: Banners -->
           <CarouselItem>
-            <div class="grid grid-flow-col gap-4 overflow-hidden">
+            <div class="grid grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-4 p-2">
               <ShopItemCard
                 v-for="item in shopBanners"
                 :key="item.id"
@@ -84,6 +114,7 @@ const currentTitle = computed(() => slideTitles[currentSlide.value])
                 :type="item.type"
                 :color="item.color"
                 :price="item.price"
+                :rarity="item.rarity"
                 :on-buy="() => handleBuyBanner(item)"
                 :bought="playerStore.unlockedBanners.includes(item.id)"
               />
@@ -92,7 +123,7 @@ const currentTitle = computed(() => slideTitles[currentSlide.value])
 
           <!-- Slide 3: Themes -->
           <CarouselItem>
-            <div class="grid grid-cols-1 gap-4 overflow-hidden lg:grid-cols-3 sm:grid-cols-2">
+            <div class="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-4 p-2">
               <ShopItemCard
                 v-for="item in shopThemes"
                 :key="item.id"
@@ -100,6 +131,8 @@ const currentTitle = computed(() => slideTitles[currentSlide.value])
                 :type="item.type"
                 :color="item.color"
                 :price="item.price"
+                :rarity="item.rarity"
+                :levelrequired="item.levelrequired"
                 :on-buy="() => handleBuyTheme(item)"
                 :bought="playerStore.unlockedThemes.includes(item.id)"
               />

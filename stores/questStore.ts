@@ -4,6 +4,7 @@ import { doc, getDoc, setDoc } from 'firebase/firestore'
 // stores/questStore.ts
 import { defineStore } from 'pinia'
 import { dailyQuests as dailyQuestsArray, weeklyQuests as weeklyQuestsArray } from '~/components/tasks/data/questData'
+import { useFitbitCachedData } from '~/composables/useFitbitCachedData'
 import { getRandomQuests } from '~/lib/getRandomQuests'
 import { useFirebase } from '~/server/utils/firebase'
 
@@ -17,9 +18,15 @@ export const useQuestStore = defineStore('quest', () => {
   const countdownToDailyReset = ref('')
   const countdownToWeeklyReset = ref('')
 
+  // For data fetch on new quest generation
+  const fitbit = useFitbitCachedData()
+  const clearCacheAndFetch = fitbit.clearCacheAndFetch!
+
   async function fetchQuests() {
     const { auth, db } = useFirebase()
     const user = auth.currentUser
+    let questsRefreshed = false
+
     if (!user)
       return
 
@@ -41,15 +48,26 @@ export const useQuestStore = defineStore('quest', () => {
       dailyQuestsGeneratedAt.value = data.dailyQuestsGeneratedAt ?? ''
       weeklyQuestsGeneratedAt.value = data.weeklyQuestsGeneratedAt ?? ''
 
-      if (dailyQuestsGeneratedAt.value !== today)
+      if (dailyQuestsGeneratedAt.value !== today) {
         await generateNewDailyQuests(today)
+        questsRefreshed = true
+      }
 
-      if (weeklyQuestsGeneratedAt.value !== mondayKey)
+      if (weeklyQuestsGeneratedAt.value !== mondayKey) {
         await generateNewWeeklyQuests(mondayKey)
+        questsRefreshed = true
+      }
     }
     else {
       await generateNewDailyQuests(today)
       await generateNewWeeklyQuests(mondayKey)
+      questsRefreshed = true
+    }
+
+    // Fetch new fitbit data
+    if (questsRefreshed) {
+      await clearCacheAndFetch()
+      questsRefreshed = false
     }
 
     startCountdown()

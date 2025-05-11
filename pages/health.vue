@@ -115,6 +115,7 @@ async function syncChartData() {
       <h2 class="text-2xl font-bold tracking-tight">
         Health Stats
       </h2>
+      <i class="m-3 text-muted-foreground"><b>Tip: </b>Keep your bluetooth on for syncing!</i>
       <div class="flex items-center space-x-2">
         <Button class="flex items-center gap-2" @click="syncChartData">
           <span v-if="!fitbit_loading">Sync Latest Data</span>

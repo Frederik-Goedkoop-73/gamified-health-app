@@ -1,16 +1,44 @@
 <script setup lang="ts">
 import { useAuth } from '@/composables/UseAuth'
+import { useCoinStore } from '@/stores/coinStore'
 import { usePlayerStore } from '@/stores/playerStore'
+import { useStreakStore } from '@/stores/streakStore'
 import { useUserStore } from '@/stores/userStore'
-import { AVATAR_PATHS, type AvatarID } from '~/components/tasks/data/avatarData'
+import { useXPStore } from '@/stores/xpStore'
+import NumberFlow from '@number-flow/vue'
+import { Coins, User, Zap } from 'lucide-vue-next'
+import { AVATAR_PATHS } from '~/components/tasks/data/avatarData'
+import { isBannerId } from '~/components/tasks/data/bannerData'
+import { getBannerInlineStyle } from '~/composables/useBannerStyle'
 
-const { user, signInWithGoogle } = useAuth() // Use composable to manage authentication state
+const { user } = useAuth() // Use composable to manage authentication state
 const userStore = useUserStore() // Use Pinia store to manage user data
 const playerStore = usePlayerStore() // Use Pinia store to manage player data
+const xpStore = useXPStore()
+const coinStore = useCoinStore()
+const streakStore = useStreakStore()
 const { selectedAvatar } = storeToRefs(playerStore) // Use storeToRefs to get reactive references to store properties
 
-// Get all avatar IDs as typed array
-const allAvatarIds = Object.keys(AVATAR_PATHS) as AvatarID[]
+// Computed values for number-flow animation
+const progressValue = computed(() => xpStore.xpProgress)
+const xpProgressValue = computed(() => xpStore.xp)
+const xpToNextLevelValue = computed(() => xpStore.totalXpNeededForNextLevel)
+const streakValue = computed(() => streakStore.streak)
+const coinValue = computed(() => coinStore.coins)
+
+// Computed values for profile banner
+const bannerId = computed(() =>
+  typeof playerStore.selectedBanner === 'string' && isBannerId(playerStore.selectedBanner)
+    ? playerStore.selectedBanner
+    : undefined,
+)
+const bannerStyle = computed(() =>
+  bannerId.value ? getBannerInlineStyle(bannerId.value) : undefined,
+)
+
+// Function for checking if values aren't 0 -> styling
+const streakIsPositive = (streakValue: number) => streakValue > 0
+const coinIsPositive = (coinValue: number) => coinValue > 0
 
 // Auth: Fetch additional data when user is available
 watch(() => user.value, async (newUser) => {
@@ -28,81 +56,80 @@ watch(() => user.value, async (newUser) => {
 </script>
 
 <template>
-  <!-- Not Logged In State: Sign in card -->
-  <Card v-if="!user" class="max-w-md w-full">
-    <CardHeader>
-      <CardTitle class="text-center">
-        Avatar Selection
-      </CardTitle>
-    </CardHeader>
-    <CardContent class="flex flex-col items-center gap-4">
-      <div class="h-32 w-32 flex items-center justify-center rounded-md bg-gray-100 dark:bg-gray-800">
-        <User class="h-16 w-16 text-muted-foreground" />
-      </div>
-      <p class="text-center text-muted-foreground">
-        Please sign in to customize your avatar
-      </p>
-      <Button class="mt-4" @click="signInWithGoogle">
-        Sign In with Google
-      </Button>
-    </CardContent>
-  </Card>
+  <div class="w-full flex flex-col gap-4">
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <h2 class="text-2xl font-bold tracking-tight">
+        Profile
+      </h2>
+    </div>
 
-  <!-- Logged In State: Avatar selector template -->
-  <Card v-else>
-    <CardHeader>
-      <CardTitle class="text-lg">
-        Select Avatar
-      </CardTitle>
-    </CardHeader>
-    <CardContent>
-      <!-- Selected Avatar Preview -->
-      <div class="mb-6 flex flex-col items-center gap-4">
-        <div class="relative h-24 w-24 overflow-hidden border-4 border-primary rounded-md">
-          <img
-            :src="AVATAR_PATHS[selectedAvatar]"
-            :alt="`Selected avatar: ${selectedAvatar}`"
-            class="h-full w-full object-contain"
-          > <!-- https://tailwindcss.com/docs/object-fit -->
-        </div>
-        <p class="text-sm font-medium">
-          Current: {{ selectedAvatar }}
-        </p>
-      </div>
-
-      <!-- Avatar Grid -->
-      <div class="grid grid-cols-4 gap-4">
-        <Tooltip v-for="avatar in allAvatarIds" :key="avatar">
-          <TooltipTrigger as-child>
-            <div
-              class="relative aspect-square cursor-pointer overflow-hidden rounded-md transition-all"
-              :class="{
-                'ring-2 ring-primary': selectedAvatar === avatar,
-                'opacity-50 grayscale': !playerStore.hasAvatar(avatar),
-                'hover:scale-105': playerStore.hasAvatar(avatar),
-              }"
-              @click="playerStore.hasAvatar(avatar) && playerStore.setAvatar(avatar)"
-            >
-              <img
-                :src="AVATAR_PATHS[avatar]"
-                :alt="`Avatar ${avatar}`"
-                class="h-full w-full object-contain"
-              >
-              <Badge
-                v-if="!playerStore.hasAvatar(avatar)"
-                variant="outline"
-                class="absolute bottom-1 left-1/2 transform text-xs -translate-x-1/2"
-                @click="playerStore.unlockAvatar(avatar)"
-              >
-                Locked
-              </Badge>
+    <main class="flex flex-1 flex-col gap-4 md:gap-8">
+      <!-- Profile card -->
+      <Card :style="bannerStyle">
+        <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
+          <CardTitle class="text-md font-medium">
+            <p>{{ userStore.username || 'Guest' }}</p>
+          </CardTitle>
+          <div class="text-s w-85% flex flex-row items-center justify-end gap-5% text-muted-foreground">
+            <!-- Streak value -->
+            <div class="flex flex-row items-center gap-2">
+              <Zap
+                class="h-4 w-4" :class="{
+                  'text-rose-500': streakIsPositive(streakValue),
+                  'text-muted-foreground': streakValue === 0,
+                }"
+              />
+              <NumberFlow
+                :value="streakValue"
+              />
             </div>
-          </TooltipTrigger>
-          <TooltipContent v-if="!playerStore.hasAvatar(avatar)">
-            <p>Complete challenges to unlock this avatar</p>
-          </TooltipContent>
-        </Tooltip>
-      </div>
-    </CardContent>
-  </Card>
+            <!-- Coin value -->
+            <div class="flex flex-row items-center gap-2">
+              <Coins
+                class="h-4 w-4" :class="{
+                  'text-yellow-500': coinIsPositive(coinValue),
+                  'text-muted-foreground': coinValue === 0,
+                }"
+              />
+              <NumberFlow
+                :value="coinValue"
+              />
+            </div>
+          </div>
+          <User class="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <div class="text-2m font-bold">
+            <div class="flex items-center gap-4">
+              <!-- Avatar image -->
+              <div class="relative h-16 w-16 overflow-visible rounded-md">
+                <img
+                  :src="AVATAR_PATHS[selectedAvatar] || AVATAR_PATHS.red"
+                  :alt="`Selected avatar: ${selectedAvatar}`"
+                  class="relative z-10 h-full w-full object-contain"
+                > <!-- https://tailwindcss.com/docs/object-fit -->
+              </div>
+              <p>Lvl.{{ xpStore.level }}</p>
+              <!-- Shadcn Progress Bar -->
+              <div class="mt-6 w-full flex flex-col gap-2">
+                <Progress v-model="progressValue" />
+                <p class="flex justify-center text-xs text-muted-foreground font-normal">
+                  <NumberFlow
+                    :value="xpProgressValue" suffix=" XP"
+                  />
+                  &nbsp;/&nbsp;
+                  <NumberFlow
+                    :value="xpToNextLevelValue" suffix=" XP"
+                  />
+                </p>
+              </div>
+
+              <p>Lvl.{{ xpStore.level + 1 }}</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+      <ProfileCarousel />
+    </main>
+  </div>
 </template>
