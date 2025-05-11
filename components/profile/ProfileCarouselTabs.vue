@@ -33,13 +33,13 @@ function resolveIcon(name: IconName) {
     <Button
       v-for="(iconName, index) in icons"
       :key="index"
-      class="h-10 w-10 flex items-center justify-center p-0 transition-colors transition-transform duration-300 ease-in-out"
+      class="size-8 flex items-center justify-center p-0 transition-colors transition-transform duration-300 ease-in-out md:size-10 sm:size-9"
       :class="[
         current === index ? ['bg-primary', iconColorClass] : 'bg-muted text-muted-foreground hover:!bg-primary/20',
       ]"
       @click="emits('update:current', index)"
     >
-      <component :is="resolveIcon(iconName)" class="size-7" />
+      <component :is="resolveIcon(iconName)" class="size-5 md:size-7 sm:size-6" />
     </Button>
   </div>
 </template>
