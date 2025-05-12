@@ -8,6 +8,10 @@ import { useFitbitCachedData } from '~/composables/useFitbitCachedData'
 import { getRandomQuests } from '~/lib/getRandomQuests'
 import { useFirebase } from '~/server/utils/firebase'
 
+// For data fetch on new quest generation
+const fitbit = useFitbitCachedData()
+const clearCacheAndFetch = fitbit.clearCacheAndFetch!
+
 // Use setup API like in UseAuth while others use options API 
 // Better for larger projects, more control (refs), cleaner code and better ts support
 export const useQuestStore = defineStore('quest', () => {
@@ -17,9 +21,6 @@ export const useQuestStore = defineStore('quest', () => {
   const weeklyQuestsGeneratedAt = ref('')
   const countdownToDailyReset = ref('')
   const countdownToWeeklyReset = ref('')
-  // For data fetch on new quest generation
-  const fitbit = useFitbitCachedData()
-  const clearCacheAndFetch = fitbit.clearCacheAndFetch!
 
   async function fetchQuests() {
     const { auth, db } = useFirebase()
@@ -29,11 +30,18 @@ export const useQuestStore = defineStore('quest', () => {
     if (!user)
       return
 
-    const playerDoc = doc(db, 'players', user.uid)
-    const snapshot = await getDoc(playerDoc)
-
+    await fitbit.fetchData() // Ensure data is loaded
+    const latestDate = fitbit.lastFitbitDataDate?.value ?? null
     const now = new Date()
     const today = format(now, 'yyyy-MM-dd')
+
+    if (!latestDate || latestDate !== today) {
+      // force user to sync first
+      return // or show warning
+    }
+
+    const playerDoc = doc(db, 'players', user.uid)
+    const snapshot = await getDoc(playerDoc)
 
     const lastMonday = new Date(now)
     lastMonday.setDate(now.getDate() - ((now.getDay() + 6) % 7)) // Get last Monday
@@ -79,14 +87,12 @@ export const useQuestStore = defineStore('quest', () => {
 
     dailyQuests.value = getRandomQuests(dailyQuestsArray, 'daily', dailyQuests.value).map(q => ({ ...q, completed: false }))
     dailyQuestsGeneratedAt.value = today
-    console.warn('Daily quests generated at:', today, dailyQuests.value)
 
     const playerDoc = doc(db, 'players', user.uid)
     await setDoc(playerDoc, {
       dailyQuests: dailyQuests.value,
       dailyQuestsGeneratedAt: today,
     }, { merge: true })
-    console.warn('Set doc to', dailyQuestsGeneratedAt.value)
   }
 
   async function generateNewWeeklyQuests(mondayKey: string) {

@@ -261,7 +261,7 @@ onMounted(async () => {
               icon="Ruler"
             />
             <HealthSummaryCard
-              title="Avg Sleep"
+              title="Total Sleep"
               :value="totalAZM"
               suffix=" h"
               :sleep="avgSleep"

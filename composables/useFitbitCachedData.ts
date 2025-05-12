@@ -42,6 +42,7 @@ export function useFitbitCachedData() {
       calories: ref([]),
       azm: ref([]),
       distance: ref([]),
+      lastFitbitDataDate: ref<string | null>(null),
     }
   }
 
@@ -66,6 +67,8 @@ export function useFitbitCachedData() {
   const azm = ref<FitbitActiveZoneMinutes['activities-active-zone-minutes']>([])
   const distance = ref<FitbitDistance['activities-distance']>([])
 
+  const lastFitbitDataDate = ref<string | null>(null)
+
   const { get: getCache, set: setCache } = useLocalCache<any>(CACHE_KEY, CACHE_TTL)
   const { fetchFitbitData } = useFitbit()
 
@@ -89,6 +92,7 @@ export function useFitbitCachedData() {
       calories.value = cached.calories
       azm.value = cached.azm
       distance.value = cached.distance
+      lastFitbitDataDate.value = cached.lastFitbitDataDate
 
       fitbit_loading.value = false
       return
@@ -124,7 +128,8 @@ export function useFitbitCachedData() {
       profile.value = profileRaw
       rawSleep.value = sleepResponses.flatMap(r => r.sleep)
 
-      steps.value = stepsRaw['activities-steps'].filter(d => d.dateTime >= startKey)
+      const filteredSteps = stepsRaw['activities-steps'].filter(d => d.dateTime >= startKey)
+      steps.value = filteredSteps
       heart.value = heartRaw['activities-heart'].filter(d => d.dateTime >= startKey)
       sleep.value = sleepResponses.flatMap(resp => resp.sleep).filter(d => d.dateOfSleep >= startKey)
       calories.value = caloriesRaw['activities-calories'].filter(d => d.dateTime >= startKey)
@@ -136,6 +141,10 @@ export function useFitbitCachedData() {
       const zoneMap = new Map(azm.value.map(e => [e.dateTime, e]))
       const calorieMap = new Map(calories.value.map(e => [e.dateTime, e]))
       const distanceMap = new Map(distance.value.map(e => [e.dateTime, e]))
+
+      const latestDate = filteredSteps.length > 0 ? filteredSteps.at(-1)?.dateTime ?? null : null
+      const latestDateStr = latestDate ? format(new Date(latestDate), 'yyyy-MM-dd') : null
+      lastFitbitDataDate.value = latestDateStr
 
       stepsData.value = weekDates.map(date => ({
         date: format(parseISO(date), 'EEE'),
@@ -205,6 +214,7 @@ export function useFitbitCachedData() {
         calories: calories.value,
         azm: azm.value,
         distance: distance.value,
+        lastFitbitDataDate: lastFitbitDataDate.value,
       })
 
       fitbit_error.value = false
@@ -249,5 +259,6 @@ export function useFitbitCachedData() {
     heartData,
     rawSleep,
     distanceData,
+    lastFitbitDataDate,
   }
 }

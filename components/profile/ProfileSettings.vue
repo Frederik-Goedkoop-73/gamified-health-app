@@ -23,7 +23,7 @@ async function updateUsername() {
         v-model="usernameInput"
         type="text"
         placeholder="Enter new username"
-        maxlength="12"
+        maxlength="16"
         class="w-full border border-input rounded-md bg-background px-3 py-2 text-sm text-foreground shadow-sm focus:outline-none focus:ring-1 focus:ring-primary"
       >
       <Button
