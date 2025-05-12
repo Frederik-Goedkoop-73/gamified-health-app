@@ -17,7 +17,6 @@ export const useQuestStore = defineStore('quest', () => {
   const weeklyQuestsGeneratedAt = ref('')
   const countdownToDailyReset = ref('')
   const countdownToWeeklyReset = ref('')
-
   // For data fetch on new quest generation
   const fitbit = useFitbitCachedData()
   const clearCacheAndFetch = fitbit.clearCacheAndFetch!
@@ -63,7 +62,6 @@ export const useQuestStore = defineStore('quest', () => {
       await generateNewWeeklyQuests(mondayKey)
       questsRefreshed = true
     }
-
     // Fetch new fitbit data
     if (questsRefreshed) {
       await clearCacheAndFetch()
@@ -81,12 +79,14 @@ export const useQuestStore = defineStore('quest', () => {
 
     dailyQuests.value = getRandomQuests(dailyQuestsArray, 'daily', dailyQuests.value).map(q => ({ ...q, completed: false }))
     dailyQuestsGeneratedAt.value = today
+    console.warn('Daily quests generated at:', today, dailyQuests.value)
 
     const playerDoc = doc(db, 'players', user.uid)
     await setDoc(playerDoc, {
       dailyQuests: dailyQuests.value,
       dailyQuestsGeneratedAt: today,
     }, { merge: true })
+    console.warn('Set doc to', dailyQuestsGeneratedAt.value)
   }
 
   async function generateNewWeeklyQuests(mondayKey: string) {

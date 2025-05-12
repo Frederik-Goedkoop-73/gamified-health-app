@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useAuth } from '@/composables/UseAuth'
+import { useFitbitAuth } from '@/composables/useFitbitAuth'
 
 const { isLoading, isLoggedIn, signInWithGoogle } = useAuth()
 
@@ -9,11 +10,7 @@ function initiateFitbitAuth() {
   window.location.href = '/api/auth/fitbitOAuth'
 }
 
-// Cookies
-const fitbitToken = useCookie('fitbit_access_token')
-
-// Computed states
-const fitbitConnected = computed(() => !!fitbitToken.value)
+const fitbitConnected = useFitbitAuth().isFitbitConnected
 </script>
 
 <template>
@@ -35,7 +32,7 @@ const fitbitConnected = computed(() => !!fitbitToken.value)
 
     <!-- Fitbit Button -->
     <Button
-      :disabled="fitbitConnected"
+      :disabled="fitbitConnected || !isLoggedIn"
       class="flex items-center gap-2"
       @click="initiateFitbitAuth"
     >

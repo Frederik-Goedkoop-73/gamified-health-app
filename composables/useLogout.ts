@@ -1,5 +1,6 @@
 // ~/composables/useLogout.ts
 import { useAuth } from '@/composables/UseAuth'
+import { useCustomize } from '@/composables/useCustomize'
 import { useFitbitCachedData } from '@/composables/useFitbitCachedData'
 import { usePlayerStore } from '@/stores/playerStore'
 import { useUserStore } from '@/stores/userStore'
@@ -13,6 +14,7 @@ export function useLogout() {
   const xpStore = useXPStore()
   const { handleSignOut } = useAuth()
   const { clearFitbitCache } = useFitbitCachedData()
+  const { setTheme } = useCustomize()
 
   const logout = async () => {
     try {
@@ -35,6 +37,7 @@ export function useLogout() {
       userStore.$reset()
       playerStore.$reset()
       xpStore.$reset()
+      setTheme('zinc') // Reset theme to default
 
       // Navigate to home
       router.push('/')

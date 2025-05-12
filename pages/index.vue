@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useAuth } from '@/composables/UseAuth'
+import { useFitbitAuth } from '@/composables/useFitbitAuth'
 import { useCoinStore } from '@/stores/coinStore'
 import { usePlayerStore } from '@/stores/playerStore'
 import { useStreakStore } from '@/stores/streakStore'
@@ -17,6 +18,10 @@ import { useFitbitCachedData } from '~/composables/useFitbitCachedData'
 import { useQuestProgress } from '~/composables/useQuestProgress'
 import { useQuestStore } from '~/stores/questStore'
 
+// Check fitbit auth state
+const fitbitConnected = useFitbitAuth().isFitbitConnected
+
+// For sumamry cards
 const {
   stepsData,
   distanceData,
@@ -32,23 +37,43 @@ const {
   fetchData,
 } = useFitbitCachedData()
 
-const totalSteps = computed(() => stepsData.value.reduce((s, d) => s + d.steps, 0))
-const totalDistance = computed(() =>
-  Math.floor(distanceData.value.reduce((sum, d) => sum + d.distance, 0)),
+const totalSteps = computed(() =>
+  fitbitConnected.value
+    ? stepsData.value.reduce((s, d) => s + d.steps, 0)
+    : 0,
 )
-const totalCalories = computed(() => caloriesData.value.reduce((sum, d) => sum + d.calories, 0))
-const totalAZM = computed(() => zoneData.value.reduce((sum, d) => sum + d.minutes, 0))
+const totalDistance = computed(() =>
+  fitbitConnected.value
+    ? Math.floor(distanceData.value.reduce((sum, d) => sum + d.distance, 0))
+    : 0,
+)
+const totalCalories = computed(() =>
+  fitbitConnected.value
+    ? caloriesData.value.reduce((sum, d) => sum + d.calories, 0)
+    : 0,
+)
+const totalAZM = computed(() =>
+  fitbitConnected.value
+    ? zoneData.value.reduce((sum, d) => sum + d.minutes, 0)
+    : 0,
+)
 const avgSleep = computed(() => {
+  if (!fitbitConnected.value || sleepData.value.length === 0)
+    return '0.0'
   const total = sleepData.value.reduce((sum, d) => sum + d.sleepHours, 0)
   return (total / sleepData.value.length).toFixed(1)
 })
 const avgHeartRate = computed(() => {
+  if (!fitbitConnected.value)
+    return '0'
   const filtered = heartData.value.filter(d => d.restingHeartRate >= 10)
+  if (filtered.length === 0)
+    return '0'
   const sum = filtered.reduce((s, d) => s + d.restingHeartRate, 0)
-  const avg = sum / Math.max(1, filtered.length)
-  return avg.toFixed(0)
+  return (sum / filtered.length).toFixed(0)
 })
 
+// For quest progress
 const fitbitData = computed(() => ({
   steps: steps.value ?? [],
   distance: (distance.value ?? []).map(({ dateTime, value }) => ({
@@ -270,7 +295,7 @@ onMounted(async () => {
             <CardTitle>Daily Quests</CardTitle>
             <Trophy class="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent class="flex grow-2 flex-col justify-between gap-4 pt-2">
+          <CardContent v-if="fitbitConnected" class="flex grow-2 flex-col justify-between gap-4 pt-2">
             <QuestCard
               v-for="info in dailyQuestProgress" :id="info.quest.id" :key="info.quest.id"
               :title="info.quest.title" :progress-text="`${info.progress} / ${info.quest.target} ${info.quest.unit}`"
@@ -281,7 +306,14 @@ onMounted(async () => {
               :dashboard="true"
             />
           </CardContent>
-          <CardFooter class="text-s text-muted-foreground font-semibold">
+          <CardContent
+            v-else
+            class="h-full flex flex-col items-center justify-center px-4 py-8 text-center text-muted-foreground space-y-2"
+          >
+            <span class="text-lg font-medium">Please connect to Google and Fitbit</span>
+            <span class="text-sm">This content can only be rendered once a user has been found.</span>
+          </CardContent>
+          <CardFooter v-if="fitbitConnected" class="text-s text-muted-foreground font-semibold">
             New daily quests in: <strong>&nbsp;{{ questStore.countdownToDailyReset }}</strong>
           </CardFooter>
         </Card>

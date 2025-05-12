@@ -6,7 +6,11 @@ import LineChart from '@/components/dashboard/LineChart.vue'
 import HealthChartCarousel from '@/components/health/HealthChartCarousel.vue'
 import HealthLoader from '@/components/health/HealthLoader.vue'
 
+import { useFitbitAuth } from '@/composables/useFitbitAuth'
 import { useFitbitCachedData } from '@/composables/useFitbitCachedData'
+
+// Check fitbit auth state
+const fitbitConnected = useFitbitAuth().isFitbitConnected
 
 const {
   fitbit_loading,
@@ -106,9 +110,9 @@ async function syncChartData() {
       <h2 class="text-2xl font-bold tracking-tight">
         Health Stats
       </h2>
-      <i class="m-3 text-muted-foreground"><b>Tip: </b>Keep your bluetooth on for syncing!</i>
+      <i v-if="fitbitConnected" class="m-3 text-muted-foreground"><b>Tip: </b>Keep your bluetooth on for syncing!</i>
       <div class="flex items-center space-x-2">
-        <Button class="flex items-center gap-2" @click="syncChartData">
+        <Button v-if="fitbitConnected" class="flex items-center gap-2" @click="syncChartData">
           <span v-if="!fitbit_loading">Sync Latest Data</span>
           <span v-else>Syncing...</span>
         </Button>
@@ -118,13 +122,13 @@ async function syncChartData() {
     <main class="flex flex-1 flex-col gap-4 md:gap-8">
       <!-- Everything below only renders client-side after hydration -->
       <client-only>
+        <AuthConnectAccounts />
         <HealthChartCarousel v-if="!fitbit_loading && !fitbit_error && profile" :charts="chartData" />
-        <div v-else-if="fitbit_loading" class="h-48 flex items-center justify-center">
+        <Card v-else-if="fitbit_loading" class="h-48 flex items-center justify-center">
           <p class="text-sm text-muted-foreground">
             Loading charts...
           </p>
-        </div>
-        <AuthConnectAccounts v-else />
+        </Card>
       </client-only>
       <!-- Render loading/error state immediately -->
       <HealthLoader v-if="fitbit_loading || fitbit_error" :loading="fitbit_loading" :error="fitbit_error" />

@@ -1,10 +1,14 @@
 <script setup lang="ts">
 // import NumberFlow from '@number-flow/vue'
+import { useFitbitAuth } from '@/composables/useFitbitAuth'
 import { Trophy } from 'lucide-vue-next'
 import QuestCard from '~/components/quests/QuestCard.vue'
 import { useFitbitCachedData } from '~/composables/useFitbitCachedData'
 import { useQuestStore } from '~/stores/questStore'
 import { useQuestProgress } from '../composables/useQuestProgress'
+
+// Check fitbit auth state
+const fitbitConnected = useFitbitAuth().isFitbitConnected
 
 // Stores
 const questStore = useQuestStore()
@@ -54,17 +58,17 @@ const clearCacheAndFetch = fitbit.clearCacheAndFetch!
         Quests
       </h2>
       <div class="flex items-center space-x-2">
-        <Button class="flex items-center gap-2" @click="() => clearCacheAndFetch()">
+        <Button v-if="fitbitConnected" class="flex items-center gap-2" @click="() => clearCacheAndFetch()">
           <span v-if="!fitbit_loading">Sync Latest Data</span>
           <span v-else>Syncing...</span>
         </Button>
       </div>
     </div>
-    <!-- Main body under header -->
     <main class="flex flex-1 flex-col gap-4 md:gap-8">
+      <AuthConnectAccounts />
       <!-- Daily quests -->
-
       <Card class="xl:col-span-2">
+        <!-- v-if="fitbitConnected" -->
         <!-- Daily quests -->
         <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
           <CardTitle>Daily Quests</CardTitle>
@@ -115,11 +119,13 @@ const clearCacheAndFetch = fitbit.clearCacheAndFetch!
             :difficulty="info.quest.difficulty ?? 'normal'"
             :icon="info.quest.icon"
           />
-        </cardcontent>
+        </Cardcontent>
         <CardFooter class="text-s text-muted-foreground font-semibold">
           New weekly quests in: &nbsp;<strong>{{ questStore.countdownToWeeklyReset }}</strong>
         </CardFooter>
       </Card>
+
+      <HealthLoader v-if="fitbit_loading || !fitbitConnected" :loading="fitbit_loading" :error="!fitbitConnected" />
     </main>
   </div>
 </template>

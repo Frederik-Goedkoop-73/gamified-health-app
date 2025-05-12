@@ -9,13 +9,13 @@ export const shopBanners: BannerShopItem[] = [
   { id: 'blue', title: 'Blue', type: 'banner', price: 200, color: 'blue' },
   { id: 'rose', title: 'Rose', type: 'banner', price: 200, color: 'rose' },
 
-  { id: 'violet', title: 'Violet', type: 'banner', price: 500, rarity: 'rare', color: 'violet' },
-  { id: 'yellow', title: 'Yellow', type: 'banner', price: 1000, rarity: 'rare', color: 'yellow' },
+  { id: 'violet', title: 'Violet', type: 'banner', price: 500, rarity: 'rare', color: 'violet', levelrequired: 25 },
+  { id: 'yellow', title: 'Yellow', type: 'banner', price: 1000, rarity: 'rare', color: 'yellow', levelrequired: 40 },
 
-  { id: 'bronze', title: 'Bronze', type: 'banner', price: 2500, rarity: 'epic', color: 'bronze' },
-  { id: 'silver', title: 'Silver', type: 'banner', price: 5000, rarity: 'epic', color: 'silver' },
-  { id: 'gold', title: 'Gold', type: 'banner', price: 7500, rarity: 'epic', color: 'gold' },
-  { id: 'platinum', title: 'Platinum', type: 'banner', price: 10000, rarity: 'legendary', color: 'platinum' },
+  { id: 'bronze', title: 'Bronze', type: 'banner', price: 2500, rarity: 'epic', color: 'bronze', levelrequired: 100 },
+  { id: 'silver', title: 'Silver', type: 'banner', price: 5000, rarity: 'epic', color: 'silver', levelrequired: 100 },
+  { id: 'gold', title: 'Gold', type: 'banner', price: 7500, rarity: 'epic', color: 'gold', levelrequired: 100 },
+  { id: 'platinum', title: 'Platinum', type: 'banner', price: 10000, rarity: 'legendary', color: 'platinum', levelrequired: 100 },
 
 ]
 

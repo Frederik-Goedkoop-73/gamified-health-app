@@ -70,8 +70,10 @@ const lockedByLevel = computed(() => {
       <!-- Banner Preview Skeleton -->
       <div
         v-if="type === 'banner'"
-        class="h-40 w-full flex items-center gap-4 border-4 rounded-lg bg-secondary px-4 py-2"
-        :style="bannerStyle"
+        class="h-40 w-full flex items-center gap-4 border-4 rounded-lg bg-secondary px-4 py-2" :class="[
+          lockedByLevel ? 'border-2 border-dashed border-black/70 dark:border-white/70' : 'border-4 bg-secondary',
+        ]"
+        :style="lockedByLevel ? {} : bannerStyle"
       >
         <div class="size-12 rounded-full bg-primary/30 sm:size-16" />
         <div class="flex-1 space-y-2">
@@ -113,7 +115,7 @@ const lockedByLevel = computed(() => {
       <div class="flex flex-row items-center justify-between gap-2">
         <template v-if="lockedByLevel">
           <p class="text-sm text-muted-foreground font-semibold">
-            Unlock at lvl. {{ props.levelrequired }}
+            {{ props.levelrequired === 100 ? 'Coming soon ...' : `Unlock at lvl. ${props.levelrequired}` }}
           </p>
         </template>
         <template v-else>

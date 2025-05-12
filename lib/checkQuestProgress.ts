@@ -1,4 +1,4 @@
-import type { FitbitActiveZoneMinutes, FitbitCalories, FitbitDistance, FitbitSimpleSleepLog, FitbitSteps } from '@/types/fitbit'
+import type { FitbitActiveZoneMinutes, FitbitCalories, FitbitSimpleSleepLog, FitbitSteps } from '@/types/fitbit'
 import type { Quest } from '@/types/quest'
 import { useQuestStore } from '~/stores/questStore'
 
@@ -7,7 +7,7 @@ interface PlayerFitbitData {
   sleep: FitbitSimpleSleepLog[]
   calories: FitbitCalories['activities-calories'] // We only want data at index 0
   AZM: FitbitActiveZoneMinutes['activities-active-zone-minutes']
-  distance: FitbitDistance['activities-distance']
+  distance: { dateTime: string, value: number }[]
 }
 
 export function checkQuestProgress(quest: Quest, data: PlayerFitbitData) {

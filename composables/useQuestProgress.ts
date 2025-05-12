@@ -8,6 +8,7 @@ interface PlayerFitbitData {
   sleep: FitbitSimpleSleepLog[]
   calories: FitbitCalories['activities-calories'] // We only want data at index 0
   AZM: FitbitActiveZoneMinutes['activities-active-zone-minutes']
+  distance: { dateTime: string, value: number }[]
 }
 
 export function useQuestProgress(fitbitData: Ref<PlayerFitbitData>) {

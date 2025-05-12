@@ -38,6 +38,13 @@ function onSlideChanged(index: number) {
   currentSlide.value = index
 }
 
+// Check if any avatars are unlocked
+const shopAvatars = computed(() =>
+  PROFILE_AVATARS.filter(
+    a => a.category === 'shop' && playerStore.unlockedAvatars.includes(a.id),
+  ),
+)
+
 const slideTitles = ['Avatars', 'Banners', 'Themes']
 const currentTitle = computed(() => slideTitles[currentSlide.value])
 </script>
@@ -80,21 +87,23 @@ const currentTitle = computed(() => slideTitles[currentSlide.value])
             </div>
 
             <!-- Shop Avatars -->
-            <hr class="my-4">
-            <h3 class="text-lg text-muted-foreground font-semibold capitalize">
-              The Universal Athletes
-            </h3>
-            <div class="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-4 p-2">
-              <ProfileItemCard
-                v-for="item in PROFILE_AVATARS.filter(a => a.category === 'shop' && playerStore.unlockedAvatars.includes(a.id))"
-                :key="item.id"
-                :name="item.title"
-                :type="item.type"
-                :image="item.path"
-                :rarity="item.rarity"
-                :on-select="() => selectAvatar(item)"
-                :selected="playerStore.selectedAvatar === item.id"
-              />
+            <div v-if="shopAvatars.length > 0">
+              <hr class="my-4">
+              <h3 class="text-lg text-muted-foreground font-semibold capitalize">
+                The Universal Athletes
+              </h3>
+              <div class="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-4 p-2">
+                <ProfileItemCard
+                  v-for="item in PROFILE_AVATARS.filter(a => a.category === 'shop' && playerStore.unlockedAvatars.includes(a.id))"
+                  :key="item.id"
+                  :name="item.title"
+                  :type="item.type"
+                  :image="item.path"
+                  :rarity="item.rarity"
+                  :on-select="() => selectAvatar(item)"
+                  :selected="playerStore.selectedAvatar === item.id"
+                />
+              </div>
             </div>
 
             <!-- Premium Avatars -->
@@ -123,7 +132,7 @@ const currentTitle = computed(() => slideTitles[currentSlide.value])
             </div>
 
             <!-- Story Avatars -->
-            <div>
+            <!-- <div>
               <div
                 v-for="subcategory in Object.keys(STORY_AVATARS)"
                 :key="subcategory"
@@ -145,7 +154,7 @@ const currentTitle = computed(() => slideTitles[currentSlide.value])
                   />
                 </div>
               </div>
-            </div>
+            </div> -->
           </CarouselItem>
 
           <!-- Slide 2: Banners -->

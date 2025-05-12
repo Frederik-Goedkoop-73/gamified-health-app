@@ -115,6 +115,7 @@ const currentTitle = computed(() => slideTitles[currentSlide.value])
                 :color="item.color"
                 :price="item.price"
                 :rarity="item.rarity"
+                :levelrequired="item.levelrequired"
                 :on-buy="() => handleBuyBanner(item)"
                 :bought="playerStore.unlockedBanners.includes(item.id)"
               />
