@@ -102,7 +102,7 @@ watch(() => user.value, async (newUser) => {
           <div class="text-2m font-bold">
             <div class="flex items-center gap-4">
               <!-- Avatar image -->
-              <div class="relative h-16 w-16 overflow-visible rounded-md">
+              <div class="relative size-16 overflow-visible rounded-md">
                 <img
                   :src="AVATAR_PATHS[selectedAvatar] || AVATAR_PATHS.red"
                   :alt="`Selected avatar: ${selectedAvatar}`"

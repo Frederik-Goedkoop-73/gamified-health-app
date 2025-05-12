@@ -79,41 +79,45 @@ const themeColors: Record<string, string> = {
 </script>
 
 <template>
-  <div class="mx-auto max-w-4xl w-full py-8">
-    <h2 class="mb-6 text-center text-3xl text-primary font-bold">
-      Leaderboard
-    </h2>
-
-    <div v-if="loading" class="text-center text-muted-foreground">
-      Loading...
+  <div class="w-full flex flex-col gap-4">
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <h2 class="text-2xl font-bold tracking-tight">
+        Leaderboard
+      </h2>
+      <i class="m-3 text-muted-foreground"><b>Tip: </b>Collect XP to join the Leaderboard!</i>
     </div>
+    <main>
+      <div v-if="loading" class="text-center text-muted-foreground">
+        Loading...
+      </div>
 
-    <div v-else>
-      <div class="space-y-4">
-        <div
-          v-for="(player, index) in topPlayers" :key="player.uid"
-          class="relative flex items-center justify-between border-4 rounded-lg p-4 shadow-sm"
-          :style="isBannerId(player.banner) ? getBannerInlineStyle(player.banner) : undefined"
-        >
-          <!-- Streak badge -->
+      <div v-else>
+        <div class="space-y-4">
           <div
-            v-if="player.streak !== 0"
-            class="absolute right--5 top--2 flex items-center gap-1 rounded px-2 py-0.5 text-sm font-bold shadow"
-            :class="themeColors[player.theme] || themeColors.zinc"
+            v-for="(player, index) in topPlayers" :key="player.uid"
+            class="relative flex items-center justify-between border-4 rounded-lg p-4 shadow-sm"
+            :style="isBannerId(player.banner) ? getBannerInlineStyle(player.banner) : undefined"
           >
-            {{ player.streak }}
-            <Zap class="size-4" />
-          </div>
+            <!-- Streak badge -->
+            <div
+              v-if="player.streak !== 0"
+              class="absolute right--3 top--2 flex items-center gap-1 rounded px-2 py-0.5 text-sm font-bold shadow sm:right--5"
+              :class="themeColors[player.theme] || themeColors.zinc"
+            >
+              {{ player.streak }}
+              <Zap class="size-4" />
+            </div>
 
-          <!-- Main card content -->
-          <div class="flex items-center gap-4">
-            <span class="w-6 text-right text-xl font-bold">{{ index + 1 }}</span>
-            <img :src="player.avatar" alt="avatar" class="h-20 w-20 justify-self-center object-contain">
-            <span class="font-semibold">{{ player.username }}</span>
+            <!-- Main card content -->
+            <div class="flex items-center gap-4">
+              <span class="w-6 text-right text-xl font-bold">{{ index + 1 }}</span>
+              <img :src="player.avatar" alt="avatar" class="size-12 justify-self-center object-contain sm:size-20">
+              <span class="font-semibold">{{ player.username }}</span>
+            </div>
+            <span class="text-sm text-muted-foreground">{{ player.xp.toLocaleString('en-US') }} XP</span>
           </div>
-          <span class="text-sm text-muted-foreground">{{ player.xp.toLocaleString('en-US') }} XP</span>
         </div>
       </div>
-    </div>
+    </main>
   </div>
 </template>

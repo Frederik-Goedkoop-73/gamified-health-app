@@ -3,6 +3,32 @@ import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { defineStore } from 'pinia'
 import { useFirebase } from '~/server/utils/firebase'
 
+// XP calculation functions
+function getXPForLevel(level: number): number {
+  return Math.ceil(0.50025 * level ** 2 - 1.94125 * level + 7.7007)
+}
+
+function getXPProgress(currentXP: number): {
+  level: number
+  currentLevelXP: number
+  xpNeeded: number
+  progressPercent: number
+} {
+  let level = 1
+  let totalXP = 0
+
+  while (currentXP >= totalXP + getXPForLevel(level)) {
+    totalXP += getXPForLevel(level)
+    level++
+  }
+
+  const currentLevelXP = currentXP - totalXP
+  const xpNeeded = getXPForLevel(level)
+  const progressPercent = Math.min(100, (currentLevelXP / xpNeeded) * 100)
+
+  return { level, currentLevelXP, xpNeeded, progressPercent }
+}
+
 // Type definition
 interface XPState {
   xp: number
@@ -10,7 +36,6 @@ interface XPState {
   level: number
   showPopup: boolean
   leveledUpTo: number
-  hasAwarded1000XP: boolean
 }
 
 export const useXPStore = defineStore('xp', {
@@ -20,8 +45,6 @@ export const useXPStore = defineStore('xp', {
     level: 1, // Initial level
     showPopup: false, // Initial visibility of the level-up popup
     leveledUpTo: 0, // Initial level the user leveled up to in one go
-
-    hasAwarded1000XP: false, // Track if 200 XP has been awarded for reaching 1000 XP
   }),
 
   actions: {
@@ -42,10 +65,10 @@ export const useXPStore = defineStore('xp', {
           const docSnap = await getDoc(userDocRef)
           if (docSnap.exists()) {
             const data = docSnap.data()
-            this.xp = data.xp ?? 0// Update local state with Firestore data
-            this.totalXP = data.totalXP ?? 0 // Update local state with Firestore data
-            this.level = data.level ?? 1 // Update local state with Firestore data
-            this.hasAwarded1000XP = data.hasAwarded1000XP ?? false // Update local state with Firestore data
+            this.totalXP = data.totalXP ?? 0
+            const progress = getXPProgress(this.totalXP)
+            this.level = progress.level
+            this.xp = progress.currentLevelXP
           }
           else {
             this.resetXP()
@@ -71,14 +94,6 @@ export const useXPStore = defineStore('xp', {
       this.xp += xpAmount
       this.totalXP += xpAmount
 
-      // Special 1000 XP bonus (only once)
-      if (this.totalXP >= 1000 && !this.hasAwarded1000XP) {
-        const bonus = 200
-        this.xp += bonus // Add 200 XP
-        this.totalXP += bonus // Add 200 XP to totalXP
-        this.hasAwarded1000XP = true // Mark as awarded
-      }
-
       this.updateLevel() // Update level based on new XP
 
       // Save to Firestore
@@ -89,7 +104,6 @@ export const useXPStore = defineStore('xp', {
             xp: this.xp, // Save the current XP
             totalXP: this.totalXP, // Save the total XP
             level: this.level, // Save the current level
-            hasAwarded1000XP: this.hasAwarded1000XP, // Save the awarded status
           },
           { merge: true },
         )
@@ -100,12 +114,6 @@ export const useXPStore = defineStore('xp', {
         // Revert local changes if save fails
         this.xp -= xpAmount // Revert XP
         this.totalXP -= xpAmount // Revert total XP
-        if (this.totalXP >= 1000 && this.hasAwarded1000XP) {
-          const bonus = 200
-          this.xp -= bonus // Revert 200 XP
-          this.totalXP -= bonus // Revert 200 XP from totalXP
-          this.hasAwarded1000XP = false // Mark as not awarded
-        }
         throw error
       }
     },
@@ -127,7 +135,6 @@ export const useXPStore = defineStore('xp', {
             xp: 0, // Reset XP
             totalXP: 0, // Reset total XP
             level: 1, // Reset level
-            hasAwarded1000XP: false, // Reset awarded status
           },
           { merge: true },
         )
@@ -141,24 +148,18 @@ export const useXPStore = defineStore('xp', {
 
     // Update the player's level based on XP
     updateLevel(): void {
-      if (this.xp <= 0)
-        return // Early exit if XP is 0, so that xp isn't set to 0 on login
+      if (this.totalXP <= 0)
+        return
 
-      let levelsGained = 0
-      let remainingXP = this.xp
+      const progress = getXPProgress(this.totalXP)
+      const leveledUp = progress.level > this.level
 
-      // Process all possible level-ups
-      while (remainingXP >= this.totalXpNeededForNextLevel) {
-        remainingXP -= this.totalXpNeededForNextLevel // Subtract XP needed for level-up
-        levelsGained++ // Increase level count
-        this.level++ // Increase level
-      }
+      this.level = progress.level
+      this.xp = progress.currentLevelXP
 
-      // Update state onlt if we leveled up
-      if (levelsGained > 0) {
-        this.xp = remainingXP // Update XP after level-ups
-        this.leveledUpTo = this.level // Track the current level-up
-        this.showPopup = true // Show level-up popup
+      if (leveledUp) {
+        this.leveledUpTo = this.level
+        this.showPopup = true
       }
     },
 
@@ -174,7 +175,7 @@ export const useXPStore = defineStore('xp', {
       return this.totalXP
     },
     totalXpNeededForNextLevel(): number {
-      return this.level * 10
+      return getXPForLevel(this.level)
     },
     xpProgress(): number {
       // Handle edge cases
@@ -184,7 +185,8 @@ export const useXPStore = defineStore('xp', {
         return 0
 
       // Calculate progress to next level
-      const progress = (this.xp / this.totalXpNeededForNextLevel) * 100
+      const xpNeeded = getXPForLevel(this.level)
+      const progress = (this.xp / xpNeeded) * 100
 
       // Clamp between 0-100%
       return Math.min(100, Math.max(0, progress))

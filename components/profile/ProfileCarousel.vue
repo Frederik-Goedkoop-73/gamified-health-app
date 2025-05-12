@@ -149,8 +149,8 @@ const currentTitle = computed(() => slideTitles[currentSlide.value])
           </CarouselItem>
 
           <!-- Slide 2: Banners -->
-          <CarouselItem>
-            <div class="grid grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-4 p-2">
+          <CarouselItem class="overflow-x-hidden">
+            <div class="grid grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-4 py-2 max-[400px]:px-1 sm:px-2">
               <!-- Default Banner -->
               <ProfileItemCard
                 key="none"

@@ -35,13 +35,13 @@ const lockedByLevel = computed(() => {
     :class="[
       bought || lockedByLevel
         ? 'bg-muted text-muted-foreground opacity-70 cursor-not-allowed'
-        : 'hover:shadow-md hover:scale-105 cursor-pointer',
+        : 'hover:shadow-md sm:hover:scale-102 cursor-pointer',
 
       // Border colors for rarities
       !lockedByLevel && rarity === 'rare' ? 'border-blue-500' : '',
       !lockedByLevel && rarity === 'epic' ? 'border-purple-500 ring-1 ring-purple-400' : '',
       !lockedByLevel && rarity === 'legendary' ? 'border-yellow-400 ring-2 ring-yellow-300 shadow-[0_0_12px_rgba(234,179,8,0.6)]' : '',
-      type === 'banner' ? 'min-w-80' : 'min-w-60',
+      type === 'banner' ? 'max-[400px]:max-w-75 sm:min-w-80 sm:max-w-100%' : 'min-w-60',
     ]"
     @click="!bought && !lockedByLevel && onBuy()"
   >
@@ -66,14 +66,14 @@ const lockedByLevel = computed(() => {
       </div>
     </CardHeader>
     <hr class="my-1 w-full">
-    <CardContent class="flex flex-col items-center justify-between gap-2 pt-2">
+    <CardContent class="m-auto flex flex-col items-center justify-between gap-2 pt-2">
       <!-- Banner Preview Skeleton -->
       <div
         v-if="type === 'banner'"
         class="h-40 w-full flex items-center gap-4 border-4 rounded-lg bg-secondary px-4 py-2"
         :style="bannerStyle"
       >
-        <div class="h-16 w-16 rounded-full bg-primary/30" />
+        <div class="size-12 rounded-full bg-primary/30 sm:size-16" />
         <div class="flex-1 space-y-2">
           <div class="h-4 w-3/4 rounded bg-primary/50" />
           <div class="h-4 w-2/3 rounded bg-primary/40" />
