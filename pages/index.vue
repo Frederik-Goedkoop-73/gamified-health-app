@@ -7,6 +7,7 @@ import { useStreakStore } from '@/stores/streakStore'
 import { useUserStore } from '@/stores/userStore'
 import { useXPStore } from '@/stores/xpStore'
 import NumberFlow from '@number-flow/vue'
+import { format } from 'date-fns'
 import { Coins, FileText, Trophy, User, Zap } from 'lucide-vue-next'
 import ConnectAccounts from '~/components/auth/ConnectAccounts.vue'
 import HealthSummaryCard from '~/components/health/HealthSummaryCard.vue'
@@ -23,12 +24,12 @@ const fitbitConnected = useFitbitAuth().isFitbitConnected
 
 // For sumamry cards
 const {
-  stepsData,
+  /* stepsData,
   distanceData,
-  sleepData,
+  sleepData, */
   heartData,
-  zoneData,
-  caloriesData,
+  /*   zoneData,
+  caloriesData, */
   steps,
   distance,
   sleep,
@@ -37,7 +38,7 @@ const {
   fetchData,
 } = useFitbitCachedData()
 
-const totalSteps = computed(() =>
+/* const totalSteps = computed(() =>
   fitbitConnected.value
     ? stepsData.value.reduce((s, d) => s + d.steps, 0)
     : 0,
@@ -59,9 +60,14 @@ const totalAZM = computed(() =>
 )
 const avgSleep = computed(() => {
   if (!fitbitConnected.value || sleepData.value.length === 0)
-    return '0.0'
-  const total = sleepData.value.reduce((sum, d) => sum + d.sleepHours, 0)
-  return (total / sleepData.value.length).toFixed(1)
+    return '0h00m'
+
+  const totalHours = sleepData.value.reduce((sum, d) => sum + d.sleepHours, 0)
+  const avgMinutes = Math.round((totalHours / sleepData.value.length) * 60)
+  const hours = Math.floor(avgMinutes / 60)
+  const minutes = avgMinutes % 60
+
+  return `${hours}h${minutes.toString().padStart(2, '0')}m`
 })
 const avgHeartRate = computed(() => {
   if (!fitbitConnected.value)
@@ -71,7 +77,7 @@ const avgHeartRate = computed(() => {
     return '0'
   const sum = filtered.reduce((s, d) => s + d.restingHeartRate, 0)
   return (sum / filtered.length).toFixed(0)
-})
+}) */
 
 // For quest progress
 const fitbitData = computed(() => ({
@@ -89,6 +95,57 @@ const fitbitData = computed(() => ({
     value: { fatBurnActiveZoneMinutes: 0, cardioActiveZoneMinutes: 0, peakActiveZoneMinutes: 0 },
   },
 }))
+
+// For summary today
+const today = format(new Date(), 'yyyy-MM-dd')
+
+// Steps today
+const stepsToday = computed(() => {
+  return Number(fitbitData.value.steps.find(d => d.dateTime === today)?.value ?? 0)
+})
+
+// Distance today (in km)
+const distanceToday = computed(() => {
+  return Number(fitbitData.value.distance.find(d => d.dateTime === today)?.value ?? 0).toFixed(2)
+})
+
+// Total sleep today
+const sleepToday = computed(() => {
+  const duration = fitbitData.value.sleep.find(d => d.dateOfSleep === today)?.duration ?? 0
+  const totalMinutes = Math.round(duration / 60000)
+  const hours = Math.floor(totalMinutes / 60)
+  const minutes = totalMinutes % 60
+  return `${hours}h${minutes.toString().padStart(2, '0')}m`
+})
+
+// Calories burned today
+const caloriesToday = computed(() => {
+  return Number(fitbitData.value.caloriesToday?.value ?? 0)
+})
+
+// Active Zone Minutes today
+const azmToday = computed(() => {
+  const today = format(new Date(), 'yyyy-MM-dd')
+  const todayEntry = fitbitData.value.AZM.find(entry => entry.dateTime === today)
+
+  if (!todayEntry)
+    return 0
+
+  const { fatBurnActiveZoneMinutes = 0, cardioActiveZoneMinutes = 0, peakActiveZoneMinutes = 0 } = todayEntry.value
+
+  return fatBurnActiveZoneMinutes + cardioActiveZoneMinutes + peakActiveZoneMinutes
+})
+
+// Average heart rate
+const avgHeartRate = computed(() => {
+  if (!fitbitConnected.value)
+    return '0'
+  const filtered = heartData.value.filter(d => d.restingHeartRate >= 10)
+  if (filtered.length === 0)
+    return '0'
+  const sum = filtered.reduce((s, d) => s + d.restingHeartRate, 0)
+  return (sum / filtered.length).toFixed(0)
+})
 
 // Initialise the composables
 const { user } = useAuth()
@@ -244,46 +301,45 @@ onMounted(async () => {
         <!-- Health card -->
         <Card>
           <CardHeader class="flex flex-row items-center justify-between pb-6 space-y-0">
-            <CardTitle>This Week's Health Summary</CardTitle>
+            <CardTitle>Today's Health Summary</CardTitle>
             <FileText class="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent class="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4 text-center text-black dark:text-white">
             <HealthSummaryCard
               title="Steps"
-              :value="totalSteps"
+              :value="stepsToday"
               suffix=" steps"
               icon="Footprints"
             />
             <HealthSummaryCard
               title="Distance"
-              :value="totalDistance"
+              :value="Number(distanceToday) || 0"
               suffix=" km"
               icon="Ruler"
             />
             <HealthSummaryCard
-              title="Total Sleep"
-              :value="totalAZM"
-              suffix=" h"
-              :sleep="avgSleep"
+              title="Sleep"
+              :value="0"
+              suffix=""
+              :sleep="sleepToday"
               icon="MoonStar"
             />
             <HealthSummaryCard
               title="Calories Burned"
-              :value="totalCalories"
+              :value="caloriesToday"
               suffix=" kcal"
               icon="Flame"
             />
             <HealthSummaryCard
               title="Active Zone Minutes"
-              :value="totalAZM"
+              :value="azmToday"
               suffix=" min"
               icon="Zap"
             />
             <HealthSummaryCard
               title="Avg Heart Rate"
-              :value="totalAZM"
+              :value="Number(avgHeartRate) || 0"
               suffix=" bpm"
-              :sleep="avgHeartRate"
               icon="HeartPulse"
             />
           </CardContent>

@@ -86,7 +86,7 @@ async function updateUsername() {
         rel="noopener"
         class="text-sm underline hover:text-primary"
       >
-        Watch ad for coins
+        Watch ad?
       </a>
     </div>
   </div>

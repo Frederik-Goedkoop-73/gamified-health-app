@@ -36,7 +36,7 @@ function resolveIcon(name: IconName) {
     <hr>
     <CardContent>
       <div class="flex items-center justify-start pt-3 text-2xl font-bold">
-        <NumberFlow v-if="title !== 'Avg Sleep' || 'Avg Heart Rate'" :value="value" :suffix="suffix" />
+        <NumberFlow v-if="title !== 'Sleep' && title !== 'Av Heart Rate'" :value="value" :suffix="suffix" />
         <span v-else>
           {{ sleep }} {{ suffix }}
         </span>
