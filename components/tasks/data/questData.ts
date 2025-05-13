@@ -2,7 +2,7 @@ import type { Quest } from '~/types/quest'
 
 export const dailyQuests: Quest[] = [
   // Steps - Normal
-  { id: 'daily-steps-1', title: 'Walk 6,000 steps', type: 'daily', activity: 'steps', unit: 'steps', target: 5000, rewardXP: 100, rewardCoins: 10, difficulty: 'normal', icon: 'Footprints' },
+  { id: 'daily-steps-1', title: 'Walk 6,000 steps', type: 'daily', activity: 'steps', unit: 'steps', target: 6000, rewardXP: 100, rewardCoins: 10, difficulty: 'normal', icon: 'Footprints' },
   { id: 'daily-steps-2', title: 'Walk 7,000 steps', type: 'daily', activity: 'steps', unit: 'steps', target: 7000, rewardXP: 110, rewardCoins: 11, difficulty: 'normal', icon: 'Footprints' },
   { id: 'daily-steps-3', title: 'Walk 8,000 steps', type: 'daily', activity: 'steps', unit: 'steps', target: 8000, rewardXP: 120, rewardCoins: 12, difficulty: 'normal', icon: 'Footprints' },
   { id: 'daily-steps-4', title: 'Walk 9,000 steps', type: 'daily', activity: 'steps', unit: 'steps', target: 9000, rewardXP: 130, rewardCoins: 13, difficulty: 'normal', icon: 'Footprints' },
@@ -42,8 +42,8 @@ export const dailyQuests: Quest[] = [
   { id: 'daily-AZM-5', title: 'Be active for 45 min', type: 'daily', activity: 'AZM', unit: 'm', target: 45, rewardXP: 140, rewardCoins: 14, difficulty: 'normal', icon: 'Zap' },
   // AZM - Hard
   { id: 'daily-AZM-hard-1', title: 'Be active for 60 min', type: 'daily', activity: 'AZM', unit: 'm', target: 60, rewardXP: 170, rewardCoins: 20, difficulty: 'hard', icon: 'Zap' },
-  { id: 'daily-AZM-hard-2', title: 'Be active for 75 min', type: 'daily', activity: 'AZM', unit: 'm', target: 90, rewardXP: 200, rewardCoins: 25, difficulty: 'hard', icon: 'Zap' },
-  { id: 'daily-AZM-hard-3', title: 'Be active for 90 min', type: 'daily', activity: 'AZM', unit: 'm', target: 120, rewardXP: 220, rewardCoins: 30, difficulty: 'hard', icon: 'Zap' },
+  { id: 'daily-AZM-hard-2', title: 'Be active for 90 min', type: 'daily', activity: 'AZM', unit: 'm', target: 90, rewardXP: 220, rewardCoins: 25, difficulty: 'hard', icon: 'Zap' },
+  { id: 'daily-AZM-hard-3', title: 'Be active for 120 min', type: 'daily', activity: 'AZM', unit: 'm', target: 120, rewardXP: 250, rewardCoins: 30, difficulty: 'hard', icon: 'Zap' },
 ]
 
 export const weeklyQuests: Quest[] = [
