@@ -234,7 +234,11 @@ async function sync() {
   try {
     syncing.value = true
     await clearCacheAndFetch()
-    window.location.reload()
+
+    // Delay reload to allow button state to update in DOM
+    setTimeout(() => {
+      window.location.reload()
+    }, 100)
   }
   catch (error) {
     console.error('Error syncing data:', error)
@@ -296,7 +300,7 @@ async function sync() {
               <NumberFlow :value="coinValue" />
             </div>
           </div>
-          <User class="h-4 w-4 text-muted-foreground" />
+          <User class="ml-2 h-4 min-w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
           <div class="text-2m font-bold">

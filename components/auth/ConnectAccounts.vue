@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { useAuth } from '@/composables/UseAuth'
 import { useFitbitAuth } from '@/composables/useFitbitAuth'
+import { useMediaQuery } from '@vueuse/core'
 
 const { isLoading, isLoggedIn, signInWithGoogle } = useAuth()
+const isMobile = useMediaQuery('(max-width: 400px)')
 
 // Handle Fitbit login (redirect to Fitbit auth)
 function initiateFitbitAuth() {
@@ -18,7 +20,7 @@ const fitbitConnected = useFitbitAuth().isFitbitConnected
     <!-- Google Button -->
     <Button
       :disabled="isLoggedIn"
-      class="flex items-center gap-2"
+      class="flex items-center gap-2 p-2"
       @click="signInWithGoogle"
     >
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="size-5">
@@ -27,17 +29,32 @@ const fitbitConnected = useFitbitAuth().isFitbitConnected
           fill="currentColor"
         />
       </svg>
-      <span>{{ isLoading ? 'Logging into Google' : (isLoggedIn ? 'Connected' : 'Connect with Google') }}</span>
+      <!-- Mobile -->
+      <span v-if="isMobile && !isLoading && !isLoggedIn">Connect</span>
+      <span v-else-if="isMobile && isLoading">...</span>
+
+      <!-- Desktop -->
+      <span v-else-if="!isMobile">
+        {{ isLoading ? 'Connecting' : (isLoggedIn ? 'Connected' : 'Connect with Google') }}
+      </span>
     </Button>
 
     <!-- Fitbit Button -->
     <Button
       :disabled="fitbitConnected || !isLoggedIn"
-      class="flex items-center gap-2"
+      class="flex items-center gap-2 p-2"
       @click="initiateFitbitAuth"
     >
       <img src="/Fitbit_app_icon_square.png" alt="Fitbit logo" class="h-6 w-6 rounded-full">
-      <span>{{ isLoggedIn ? (fitbitConnected ? 'Connected' : 'Connect to Fitbit') : 'First connect with Google' }}</span>
+      <!-- Mobile -->
+      <span v-if="isMobile && !fitbitConnected">
+        {{ isLoggedIn ? 'Connect' : 'Connect Google' }}
+      </span>
+
+      <!-- Desktop -->
+      <span v-else-if="!isMobile">
+        {{ isLoggedIn ? (fitbitConnected ? 'Connected' : 'Connect to Fitbit') : 'First connect with Google' }}
+      </span>
     </Button>
   </div>
 </template>

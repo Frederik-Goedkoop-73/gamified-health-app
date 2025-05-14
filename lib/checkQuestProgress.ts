@@ -1,5 +1,6 @@
 import type { FitbitActiveZoneMinutes, FitbitCalories, FitbitSimpleSleepLog, FitbitSteps } from '@/types/fitbit'
 import type { Quest } from '@/types/quest'
+import { format, startOfWeek } from 'date-fns'
 import { useQuestStore } from '~/stores/questStore'
 
 interface PlayerFitbitData {
@@ -15,6 +16,11 @@ export function checkQuestProgress(quest: Quest, data: PlayerFitbitData) {
   let currentProgress = 0
 
   const isWeekly = quest.type === 'weekly'
+
+  // AZM helper variables
+  const today = format(new Date(), 'yyyy-MM-dd')
+  const weekStart = format(startOfWeek(new Date(), { weekStartsOn: 1 }), 'yyyy-MM-dd')
+  const azmEntries = data.AZM ?? []
 
   switch (quest.activity) {
     case 'steps':
@@ -45,7 +51,8 @@ export function checkQuestProgress(quest: Quest, data: PlayerFitbitData) {
         currentProgress = data.calories.length > 0 ? Number(data.calories[data.calories.length - 1].value) : 0
       break
 
-    case 'AZM':
+      /* case 'AZM':
+
       if (isWeekly) {
         currentProgress = data.AZM.reduce((sum, z) => {
           const v = z.value
@@ -61,6 +68,37 @@ export function checkQuestProgress(quest: Quest, data: PlayerFitbitData) {
           = (v.fatBurnActiveZoneMinutes ?? 0)
             + (v.cardioActiveZoneMinutes ?? 0)
             + (v.peakActiveZoneMinutes ?? 0)
+      }
+      break */
+
+    case 'AZM':
+      if (isWeekly) {
+        const first = azmEntries[0]
+        if (!first || first.dateTime !== weekStart) {
+          currentProgress = 0
+          break
+        }
+
+        currentProgress = azmEntries.reduce((sum, z) => {
+          const v = z.value
+          return sum
+            + (v.fatBurnActiveZoneMinutes ?? 0)
+            + (v.cardioActiveZoneMinutes ?? 0)
+            + (v.peakActiveZoneMinutes ?? 0)
+        }, 0)
+      }
+      else {
+        const latest = azmEntries.at(-1)
+        if (!latest || latest.dateTime !== today) {
+          currentProgress = 0
+          break
+        }
+
+        const v = latest.value
+        currentProgress
+      = (v.fatBurnActiveZoneMinutes ?? 0)
+        + (v.cardioActiveZoneMinutes ?? 0)
+        + (v.peakActiveZoneMinutes ?? 0)
       }
       break
 

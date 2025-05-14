@@ -54,11 +54,15 @@ const syncing = ref(false)
 async function sync() {
   try {
     syncing.value = true
-    clearCacheAndFetch()
-    window.location.reload()
+    await clearCacheAndFetch()
+
+    // Delay reload to allow button state to update in DOM
+    setTimeout(() => {
+      window.location.reload()
+    }, 100)
   }
   catch (error) {
-    console.error('Error clearing cache:', error)
+    console.error('Error syncing data:', error)
   }
   finally {
     syncing.value = false
@@ -68,21 +72,30 @@ async function sync() {
 
 <template>
   <div class="w-full flex flex-col gap-4">
-    <div class="flex flex-wrap items-center justify-between gap-2">
-      <h2 class="text-2xl font-bold tracking-tight">
-        Quests
-      </h2>
-      <div class="flex items-center space-x-2">
-        <Button
-          v-if="fitbitConnected"
-          :disabled="syncing"
-          class="flex items-center gap-2"
-          @click="() => sync()"
-        >
-          <span v-if="!syncing">Sync Latest Data</span>
-          <span v-else>Syncing...</span>
-        </Button>
+    <div class="flex flex-wrap items-start justify-between gap-2 sm:flex-col sm:items-start">
+      <div class="w-full flex items-center justify-between">
+        <h2 class="text-2xl font-bold tracking-tight">
+          Quests
+        </h2>
+        <div class="ml-auto flex items-center space-x-2">
+          <Button
+            v-if="fitbitConnected"
+            :disabled="syncing"
+            class="flex items-center gap-2"
+            @click="() => sync()"
+          >
+            <span v-if="!syncing">Sync Latest Data</span>
+            <span v-else>Syncing...</span>
+          </Button>
+        </div>
       </div>
+
+      <i
+        v-if="fitbitConnected"
+        class="text-muted-foreground sm:mt-2"
+      >
+        <b>Tip: </b>Get Distance through Running or Walking
+      </i>
     </div>
     <main class="flex flex-1 flex-col gap-4 md:gap-8">
       <AuthConnectAccounts />
