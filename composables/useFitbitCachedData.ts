@@ -117,6 +117,7 @@ export function useFitbitCachedData() {
         fetchFitbitData<FitbitDistance>('activities/distance/date/today/7d'),
       ])
 
+      const today = format(new Date(), 'yyyy-MM-dd')
       const weekDates = getDatesThisWeek()
       const startOfThisWeek = startOfWeek(new Date(), { weekStartsOn: 1 }) // Monday
       const startKey = format(startOfThisWeek, 'yyyy-MM-dd')
@@ -129,11 +130,14 @@ export function useFitbitCachedData() {
       rawSleep.value = sleepResponses.flatMap(r => r.sleep)
 
       const filteredSteps = stepsRaw['activities-steps'].filter(d => d.dateTime >= startKey)
+      const azmRaw = zoneRaw['activities-active-zone-minutes'].filter(d => d.dateTime >= startKey)
+      const azmLatest = azmRaw.at(-1) ?? null
       steps.value = filteredSteps
       heart.value = heartRaw['activities-heart'].filter(d => d.dateTime >= startKey)
       sleep.value = sleepResponses.flatMap(resp => resp.sleep).filter(d => d.dateOfSleep >= startKey)
       calories.value = caloriesRaw['activities-calories'].filter(d => d.dateTime >= startKey)
-      azm.value = zoneRaw['activities-active-zone-minutes'].filter(d => d.dateTime >= startKey)
+      /* azm.value = zoneRaw['activities-active-zone-minutes'].filter(d => d.dateTime >= startKey) */
+      azm.value = azmLatest && azmLatest.dateTime === today ? azmRaw : []
       distance.value = distanceRaw['activities-distance'].filter(d => d.dateTime >= startKey)
 
       const stepsMap = new Map(steps.value.map(e => [e.dateTime, e]))

@@ -49,6 +49,21 @@ const { dailyQuestProgress, weeklyQuestProgress } = useQuestProgress(fitbitData)
 // For data fetch on sync button click
 const fitbit = useFitbitCachedData()
 const clearCacheAndFetch = fitbit.clearCacheAndFetch!
+const syncing = ref(false)
+
+async function sync() {
+  try {
+    syncing.value = true
+    clearCacheAndFetch()
+    window.location.reload()
+  }
+  catch (error) {
+    console.error('Error clearing cache:', error)
+  }
+  finally {
+    syncing.value = false
+  }
+}
 </script>
 
 <template>
@@ -58,8 +73,13 @@ const clearCacheAndFetch = fitbit.clearCacheAndFetch!
         Quests
       </h2>
       <div class="flex items-center space-x-2">
-        <Button v-if="fitbitConnected" class="flex items-center gap-2" @click="() => clearCacheAndFetch()">
-          <span v-if="!fitbit_loading">Sync Latest Data</span>
+        <Button
+          v-if="fitbitConnected"
+          :disabled="syncing"
+          class="flex items-center gap-2"
+          @click="() => sync()"
+        >
+          <span v-if="!syncing">Sync Latest Data</span>
           <span v-else>Syncing...</span>
         </Button>
       </div>

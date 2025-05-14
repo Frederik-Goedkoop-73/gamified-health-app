@@ -60,8 +60,13 @@ const lockedByLevel = computed(() => {
           'bg-blue-500 text-white': rarity === 'rare',
           'bg-purple-500 text-white': rarity === 'epic',
           'bg-yellow-400 text-black': rarity === 'legendary',
+          /* 'bg-gradient-to-r from-pink-500 via-yellow-500 to-purple-500 text-white': rarity === 'mythic' */
         }"
       >
+        <!-- :style="rarity === 'mythic' ? {
+          background: 'linear-gradient(-45deg, dc2627, #f97317, #facb14, #15a34a, #2563eb)',
+          color: 'white',
+        } : undefined" -->
         {{ rarity }}
       </div>
     </CardHeader>

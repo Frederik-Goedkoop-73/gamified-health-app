@@ -224,6 +224,25 @@ onMounted(async () => {
   await fetchData()
   await questStore.fetchQuests()
 })
+
+// For data fetch on sync button click
+const fitbit = useFitbitCachedData()
+const clearCacheAndFetch = fitbit.clearCacheAndFetch!
+const syncing = ref(false)
+
+async function sync() {
+  try {
+    syncing.value = true
+    await clearCacheAndFetch()
+    window.location.reload()
+  }
+  catch (error) {
+    console.error('Error syncing data:', error)
+  }
+  finally {
+    syncing.value = false
+  }
+}
 </script>
 
 <template>
@@ -232,6 +251,17 @@ onMounted(async () => {
       <h2 class="text-2xl font-bold tracking-tight">
         Dashboard
       </h2>
+      <div class="flex items-center space-x-2">
+        <Button
+          v-if="fitbitConnected"
+          :disabled="syncing"
+          class="flex items-center gap-2"
+          @click="() => sync()"
+        >
+          <span v-if="!syncing">Sync Latest Data</span>
+          <span v-else>Syncing...</span>
+        </Button>
+      </div>
     </div>
     <!-- Main body under header -->
     <main class="flex flex-1 flex-col gap-4 md:gap-8">

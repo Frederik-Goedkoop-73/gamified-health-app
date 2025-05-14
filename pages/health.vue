@@ -96,11 +96,23 @@ const chartData = computed(() => [
   },
 ])
 
-async function syncChartData() {
-  const { clear } = useLocalCache('fitbit-weekly', 0)
-  clear() // Clear the existing cache
+// For data fetch on sync button click
+const fitbit = useFitbitCachedData()
+const clearCacheAndFetch = fitbit.clearCacheAndFetch!
+const syncing = ref(false)
 
-  await fetchData() // Refetch and repopulate cache
+async function sync() {
+  try {
+    syncing.value = true
+    clearCacheAndFetch()
+    window.location.reload()
+  }
+  catch (error) {
+    console.error('Error clearing cache:', error)
+  }
+  finally {
+    syncing.value = false
+  }
 }
 </script>
 
@@ -110,10 +122,15 @@ async function syncChartData() {
       <h2 class="text-2xl font-bold tracking-tight">
         Health Stats
       </h2>
-      <i v-if="fitbitConnected" class="m-3 text-muted-foreground"><b>Tip: </b>Keep your bluetooth on for syncing!</i>
+      <i v-if="fitbitConnected" class="m-3 text-muted-foreground"><b>Tip: </b>Sync in the Fitbit app before syncing here!</i>
       <div class="flex items-center space-x-2">
-        <Button v-if="fitbitConnected" class="flex items-center gap-2" @click="syncChartData">
-          <span v-if="!fitbit_loading">Sync Latest Data</span>
+        <Button
+          v-if="fitbitConnected"
+          :disabled="syncing"
+          class="flex items-center gap-2"
+          @click="() => sync()"
+        >
+          <span v-if="!syncing">Sync Latest Data</span>
           <span v-else>Syncing...</span>
         </Button>
       </div>

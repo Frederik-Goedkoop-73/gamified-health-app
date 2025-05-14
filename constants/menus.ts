@@ -406,17 +406,6 @@ export const navMenuBottom: NavMenuItems = [
   },
 ]
 
-/*       {
-        title: 'Email',
-        icon: 'i-lucide-mail',
-        link: '/email',
-      },
-      {
-        title: 'Tasks',
-        icon: 'i-lucide-calendar-check-2',
-        link: '/tasks',
-      }, */
-
 /* {
         title: 'Settings',
         icon: 'i-lucide-settings',
