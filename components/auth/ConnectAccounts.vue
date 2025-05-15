@@ -4,7 +4,7 @@ import { useFitbitAuth } from '@/composables/useFitbitAuth'
 import { useMediaQuery } from '@vueuse/core'
 
 const { isLoading, isLoggedIn, signInWithGoogle } = useAuth()
-const isMobile = useMediaQuery('(max-width: 400px)')
+const isMobile = useMediaQuery('(max-width: 540px)')
 
 // Handle Fitbit login (redirect to Fitbit auth)
 function initiateFitbitAuth() {

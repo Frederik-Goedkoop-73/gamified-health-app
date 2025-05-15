@@ -304,16 +304,18 @@ async function sync() {
         </CardHeader>
         <CardContent>
           <div class="text-2m font-bold">
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-4 max-[400px]:gap-3">
               <!-- Avatar image -->
-              <div class="relative h-16 w-16 overflow-hidden rounded-md">
+              <div class="relative h-16 min-w-12 w-16 overflow-hidden rounded-md">
                 <img
                   :src="AVATAR_PATHS[selectedAvatar] || AVATAR_PATHS.red" :alt="`Selected avatar: ${selectedAvatar}`"
                   width="64" height="64" class="h-16 w-16 object-contain" loading="eager"
                 >
                 <!-- https://tailwindcss.com/docs/object-fit class="h-full w-full object-contain" -->
               </div>
-              <p>Lvl.{{ xpStore.level }}</p>
+              <p class="text-auto max-[400px]:text-sm">
+                Lvl.{{ xpStore.level }}
+              </p>
               <!-- Shadcn Progress Bar -->
               <div class="mt-6 w-full flex flex-col gap-2">
                 <Progress v-model="progressValue" />
@@ -324,7 +326,9 @@ async function sync() {
                 </p>
               </div>
 
-              <p>Lvl.{{ xpStore.level + 1 }}</p>
+              <p class="text-auto max-[400px]:text-sm">
+                Lvl.{{ xpStore.level + 1 }}
+              </p>
             </div>
           </div>
         </CardContent>
