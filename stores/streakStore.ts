@@ -7,12 +7,14 @@ import { useFirebase } from '~/server/utils/firebase'
 // Type definition
 interface StreakState {
   streak: number
+  maxStreak: number
   lastLoginDate: Date | null
 }
 
 export const useStreakStore = defineStore('streak', {
   state: (): StreakState => ({
     streak: 0, // Local streak balance
+    maxStreak: 0, // Local max streak balance
     lastLoginDate: null,
   }),
 
@@ -32,6 +34,7 @@ export const useStreakStore = defineStore('streak', {
           if (docSnap.exists()) {
             const data = docSnap.data()
             this.streak = data.streak ?? 0 // Update local state with Firestore data, ?? instead of || because only want to return 0 for undefined or null
+            this.maxStreak = data.maxStreak ?? 0 // Update local state with Firestore data
             this.lastLoginDate = (data.lastLoginDate as Timestamp)?.toDate() ?? null
           }
         }
@@ -77,6 +80,11 @@ export const useStreakStore = defineStore('streak', {
     // Add streak and update Firestore
     async addStreak(streakAmount: number): Promise<void> {
       this.streak += streakAmount // Update local state
+
+      if (this.streak > this.maxStreak) {
+        this.maxStreak = this.streak // Update maxStreak if current streak is greater
+      }
+
       await this.saveStreakToFirestore() // Save to Firestore
     },
 
@@ -102,6 +110,7 @@ export const useStreakStore = defineStore('streak', {
           doc(db, 'users', currentUser.uid),
           {
             streak: this.streak, // Save the current streak balance
+            maxStreak: this.maxStreak, // Save the current max streak balance
             lastLoginDate: new Date(), // Always update lastLoginDate to now
           },
           { merge: true },

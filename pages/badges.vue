@@ -1,20 +1,45 @@
 <script setup lang="ts">
-// import NumberFlow from '@number-flow/vue'
-import { Award } from 'lucide-vue-next'
+import { useStarStore } from '@/stores/starStore'
+import NumberFlow from '@number-flow/vue'
+import { Award, Star } from 'lucide-vue-next'
+import BadgeConstruction from '~/components/badges/BadgeConstruction.vue'
+import BadgeInfo from '~/components/info/BadgeInfo.vue'
 import { badges } from '~/components/tasks/data/badgeData.js'
+
+const starStore = useStarStore()
+const starValue = computed(() => starStore.stars)
 </script>
 
 <template>
   <div class="w-full flex flex-col gap-4">
     <div class="flex flex-wrap items-center justify-between gap-2">
-      <h2 class="text-2xl font-bold tracking-tight">
-        Badges
-      </h2>
+      <div class="flex items-center justify-between gap-2">
+        <h2 class="text-2xl font-bold tracking-tight">
+          Badges
+        </h2>
+        <BadgeInfo />
+      </div>
+      <div>
+        <div class="flex flex-row items-center gap-2">
+          <h3 class="flex flex-row items-center gap-2 text-muted-foreground">
+            <strong>Stars: </strong>
+            <NumberFlow
+              :value="starValue"
+            />
+          </h3>
+          <Star
+            class="size-4"
+            :class="starValue !== 0 ? 'text-blue-500' : 'text-muted-foreground'"
+          />
+        </div>
+      </div>
     </div>
     <!-- Main body under header -->
     <main class="flex flex-1 flex-col gap-4 md:gap-8">
-      <!-- Daily quests -->
-      <Card class="xl:col-span-2">
+      <BadgeConstruction />
+
+      <!-- Badges Grid -->
+      <!-- <Card class="xl:col-span-2">
         <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
           <CardTitle class="text-2xl font-bold">
             Achievement Badges
@@ -24,7 +49,6 @@ import { badges } from '~/components/tasks/data/badgeData.js'
 
         <CardContent class="space-y-8">
           <div v-for="category in badges" :key="category.category" class="badge-category">
-            <!-- Category Header -->
             <div class="category-header mb-4">
               <h3 class="flex items-center gap-2 text-xl text-primary font-semibold">
                 <Award class="h-5 w-5" />
@@ -33,7 +57,6 @@ import { badges } from '~/components/tasks/data/badgeData.js'
               <hr class="mt-2 border-t border-muted">
             </div>
 
-            <!-- Badges Grid -->
             <div class="badges-grid">
               <div v-for="badge in category.badges" :key="badge.tier" class="badge-item">
                 <div class="badge-content">
@@ -57,6 +80,7 @@ import { badges } from '~/components/tasks/data/badgeData.js'
           </div>
         </CardContent>
       </card>
+    -->
     </main>
   </div>
 </template>

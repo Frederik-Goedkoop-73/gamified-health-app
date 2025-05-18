@@ -24,11 +24,12 @@ export const navMenu: NavMenu[] = [
         icon: 'i-lucide-trophy',
         link: '/quests',
       },
-      /* {
+      {
         title: 'Badges',
         icon: 'i-lucide-award',
         link: '/badges',
-      }, */
+        /* new: true, */
+      },
     ],
   },
   {

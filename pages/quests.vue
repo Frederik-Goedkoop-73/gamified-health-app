@@ -1,14 +1,17 @@
 <script setup lang="ts">
 // import NumberFlow from '@number-flow/vue'
 import { useFitbitAuth } from '@/composables/useFitbitAuth'
+import { useQuestProgress } from '@/composables/useQuestProgress'
 import { Trophy } from 'lucide-vue-next'
+import QuestInfo from '~/components/info/QuestInfo.vue'
 import QuestCard from '~/components/quests/QuestCard.vue'
 import { useFitbitCachedData } from '~/composables/useFitbitCachedData'
 import { useQuestStore } from '~/stores/questStore'
-import { useQuestProgress } from '../composables/useQuestProgress'
+import { useHealthTotals } from '../composables/useHealthTotals'
 
 // Check fitbit auth state
 const fitbitConnected = useFitbitAuth().isFitbitConnected
+const { updateThisWeeksTotals } = useHealthTotals()
 
 // Stores
 const questStore = useQuestStore()
@@ -21,11 +24,6 @@ const {
   calories,
   azm,
 } = useFitbitCachedData()
-
-onMounted(async () => {
-  await fetchData()
-  await questStore.fetchQuests()
-})
 
 const fitbitData = computed(() => ({
   steps: steps.value ?? [],
@@ -42,6 +40,18 @@ const fitbitData = computed(() => ({
     value: { fatBurnActiveZoneMinutes: 0, cardioActiveZoneMinutes: 0, peakActiveZoneMinutes: 0 },
   },
 }))
+
+onMounted(async () => {
+  await fetchData()
+
+  // Update this week's totals from newly fetched data
+  updateThisWeeksTotals(fitbitData.value)
+
+  // If a new week has started, add this week's totals to real totals
+  // await updateRealTotalsIfNeeded()
+
+  await questStore.fetchQuests()
+})
 
 // Quest progress
 const { dailyQuestProgress, weeklyQuestProgress } = useQuestProgress(fitbitData)
@@ -74,9 +84,12 @@ async function sync() {
   <div class="w-full flex flex-col gap-4">
     <div class="flex flex-wrap items-start justify-between gap-2 sm:flex-col sm:items-start">
       <div class="w-full flex items-center justify-between">
-        <h2 class="text-2xl font-bold tracking-tight">
-          Quests
-        </h2>
+        <div class="flex items-center justify-between gap-2">
+          <h2 class="text-2xl font-bold tracking-tight">
+            Quests
+          </h2>
+          <QuestInfo />
+        </div>
         <div class="ml-auto flex items-center space-x-2">
           <Button
             v-if="fitbitConnected"

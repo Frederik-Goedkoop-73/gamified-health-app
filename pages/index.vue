@@ -11,6 +11,7 @@ import { format } from 'date-fns'
 import { Coins, FileText, Trophy, User, Zap } from 'lucide-vue-next'
 import ConnectAccounts from '~/components/auth/ConnectAccounts.vue'
 import HealthSummaryCard from '~/components/health/HealthSummaryCard.vue'
+import DashboardInfo from '~/components/info/DashboardInfo.vue'
 import QuestCard from '~/components/quests/QuestCard.vue'
 import { AVATAR_PATHS } from '~/components/tasks/data/avatarData'
 import { isBannerId } from '~/components/tasks/data/bannerData'
@@ -37,47 +38,6 @@ const {
   azm,
   fetchData,
 } = useFitbitCachedData()
-
-/* const totalSteps = computed(() =>
-  fitbitConnected.value
-    ? stepsData.value.reduce((s, d) => s + d.steps, 0)
-    : 0,
-)
-const totalDistance = computed(() =>
-  fitbitConnected.value
-    ? Math.floor(distanceData.value.reduce((sum, d) => sum + d.distance, 0))
-    : 0,
-)
-const totalCalories = computed(() =>
-  fitbitConnected.value
-    ? caloriesData.value.reduce((sum, d) => sum + d.calories, 0)
-    : 0,
-)
-const totalAZM = computed(() =>
-  fitbitConnected.value
-    ? zoneData.value.reduce((sum, d) => sum + d.minutes, 0)
-    : 0,
-)
-const avgSleep = computed(() => {
-  if (!fitbitConnected.value || sleepData.value.length === 0)
-    return '0h00m'
-
-  const totalHours = sleepData.value.reduce((sum, d) => sum + d.sleepHours, 0)
-  const avgMinutes = Math.round((totalHours / sleepData.value.length) * 60)
-  const hours = Math.floor(avgMinutes / 60)
-  const minutes = avgMinutes % 60
-
-  return `${hours}h${minutes.toString().padStart(2, '0')}m`
-})
-const avgHeartRate = computed(() => {
-  if (!fitbitConnected.value)
-    return '0'
-  const filtered = heartData.value.filter(d => d.restingHeartRate >= 10)
-  if (filtered.length === 0)
-    return '0'
-  const sum = filtered.reduce((s, d) => s + d.restingHeartRate, 0)
-  return (sum / filtered.length).toFixed(0)
-}) */
 
 // For quest progress
 const fitbitData = computed(() => ({
@@ -157,6 +117,7 @@ const coinStore = useCoinStore()
 const streakStore = useStreakStore()
 const userStore = useUserStore()
 const playerStore = usePlayerStore()
+const { updateThisWeeksTotals } = useHealthTotals()
 
 const { selectedAvatar } = storeToRefs(playerStore)
 
@@ -222,6 +183,7 @@ watch(() => user.value, async (newUser) => {
 
 onMounted(async () => {
   await fetchData()
+  updateThisWeeksTotals(fitbitData.value)
   await questStore.fetchQuests()
 })
 
@@ -252,9 +214,12 @@ async function sync() {
 <template>
   <div class="w-full flex flex-col gap-4">
     <div class="flex flex-wrap items-center justify-between gap-2">
-      <h2 class="text-2xl font-bold tracking-tight">
-        Dashboard
-      </h2>
+      <div class="flex items-center justify-between gap-2">
+        <h2 class="text-2xl font-bold tracking-tight">
+          Dashboard
+        </h2>
+        <DashboardInfo />
+      </div>
       <div class="flex items-center space-x-2">
         <Button
           v-if="fitbitConnected"
@@ -275,7 +240,9 @@ async function sync() {
         <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
           <CardTitle class="text-md font-medium">
             <NuxtLink to="/profile" class="text-md cursor-pointer font-medium">
-              <p>{{ userStore.username || 'Guest' }}</p>
+              <p class="whitespace-nowrap">
+                {{ userStore.username || 'Guest' }}
+              </p>
             </NuxtLink><!-- add username {{ username }} -->
           </CardTitle>
           <div class="text-s w-85% flex flex-row items-center justify-end gap-5% text-muted-foreground">

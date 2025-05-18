@@ -7,6 +7,7 @@ import { useUserStore } from '@/stores/userStore'
 import { useXPStore } from '@/stores/xpStore'
 import NumberFlow from '@number-flow/vue'
 import { Coins, User, Zap } from 'lucide-vue-next'
+import ProfileInfo from '~/components/info/ProfileInfo.vue'
 import { AVATAR_PATHS } from '~/components/tasks/data/avatarData'
 import { isBannerId } from '~/components/tasks/data/bannerData'
 import { getBannerInlineStyle } from '~/composables/useBannerStyle'
@@ -58,9 +59,12 @@ watch(() => user.value, async (newUser) => {
 <template>
   <div class="w-full flex flex-col gap-4">
     <div class="flex flex-wrap items-center justify-between gap-2">
-      <h2 class="text-2xl font-bold tracking-tight">
-        Profile
-      </h2>
+      <div class="flex items-center justify-between gap-2">
+        <h2 class="text-2xl font-bold tracking-tight">
+          Profile
+        </h2>
+        <ProfileInfo />
+      </div>
     </div>
 
     <main class="flex flex-1 flex-col gap-4 md:gap-8">
@@ -68,7 +72,11 @@ watch(() => user.value, async (newUser) => {
       <Card :style="bannerStyle">
         <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
           <CardTitle class="text-md font-medium">
-            <p>{{ userStore.username || 'Guest' }}</p>
+            <NuxtLink to="/profile" class="text-md cursor-pointer font-medium">
+              <p class="whitespace-nowrap">
+                {{ userStore.username || 'Guest' }}
+              </p>
+            </NuxtLink><!-- add username {{ username }} -->
           </CardTitle>
           <div class="text-s w-85% flex flex-row items-center justify-end gap-5% text-muted-foreground">
             <!-- Streak value -->
@@ -79,9 +87,7 @@ watch(() => user.value, async (newUser) => {
                   'text-muted-foreground': streakValue === 0,
                 }"
               />
-              <NumberFlow
-                :value="streakValue"
-              />
+              <NumberFlow :value="streakValue" />
             </div>
             <!-- Coin value -->
             <div class="flex flex-row items-center gap-2">
@@ -91,40 +97,38 @@ watch(() => user.value, async (newUser) => {
                   'text-muted-foreground': coinValue === 0,
                 }"
               />
-              <NumberFlow
-                :value="coinValue"
-              />
+              <NumberFlow :value="coinValue" />
             </div>
           </div>
-          <User class="h-4 w-4 text-muted-foreground" />
+          <User class="ml-2 h-4 min-w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
           <div class="text-2m font-bold">
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-4 max-[400px]:gap-3">
               <!-- Avatar image -->
-              <div class="relative size-16 overflow-visible rounded-md">
+              <div class="relative h-16 min-w-12 w-16 overflow-hidden rounded-md">
                 <img
-                  :src="AVATAR_PATHS[selectedAvatar] || AVATAR_PATHS.red"
-                  :alt="`Selected avatar: ${selectedAvatar}`"
-                  class="relative z-10 h-full w-full object-contain"
-                > <!-- https://tailwindcss.com/docs/object-fit -->
+                  :src="AVATAR_PATHS[selectedAvatar] || AVATAR_PATHS.red" :alt="`Selected avatar: ${selectedAvatar}`"
+                  width="64" height="64" class="h-16 w-16 object-contain" loading="eager"
+                >
+                <!-- https://tailwindcss.com/docs/object-fit class="h-full w-full object-contain" -->
               </div>
-              <p>Lvl.{{ xpStore.level }}</p>
+              <p class="text-auto max-[400px]:text-sm">
+                Lvl.{{ xpStore.level }}
+              </p>
               <!-- Shadcn Progress Bar -->
               <div class="mt-6 w-full flex flex-col gap-2">
                 <Progress v-model="progressValue" />
                 <p class="flex justify-center text-xs text-muted-foreground font-normal">
-                  <NumberFlow
-                    :value="xpProgressValue" suffix=" XP"
-                  />
+                  <NumberFlow :value="xpProgressValue" suffix=" XP" />
                   &nbsp;/&nbsp;
-                  <NumberFlow
-                    :value="xpToNextLevelValue" suffix=" XP"
-                  />
+                  <NumberFlow :value="xpToNextLevelValue" suffix=" XP" />
                 </p>
               </div>
 
-              <p>Lvl.{{ xpStore.level + 1 }}</p>
+              <p class="text-auto max-[400px]:text-sm">
+                Lvl.{{ xpStore.level + 1 }}
+              </p>
             </div>
           </div>
         </CardContent>

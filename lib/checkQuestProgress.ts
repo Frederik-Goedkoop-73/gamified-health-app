@@ -51,26 +51,6 @@ export function checkQuestProgress(quest: Quest, data: PlayerFitbitData) {
         currentProgress = data.calories.length > 0 ? Number(data.calories[data.calories.length - 1].value) : 0
       break
 
-      /* case 'AZM':
-
-      if (isWeekly) {
-        currentProgress = data.AZM.reduce((sum, z) => {
-          const v = z.value
-          return sum
-            + (v.fatBurnActiveZoneMinutes ?? 0)
-            + (v.cardioActiveZoneMinutes ?? 0)
-            + (v.peakActiveZoneMinutes ?? 0)
-        }, 0)
-      }
-      else if (data.AZM.length > 0) {
-        const v = data.AZM.at(-1)!.value
-        currentProgress
-          = (v.fatBurnActiveZoneMinutes ?? 0)
-            + (v.cardioActiveZoneMinutes ?? 0)
-            + (v.peakActiveZoneMinutes ?? 0)
-      }
-      break */
-
     case 'AZM':
       if (isWeekly) {
         const first = azmEntries[0]
