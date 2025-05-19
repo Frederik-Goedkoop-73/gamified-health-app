@@ -43,14 +43,12 @@ const fitbitData = computed(() => ({
 
 onMounted(async () => {
   await fetchData()
+  await questStore.fetchQuests() // Possibly update lock + save to Firebase
 
-  // Update this week's totals from newly fetched data
+  // Wait for the new lock to propagate
+  await nextTick()
+
   updateThisWeeksTotals(fitbitData.value)
-
-  // If a new week has started, add this week's totals to real totals
-  // await updateRealTotalsIfNeeded()
-
-  await questStore.fetchQuests()
 })
 
 // Quest progress

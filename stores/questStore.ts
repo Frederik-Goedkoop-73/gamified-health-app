@@ -1,12 +1,23 @@
 import type { Quest } from '@/types/quest'
-import { format } from 'date-fns'
+import { format, formatISO, startOfISOWeek } from 'date-fns'
 import { doc, getDoc, setDoc } from 'firebase/firestore'
 // stores/questStore.ts
 import { defineStore } from 'pinia'
 import { dailyQuests as dailyQuestsArray, weeklyQuests as weeklyQuestsArray } from '~/components/tasks/data/questData'
 import { useFitbitCachedData } from '~/composables/useFitbitCachedData'
+import { useHealthTotals } from '~/composables/useHealthTotals'
 import { getRandomQuests } from '~/lib/getRandomQuests'
 import { useFirebase } from '~/server/utils/firebase'
+import { useAppState } from '~/stores/weeklyTotalsState'
+
+interface ThisWeeksTotals {
+  steps: number
+  distance: number
+  sleep: number
+  calories: number
+  azm: number
+  weekStart: string // ISO date string
+}
 
 // For data fetch on new quest generation
 const fitbit = useFitbitCachedData()
@@ -61,6 +72,7 @@ export const useQuestStore = defineStore('quest', () => {
       }
 
       if (weeklyQuestsGeneratedAt.value !== mondayKey) {
+        await saveTotalsToFirebase()
         await generateNewWeeklyQuests(mondayKey)
         questsRefreshed = true
       }
@@ -132,6 +144,64 @@ export const useQuestStore = defineStore('quest', () => {
       dailyQuestsGeneratedAt: dailyQuestsGeneratedAt.value,
       weeklyQuestsGeneratedAt: weeklyQuestsGeneratedAt.value,
     }, { merge: true })
+  }
+
+  async function saveTotalsToFirebase() {
+    const { auth, db } = useFirebase()
+    const user = auth.currentUser
+    if (!user)
+      return
+
+    const { updateLockedWeekStart } = useAppState()
+    const { updateThisWeeksTotals } = useHealthTotals()
+    const { get } = useLocalCache<ThisWeeksTotals>('fitbit-weekly-totals', 1000 * 60 * 60 * 24 * 7)
+    const totals = get()
+    if (!totals || !totals.weekStart)
+      return
+
+    const docRef = doc(db, 'users', user.uid, 'weeklyTotals', totals.weekStart)
+
+    // Fetch existing totals to merge with
+    const existingSnap = await getDoc(docRef)
+    const existing = existingSnap.exists() ? existingSnap.data() : {}
+
+    // Merge values manually
+    const mergedTotals: ThisWeeksTotals = {
+      weekStart: totals.weekStart,
+      steps: (existing.steps || 0) + totals.steps,
+      distance: (existing.distance || 0) + totals.distance,
+      sleep: (existing.sleep || 0) + totals.sleep,
+      calories: (existing.calories || 0) + totals.calories,
+      azm: (existing.azm || 0) + totals.azm,
+    }
+
+    // Save merged result
+    await setDoc(docRef, mergedTotals)
+
+    // Unlock updates for the new week
+    const thisWeekStart = formatISO(startOfISOWeek(new Date()), { representation: 'date' })
+    updateLockedWeekStart(thisWeekStart)
+
+    await nextTick()
+
+    // Update cache again
+    const fitbitData = computed(() => ({
+      steps: fitbit.steps.value ?? [],
+      distance: (fitbit.distance.value ?? []).map(({ dateTime, value }) => ({
+        dateTime,
+        value: Number(Number(value).toFixed(2)),
+      })),
+      sleep: (fitbit.sleep.value ?? []).map(({ dateOfSleep, duration }) => ({ dateOfSleep, duration })),
+      calories: fitbit.calories.value ?? [],
+      AZM: fitbit.azm.value ?? [],
+      caloriesToday: fitbit.calories.value.at(-1) ?? { dateTime: '', value: '0' },
+      azmToday: fitbit.azm.value.at(-1) ?? {
+        dateTime: '',
+        value: { fatBurnActiveZoneMinutes: 0, cardioActiveZoneMinutes: 0, peakActiveZoneMinutes: 0 },
+      },
+    }))
+
+    updateThisWeeksTotals(fitbitData.value)
   }
 
   function startDailyCountdown() {
@@ -223,5 +293,6 @@ export const useQuestStore = defineStore('quest', () => {
     getQuestById,
     markQuestAsClaimed,
     unclaimedCount,
+    saveTotalsToFirebase,
   }
 })

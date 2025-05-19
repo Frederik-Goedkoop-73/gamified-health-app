@@ -183,8 +183,12 @@ watch(() => user.value, async (newUser) => {
 
 onMounted(async () => {
   await fetchData()
+  await questStore.fetchQuests() // Possibly update lock + save to Firebase
+
+  // Wait for the new lock to propagate
+  await nextTick()
+
   updateThisWeeksTotals(fitbitData.value)
-  await questStore.fetchQuests()
 })
 
 // For data fetch on sync button click

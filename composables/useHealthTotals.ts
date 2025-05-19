@@ -1,10 +1,9 @@
-import { formatISO, getISOWeek, startOfISOWeek } from 'date-fns'
-import { ref } from 'vue'
+import { formatISO, startOfISOWeek } from 'date-fns'
 import { useLocalCache } from '~/lib/useLocalCache'
+import { useAppState } from '~/stores/weeklyTotalsState'
 
 const WEEKLY_TOTALS_CACHE_KEY = 'fitbit-weekly-totals'
 const WEEKLY_TOTALS_TTL = 1000 * 60 * 60 * 24 * 7 // 1 week
-const LOCKED_WEEK_START = '2025-05-12' // YYYY-MM-DD
 
 interface ThisWeeksTotals {
   steps: number
@@ -29,15 +28,14 @@ export function useHealthTotals() {
 
   function updateThisWeeksTotals(data: any) {
     const cached = getCache() || { ...defaultTotals }
-    console.warn('[BEFORE UPDATE] Cached totals:', cached)
+
+    const { lockedWeekStart } = useAppState()
 
     const now = new Date()
     const currentWeekStart = formatISO(startOfISOWeek(now), { representation: 'date' })
-    console.warn('Updating this week\'s totals:', currentWeekStart)
 
     // If the week start date is not set, initialize it
-    if (currentWeekStart !== LOCKED_WEEK_START) {
-      console.warn('Cache guard activated:', currentWeekStart)
+    if (currentWeekStart !== lockedWeekStart) {
       return
     }
 
@@ -53,7 +51,6 @@ export function useHealthTotals() {
 
     // Steps
     cached.steps = data.steps.reduce((sum: number, s: any) => sum + Number(s.value), 0)
-    console.warn('Steps:', cached.steps)
 
     // Distance
     cached.distance = data.distance.reduce((sum: number, d: any) => sum + Number(d.value), 0)
@@ -81,15 +78,9 @@ export function useHealthTotals() {
     }
 
     setCache(cached)
-    console.warn('[AFTER UPDATE] Cached totals:', cached)
-  }
-
-  async function updateRealTotalsIfNeeded() {
-    // Placeholder for logic to move this week's totals to permanent Firestore storage
   }
 
   return {
     updateThisWeeksTotals,
-    updateRealTotalsIfNeeded,
   }
 }
