@@ -38,10 +38,6 @@ const open = ref(false)
         </li>
         <li class="flex items-center gap-2">
           <Award class="size-4 min-w-4 text-primary" />
-          Sleeping Beauty 💤 — Total hours slept
-        </li>
-        <li class="flex items-center gap-2">
-          <Award class="size-4 min-w-4 text-primary" />
           Distance Runner 🏃‍♂️ — Kilometers walked or run
         </li>
         <li class="flex items-center gap-2">
@@ -73,19 +69,19 @@ const open = ref(false)
 
       <ul class="mt-4 text-sm text-muted-foreground space-y-3">
         <li class="flex items-center gap-2">
-          <span class="inline-block size-4 min-w-4 rounded-sm bg-[url('/public/banners/bronze.jpg')]" /> XP progress toward the next level
+          <span class="inline-block size-4 min-w-4 rounded-sm bg-[url('/public/banners/bronze.jpg')]" /> Bronze: Easy badges
         </li>
         <li class="flex items-center gap-2">
-          <span class="inline-block size-4 min-w-4 rounded-sm bg-[url('/public/banners/silver.jpg')]" /> XP progress toward the next level
+          <span class="inline-block size-4 min-w-4 rounded-sm bg-[url('/public/banners/silver.jpg')]" /> Silver: Medium badges
         </li>
         <li class="flex items-center gap-2">
-          <span class="inline-block size-4 min-w-4 rounded-sm bg-[url('/public/banners/gold.jpg')]" /> XP progress toward the next level
+          <span class="inline-block size-4 min-w-4 rounded-sm bg-[url('/public/banners/gold.jpg')]" /> Gold: Hard badges
         </li>
       </ul>
 
       <ul class="mt-4 text-xs text-muted-foreground space-y-3">
         <li class="flex items-center gap-2">
-          <Star class="size-4 min-w-4 text-blue-500 self-start" />
+          <Star class="size-4 min-w-4 self-start text-blue-500" />
           Each badge tier unlocks a growing number of stars, from 1 to 9 total across Bronze, Silver, and Gold. Aim high to complete them all!
         </li>
       </ul>

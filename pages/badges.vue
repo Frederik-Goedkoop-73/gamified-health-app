@@ -1,13 +1,64 @@
 <script setup lang="ts">
+import { useBadgeStore } from '@/stores/badgeStore'
 import { useStarStore } from '@/stores/starStore'
 import NumberFlow from '@number-flow/vue'
 import { Award, Star } from 'lucide-vue-next'
-import BadgeConstruction from '~/components/badges/BadgeConstruction.vue'
+import NextBadgeCard from '~/components/badges/NextBadgeCard.vue'
 import BadgeInfo from '~/components/info/BadgeInfo.vue'
 import { badges } from '~/components/tasks/data/badgeData.js'
+/* import BadgeConstruction from '~/components/badges/BadgeConstruction.vue' */
+import { useBadgeProgress } from '~/composables/useBadgeProgress'
+import CompletedBadgeCard from '../components/badges/CompletedBadgeCard.vue'
 
 const starStore = useStarStore()
+const badgeStore = useBadgeStore()
+const { progress } = useBadgeProgress()
+
 const starValue = computed(() => starStore.stars)
+
+type BadgeType = 'steps' | 'calories' | 'distance' | 'azm' | 'coins' | 'xp' | 'streak' | 'badges'
+
+// 1️⃣ Combine static badge data with dynamic claimed & completed state
+const allBadges = computed(() =>
+  badges.flatMap(group =>
+    group.badges.map(badge => ({
+      ...badge,
+      category: group.category,
+      completed: progress.value[badge.type] >= (badge.target ?? 0),
+      claimed: badgeStore.claimedBadgeIds.includes(badge.id),
+    })),
+  ),
+)
+
+// 2️⃣ Utility: get claimed + next badge for a given type
+function getBadgeDataByType(type: BadgeType) {
+  const badgeList = allBadges.value
+    .filter(b => b.type === type)
+    .sort((a, b) => (a.target ?? 0) - (b.target ?? 0))
+
+  const completed = badgeList.filter(b => b.completed)
+  const next = badgeList.find(b => !b.completed)
+
+  return { completed, next }
+}
+// Utility: get claimed + next badge for a given type
+/* function getBadgeDataByType(type: BadgeType) {
+  const badgeList = allBadges.value
+    .filter(b => b.type === type)
+    .sort((a, b) => (a.target ?? 0) - (b.target ?? 0))
+
+  const completed = badgeList
+    .filter(b => userProgress[type] >= (b.target ?? 0))
+    .map(b => ({ ...b, completed: true }))
+  const next = badgeList.find(b => userProgress[type] < (b.target ?? 0))
+
+  return { completed, next }
+} */
+
+onMounted(async () => {
+  await badgeStore.fetchBadges()
+  await starStore.fetchStars()
+})
 </script>
 
 <template>
@@ -29,100 +80,54 @@ const starValue = computed(() => starStore.stars)
           </h3>
           <Star
             class="size-4"
-            :class="starValue !== 0 ? 'text-blue-500' : 'text-muted-foreground'"
+            :class="starValue !== 0 ? 'text-blue-500 fill-blue-500' : 'text-muted-foreground'"
           />
         </div>
       </div>
     </div>
+    <i
+      class="text-muted-foreground sm:mt-2"
+    >
+      <b>Tip: </b>Sync data in <strong>quests</strong> to update totals
+    </i>
+
     <!-- Main body under header -->
     <main class="flex flex-1 flex-col gap-4 md:gap-8">
-      <BadgeConstruction />
+      <!-- <BadgeConstruction /> -->
 
-      <!-- Badges Grid -->
-      <!-- <Card class="xl:col-span-2">
-        <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
-          <CardTitle class="text-2xl font-bold">
-            Achievement Badges
-          </CardTitle>
-          <Award class="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
+      <Card
+        v-for="category in badges"
+        :key="category.category"
+        class="rounded-2xl bg-background p-4 shadow-lg"
+      >
+        <div class="mb-4 flex flex-row items-center justify-between">
+          <CardTitle>{{ category.category }}</CardTitle>
+          <Award class="h-4 min-w-4 text-muted-foreground" />
+        </div>
 
-        <CardContent class="space-y-8">
-          <div v-for="category in badges" :key="category.category" class="badge-category">
-            <div class="category-header mb-4">
-              <h3 class="flex items-center gap-2 text-xl text-primary font-semibold">
-                <Award class="h-5 w-5" />
-                {{ category.category }}
-              </h3>
-              <hr class="mt-2 border-t border-muted">
-            </div>
+        <p class="mb-2 text-sm font-semibold">
+          You're currently at:
+          <NumberFlow
+            :value="progress[category.badges[0].type as BadgeType]"
+            class="inline-block"
+          />
+        </p>
 
-            <div class="badges-grid">
-              <div v-for="badge in category.badges" :key="badge.tier" class="badge-item">
-                <div class="badge-content">
-                  <img
-                    :src="badge.icon"
-                    :alt="badge.tier"
-                    class="badge-image"
-                    loading="lazy"
-                  >
-                  <div class="badge-info">
-                    <h4 class="badge-tier">
-                      {{ badge.tier }}
-                    </h4>
-                    <p class="badge-requirement">
-                      {{ badge.requirement }}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </card>
-    -->
+        <NextBadgeCard
+          v-if="getBadgeDataByType(category.badges[0].type as BadgeType).next"
+          :badge="getBadgeDataByType(category.badges[0].type as BadgeType).next!"
+          class="mb-6"
+        />
+
+        <!-- <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-5"> -->
+        <div class="grid grid-cols-2 min-w-0 gap-4 sm:grid-cols-[repeat(auto-fit,_minmax(150px,_1fr))] xl:grid-cols-5">
+          <CompletedBadgeCard
+            v-for="badge in getBadgeDataByType(category.badges[0].type as BadgeType).completed"
+            :key="badge.id"
+            :badge="badge"
+          />
+        </div>
+      </Card>
     </main>
   </div>
 </template>
-
-<style scoped>
-.badge-category {
-  @apply pb-6 last:pb-0;
-}
-
-.category-header {
-  @apply mb-4;
-}
-
-.badges-grid {
-  @apply grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4;
-}
-
-.badge-item {
-  @apply transition-all hover:scale-105;
-}
-
-.badge-content {
-  @apply flex flex-col items-center p-4 rounded-lg bg-card border border-muted hover:border-primary;
-}
-
-.badge-image {
-  @apply w-30 h-30 min-w-30 object-contain mb-3;
-}
-
-.badge-info {
-  @apply text-center;
-}
-
-.badge-tier {
-  @apply font-semibold text-sm md:text-base;
-}
-
-.badge-requirement {
-  @apply text-xs md:text-sm text-muted-foreground mt-1;
-}
-
-hr {
-  @apply border-t border-muted my-4;
-}
-</style>

@@ -12,6 +12,7 @@ export interface BaseShopItem {
   price: number
   rarity?: 'common' | 'rare' | 'epic' | 'legendary'
   levelrequired?: number
+  starsrequired?: number
   claimed?: boolean
 }
 

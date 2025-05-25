@@ -4,7 +4,7 @@ import { usePlayerStore } from '@/stores/playerStore'
 import { useXPStore } from '@/stores/xpStore'
 
 import { ShoppingCart } from 'lucide-vue-next'
-import { PREMIUM_AVATARS, SHOP_AVATARS, shopAvatars } from '~/components/tasks/data/avatarData'
+import { PREMIUM_AVATARS, SHOP_AVATARS, shopAvatars, STORY_AVATARS } from '~/components/tasks/data/avatarData'
 import { shopBanners, shopThemes } from '~/components/tasks/data/shopData'
 import { useShop } from '~/composables/useShop'
 import ShopCarouselTabs from './ShopCarouselTabs.vue'
@@ -102,6 +102,29 @@ const currentTitle = computed(() => slideTitles[currentSlide.value])
                 />
               </div>
             </div>
+            <div v-for="(ids, category) in STORY_AVATARS" :key="category">
+              <hr class="my-4">
+              <h3 v-if="xpStore.level < 30" class="text-lg text-muted-foreground font-semibold capitalize">
+                ? ? ?
+              </h3>
+              <h3 v-else class="text-lg text-muted-foreground font-semibold capitalize">
+                {{ category.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) }}
+              </h3>
+              <div class="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-4 p-2">
+                <ShopItemCard
+                  v-for="item in shopAvatars.filter(a => ids.includes(a.id))"
+                  :key="item.id"
+                  :name="item.title"
+                  :type="item.type"
+                  :image="item.path"
+                  :price="item.price"
+                  :rarity="item.rarity"
+                  :starsrequired="item.starsrequired"
+                  :on-buy="() => handleBuyAvatar(item)"
+                  :bought="playerStore.unlockedAvatars.includes(item.id)"
+                />
+              </div>
+            </div>
           </CarouselItem>
 
           <!-- Slide 2: Banners -->
@@ -116,6 +139,7 @@ const currentTitle = computed(() => slideTitles[currentSlide.value])
                 :price="item.price"
                 :rarity="item.rarity"
                 :levelrequired="item.levelrequired"
+                :starsrequired="item.starsrequired"
                 :on-buy="() => handleBuyBanner(item)"
                 :bought="playerStore.unlockedBanners.includes(item.id)"
               />

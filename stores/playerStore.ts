@@ -178,14 +178,6 @@ export const usePlayerStore = defineStore('player', {
       }
     },
 
-    // Badges
-    unlockBadge(badgeId: BadgeID): void {
-      if (!this.unlockedBadges.includes(badgeId)) {
-        this.unlockedBadges.push(badgeId)
-        this.savePlayerData()
-      }
-    },
-
     // Quests
     completeQuest(questId: Quest): void {
       if (!this.completedQuests.includes(questId)) {
@@ -203,9 +195,6 @@ export const usePlayerStore = defineStore('player', {
     },
   },
   getters: {
-    hasBadge: state => (badgeId: BadgeID) =>
-      state.unlockedBadges.includes(badgeId),
-
     hasCompletedQuest: state => (questId: Quest) =>
       state.completedQuests.includes(questId),
 

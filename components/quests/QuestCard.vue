@@ -43,9 +43,24 @@ const icons = {
       <TooltipTrigger as-child>
         <Card
           class="relative min-w-48 p-4 transition"
-          :class="[completed && !claimed ? 'bg-secondary text-muted-foreground' : 'bg-background',
-                   claimed ? 'bg-muted text-muted-foreground opacity-60 cursor-default' : 'bg-background',
-                   dashboard ? 'w-full hover:scale-102 h-full' : 'w-100 hover:scale-105']"
+          :class="[
+            // Background and text color
+            claimed
+              ? 'bg-muted text-muted-foreground opacity-60 cursor-default'
+              : completed
+                ? 'bg-secondary text-muted-foreground'
+                : 'bg-background',
+
+            // Hover behavior
+            claimed
+              ? 'hover:scale-100'
+              : dashboard
+                ? 'hover:scale-102'
+                : 'hover:scale-105',
+
+            // Width & height layout
+            dashboard ? 'w-full h-full' : 'w-100',
+          ]"
           @click="handleClick"
         >
           <!-- Icon top-left -->

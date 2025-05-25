@@ -1,3 +1,4 @@
+// Calculates and saves health totals to cache which will later be saved to firebase when the weeklyquest are regenerated
 import { formatISO, startOfISOWeek } from 'date-fns'
 import { useLocalCache } from '~/lib/useLocalCache'
 import { useAppState } from '~/stores/weeklyTotalsState'
@@ -25,28 +26,26 @@ const defaultTotals: ThisWeeksTotals = {
 
 export function useHealthTotals() {
   const { get: getCache, set: setCache } = useLocalCache<ThisWeeksTotals>(WEEKLY_TOTALS_CACHE_KEY, WEEKLY_TOTALS_TTL)
+  const appState = useAppState()
 
   function updateThisWeeksTotals(data: any) {
     const cached = getCache() || { ...defaultTotals }
 
-    const { lockedWeekStart } = useAppState()
-
     const now = new Date()
     const currentWeekStart = formatISO(startOfISOWeek(now), { representation: 'date' })
 
-    // If the week start date is not set, initialize it
-    if (currentWeekStart !== lockedWeekStart) {
+    // 🔒 Only update cache if we're still in the week currently being tracked
+    if (currentWeekStart !== appState.lockedWeekStart) {
+      console.warn('[HealthTotals] Skipping update — week mismatch:', {
+        currentWeekStart,
+        lockedWeekStart: appState.lockedWeekStart,
+      })
       return
     }
 
-    // If we switched to a new week, reset the totals
+    // 🧼 Reset if week start doesn't match cached object
     if (cached.weekStart !== currentWeekStart) {
-      cached.steps = 0
-      cached.distance = 0
-      cached.sleep = 0
-      cached.calories = 0
-      cached.azm = 0
-      cached.weekStart = currentWeekStart
+      Object.assign(cached, { ...defaultTotals, weekStart: currentWeekStart })
     }
 
     // Steps
@@ -80,7 +79,12 @@ export function useHealthTotals() {
     setCache(cached)
   }
 
+  function getThisWeeksTotals(): ThisWeeksTotals {
+    return getCache() ?? { ...defaultTotals }
+  }
+
   return {
     updateThisWeeksTotals,
+    getThisWeeksTotals,
   }
 }

@@ -156,6 +156,7 @@ export const useQuestStore = defineStore('quest', () => {
     const { updateThisWeeksTotals } = useHealthTotals()
     const { get } = useLocalCache<ThisWeeksTotals>('fitbit-weekly-totals', 1000 * 60 * 60 * 24 * 7)
     const totals = get()
+
     if (!totals || !totals.weekStart)
       return
 

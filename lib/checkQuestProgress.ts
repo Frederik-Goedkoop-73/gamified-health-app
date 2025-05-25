@@ -97,8 +97,10 @@ export function checkQuestProgress(quest: Quest, data: PlayerFitbitData) {
     ? Math.min((currentProgress / quest.target) * 100, 100)
     : 0
 
+  const roundedProgress = Math.round(currentProgress * 100) / 100
+
   return {
-    progress: Number.isNaN(currentProgress) ? 0 : Math.min(currentProgress, quest.target),
+    progress: Number.isNaN(roundedProgress) ? 0 : Math.min(roundedProgress, quest.target),
     completed: isCompleted,
     percentage: Number.isNaN(percentage) ? 0 : percentage,
   }

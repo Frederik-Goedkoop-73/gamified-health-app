@@ -52,6 +52,7 @@ export const useStreakStore = defineStore('streak', {
       if (!currentUser) {
         return
       }
+
       const today = new Date()
       today.setHours(0, 0, 0, 0)
 
@@ -64,6 +65,11 @@ export const useStreakStore = defineStore('streak', {
 
       const yesterday = new Date(today)
       yesterday.setDate(yesterday.getDate() - 1)
+
+      if (lastMidnight.getTime() === today.getTime()) {
+        // ⛔ Already gave a streak today
+        return
+      }
 
       if (!this.lastLoginDate) {
         await this.addStreak(1)

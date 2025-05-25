@@ -11,6 +11,10 @@ const starStore = useStarStore()
 
 const coinValue = computed(() => coinStore.coins)
 const starValue = computed(() => starStore.stars)
+
+onMounted (() => {
+  starStore.fetchStars()
+})
 </script>
 
 <template>
@@ -42,7 +46,7 @@ const starValue = computed(() => starStore.stars)
               </h3>
               <Star
                 class="size-4"
-                :class="starValue !== 0 ? 'text-blue-500' : 'text-muted-foreground'"
+                :class="starValue !== 0 ? 'text-blue-500 fill-blue-500' : 'text-muted-foreground'"
               />
             </div>
           </div>

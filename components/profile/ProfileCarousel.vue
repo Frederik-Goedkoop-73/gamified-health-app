@@ -38,13 +38,6 @@ function onSlideChanged(index: number) {
   currentSlide.value = index
 }
 
-// Check if any avatars are unlocked
-const shopAvatars = computed(() =>
-  PROFILE_AVATARS.filter(
-    a => a.category === 'shop' && playerStore.unlockedAvatars.includes(a.id),
-  ),
-)
-
 const slideTitles = ['Avatars', 'Banners', 'Themes']
 const currentTitle = computed(() => slideTitles[currentSlide.value])
 </script>
@@ -87,14 +80,16 @@ const currentTitle = computed(() => slideTitles[currentSlide.value])
             </div>
 
             <!-- Shop Avatars -->
-            <div v-if="shopAvatars.length > 0">
+            <div v-if="PROFILE_AVATARS.some(a => a.category === 'shop' && playerStore.unlockedAvatars.includes(a.id))">
               <hr class="my-4">
               <h3 class="text-lg text-muted-foreground font-semibold capitalize">
                 The Universal Athletes
               </h3>
               <div class="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-4 p-2">
                 <ProfileItemCard
-                  v-for="item in PROFILE_AVATARS.filter(a => a.category === 'shop' && playerStore.unlockedAvatars.includes(a.id))"
+                  v-for="item in PROFILE_AVATARS.filter(a =>
+                    a.category === 'shop' && playerStore.unlockedAvatars.includes(a.id),
+                  )"
                   :key="item.id"
                   :name="item.title"
                   :type="item.type"
@@ -109,7 +104,13 @@ const currentTitle = computed(() => slideTitles[currentSlide.value])
             <!-- Premium Avatars -->
             <div v-if="xpStore.level >= 30">
               <div
-                v-for="subcategory in Object.keys(PREMIUM_AVATARS)"
+                v-for="subcategory in Object.keys(PREMIUM_AVATARS).filter(sc =>
+                  PROFILE_AVATARS.some(a =>
+                    a.category === 'premium'
+                    && a.subcategory === sc
+                    && playerStore.unlockedAvatars.includes(a.id),
+                  ),
+                )"
                 :key="subcategory"
               >
                 <hr class="my-4">
@@ -118,7 +119,11 @@ const currentTitle = computed(() => slideTitles[currentSlide.value])
                 </h3>
                 <div class="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-4 p-2">
                   <ProfileItemCard
-                    v-for="item in PROFILE_AVATARS.filter(a => a.category === 'premium' && a.subcategory === subcategory && playerStore.unlockedAvatars.includes(a.id))"
+                    v-for="item in PROFILE_AVATARS.filter(a =>
+                      a.category === 'premium'
+                      && a.subcategory === subcategory
+                      && playerStore.unlockedAvatars.includes(a.id),
+                    )"
                     :key="item.id"
                     :name="item.title"
                     :type="item.type"
@@ -132,18 +137,28 @@ const currentTitle = computed(() => slideTitles[currentSlide.value])
             </div>
 
             <!-- Story Avatars -->
-            <!-- <div>
+            <div>
               <div
-                v-for="subcategory in Object.keys(STORY_AVATARS)"
+                v-for="subcategory in Object.keys(STORY_AVATARS).filter(sc =>
+                  PROFILE_AVATARS.some(a =>
+                    a.category === 'story'
+                    && a.subcategory === sc
+                    && playerStore.unlockedAvatars.includes(a.id),
+                  ),
+                )"
                 :key="subcategory"
               >
                 <hr class="my-4">
                 <h3 class="text-lg text-muted-foreground font-semibold capitalize">
-                  {{ subcategory === 'adventureTime' ? 'Adventure Time' : subcategory }}
+                  {{ subcategory.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) }}
                 </h3>
                 <div class="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-4 p-2">
                   <ProfileItemCard
-                    v-for="item in PROFILE_AVATARS.filter(a => a.category === 'story' && a.subcategory === subcategory && playerStore.unlockedAvatars.includes(a.id))"
+                    v-for="item in PROFILE_AVATARS.filter(a =>
+                      a.category === 'story'
+                      && a.subcategory === subcategory
+                      && playerStore.unlockedAvatars.includes(a.id),
+                    )"
                     :key="item.id"
                     :name="item.title"
                     :type="item.type"
@@ -154,7 +169,7 @@ const currentTitle = computed(() => slideTitles[currentSlide.value])
                   />
                 </div>
               </div>
-            </div> -->
+            </div>
           </CarouselItem>
 
           <!-- Slide 2: Banners -->

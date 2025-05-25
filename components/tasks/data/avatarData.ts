@@ -209,6 +209,52 @@ export const shopAvatars: AvatarShopItem[] = [
   { id: 'broku', title: 'Broku', type: 'avatar', price: 10000, rarity: 'legendary', path: AVATAR_PATHS.broku, levelrequired: 50 },
   { id: 'palmolive', title: 'Palmolive', type: 'avatar', price: 10000, rarity: 'legendary', path: AVATAR_PATHS.palmolive, levelrequired: 50 },
 
+  // Extra avatars
+  { id: 'packman', title: 'Packman', type: 'avatar', price: 10, rarity: 'common', path: AVATAR_PATHS.packman, starsrequired: 5 },
+  { id: 'orange_ghost', title: 'Orange Ghost', type: 'avatar', price: 10, rarity: 'common', path: AVATAR_PATHS.orange_ghost, starsrequired: 10 },
+  { id: 'cyan_ghost', title: 'Cyan Ghost', type: 'avatar', price: 10, rarity: 'common', path: AVATAR_PATHS.cyan_ghost, starsrequired: 15 },
+  { id: 'red_ghost', title: 'Red Ghost', type: 'avatar', price: 10, rarity: 'common', path: AVATAR_PATHS.red_ghost, starsrequired: 20 },
+  { id: 'vulnerable_ghost', title: 'Vulnerable Ghost', type: 'avatar', price: 20, rarity: 'common', path: AVATAR_PATHS.vulnerable_ghost, starsrequired: 40 },
+
+  { id: 'steven', title: 'Steven', type: 'avatar', price: 50, rarity: 'common', path: AVATAR_PATHS.steven, starsrequired: 45 },
+  { id: 'axel', title: 'Axel', type: 'avatar', price: 50, rarity: 'common', path: AVATAR_PATHS.axel, starsrequired: 50 },
+  { id: 'crieper', title: 'Crieper', type: 'avatar', price: 50, rarity: 'common', path: AVATAR_PATHS.crieper, starsrequired: 55 },
+  { id: 'skeleton', title: 'Skeleton', type: 'avatar', price: 50, rarity: 'common', path: AVATAR_PATHS.skeleton, starsrequired: 60 },
+  { id: 'urbanite', title: 'Urbanite', type: 'avatar', price: 100, rarity: 'rare', path: AVATAR_PATHS.urbanite, starsrequired: 80 },
+
+  { id: 'lario', title: 'Lario', type: 'avatar', price: 100, rarity: 'common', path: AVATAR_PATHS.lario, starsrequired: 85 },
+  { id: 'muigi', title: 'Muigi', type: 'avatar', price: 100, rarity: 'common', path: AVATAR_PATHS.muigi, starsrequired: 90 },
+  { id: 'plum', title: 'Plum', type: 'avatar', price: 100, rarity: 'common', path: AVATAR_PATHS.plum, starsrequired: 95 },
+  { id: 'joshi', title: 'Joshi', type: 'avatar', price: 100, rarity: 'common', path: AVATAR_PATHS.joshi, starsrequired: 100 },
+  { id: 'tode', title: 'Tode', type: 'avatar', price: 200, rarity: 'rare', path: AVATAR_PATHS.tode, starsrequired: 120 },
+
+  { id: 'sunic', title: 'Sunic', type: 'avatar', price: 200, rarity: 'rare', path: AVATAR_PATHS.sunic, starsrequired: 125 },
+  { id: 'tail', title: 'Tail', type: 'avatar', price: 200, rarity: 'rare', path: AVATAR_PATHS.tail, starsrequired: 130 },
+  { id: 'aimy', title: 'Aimy', type: 'avatar', price: 200, rarity: 'rare', path: AVATAR_PATHS.aimy, starsrequired: 135 },
+  { id: 'nukkels', title: 'Nukkels', type: 'avatar', price: 200, rarity: 'rare', path: AVATAR_PATHS.nukkels, starsrequired: 140 },
+  { id: 'super_sunic', title: 'Super Sunic', type: 'avatar', price: 500, rarity: 'rare', path: AVATAR_PATHS.super_sunic, starsrequired: 160 },
+
+  { id: 'fill', title: 'Fill', type: 'avatar', price: 300, rarity: 'rare', path: AVATAR_PATHS.fill, starsrequired: 165 },
+  { id: 'jack', title: 'Jack', type: 'avatar', price: 300, rarity: 'rare', path: AVATAR_PATHS.jack, starsrequired: 170 },
+  { id: 'princess_chewingum', title: 'Princess Chewingum', type: 'avatar', price: 300, rarity: 'rare', path: AVATAR_PATHS.princess_chewingum, starsrequired: 175 },
+  { id: 'GMO', title: 'GMO', type: 'avatar', price: 300, rarity: 'rare', path: AVATAR_PATHS.GMO, starsrequired: 180 },
+  { id: 'chunky_space_princess', title: 'Chunky Space Princess', type: 'avatar', price: 500, rarity: 'rare', path: AVATAR_PATHS.chunky_space_princess, starsrequired: 200 },
+
+  { id: 'cow', title: 'Cow', type: 'avatar', price: 400, rarity: 'rare', path: AVATAR_PATHS.cow, starsrequired: 205 },
+  { id: 'sheep', title: 'Sheep', type: 'avatar', price: 400, rarity: 'rare', path: AVATAR_PATHS.sheep, starsrequired: 210 },
+  { id: 'pig', title: 'Pig', type: 'avatar', price: 400, rarity: 'rare', path: AVATAR_PATHS.pig, starsrequired: 215 },
+  { id: 'zombee', title: 'Zombee', type: 'avatar', price: 400, rarity: 'rare', path: AVATAR_PATHS.zombee, starsrequired: 220 },
+  { id: 'endman', title: 'Endman', type: 'avatar', price: 1000, rarity: 'epic', path: AVATAR_PATHS.endman, starsrequired: 240 },
+
+  { id: 'goonba', title: 'Goonba', type: 'avatar', price: 500, rarity: 'rare', path: AVATAR_PATHS.goonba, starsrequired: 245 },
+  { id: 'boser', title: 'Boser', type: 'avatar', price: 500, rarity: 'rare', path: AVATAR_PATHS.boser, starsrequired: 250 },
+  { id: 'smeggman', title: 'Smeggman', type: 'avatar', price: 500, rarity: 'rare', path: AVATAR_PATHS.smeggman, starsrequired: 255 },
+  { id: 'silhouette', title: 'Silhouette', type: 'avatar', price: 1000, rarity: 'epic', path: AVATAR_PATHS.silhouette, starsrequired: 280 },
+  { id: 'snow_king', title: 'Snow King', type: 'avatar', price: 1000, rarity: 'epic', path: AVATAR_PATHS.snow_king, starsrequired: 300 },
+
+  { id: 'xans', title: 'Xans', type: 'avatar', price: 0, rarity: 'legendary', path: AVATAR_PATHS.xans, starsrequired: 315 },
+  { id: 'private', title: 'Private', type: 'avatar', price: 0, rarity: 'legendary', path: AVATAR_PATHS.private, starsrequired: 315 },
+  { id: 'herobrime', title: 'Herobrime', type: 'avatar', price: 0, rarity: 'legendary', path: AVATAR_PATHS.herobrime, starsrequired: 315 },
 ]
 
 export const DEFAULT_AVATARS = ['red', 'blue', 'green'] as const
@@ -246,22 +292,26 @@ export const PREMIUM_AVATARS = {
 }
 
 export const STORY_AVATARS = {
-  pacman: ['packman', 'orange_ghost', 'cyan_ghost', 'red_ghost', 'vulnerable_ghost'] as AvatarID[],
-  minecraft: ['steven', 'axel', 'crieper', 'skeleton', 'urbanite'] as AvatarID[],
-  mario: ['lario', 'muigi', 'plum', 'joshi', 'tode'] as AvatarID[],
-  sonic: ['sunic', 'tail', 'aimy', 'nukkels', 'super_sunic'] as AvatarID[],
-  adventureTime: ['fill', 'jack', 'princess_chewingum', 'GMO', 'chunky_space_princess'] as AvatarID[],
+  packman: ['packman', 'orange_ghost', 'cyan_ghost', 'red_ghost', 'vulnerable_ghost'] as AvatarID[],
+  minekraft: ['steven', 'axel', 'crieper', 'skeleton', 'urbanite'] as AvatarID[],
+  lario: ['lario', 'muigi', 'plum', 'joshi', 'tode'] as AvatarID[],
+  sunic: ['sunic', 'tail', 'aimy', 'nukkels', 'super_sunic'] as AvatarID[],
+  quest_time: ['fill', 'jack', 'princess_chewingum', 'GMO', 'chunky_space_princess'] as AvatarID[],
   mobs: [
     'cow',
     'sheep',
     'pig',
     'zombee',
     'endman',
+  ] as AvatarID[],
+  more_mobs: [
     'goonba',
     'boser',
     'smeggman',
     'silhouette',
     'snow_king',
+  ] as AvatarID[],
+  completionist: [
     'xans',
     'private',
     'herobrime',
@@ -274,65 +324,60 @@ export interface ProfileAvatarItem extends AvatarShopItem {
   subcategory?: keyof typeof PREMIUM_AVATARS | keyof typeof STORY_AVATARS
 }
 
-export const PROFILE_AVATARS: ProfileAvatarItem[] = [
-  // Default
-  ...DEFAULT_AVATARS.map(id => ({
-    id,
-    title: id.charAt(0).toUpperCase() + id.slice(1),
-    type: 'avatar',
-    rarity: 'common',
-    price: 0,
-    levelrequired: 1,
-    path: AVATAR_PATHS[id],
-    category: 'default',
-  } as const)),
+function capitalize(str: string): string {
+  return str.charAt(0).toUpperCase() + str.slice(1)
+}
 
-  // Shop
-  ...shopAvatars.map(avatar => ({
-    ...avatar,
-    category: 'shop' as const,
-  })),
+export const PROFILE_AVATARS: ProfileAvatarItem[] = getAvatarIds().map((id) => {
+  const path = AVATAR_PATHS[id]
+  const shopItem = shopAvatars.find(a => a.id === id)
 
-  // Premium
-  ...Object.entries(PREMIUM_AVATARS).flatMap(([subcategory, ids]) =>
-    ids.map((id) => {
-      const item = shopAvatars.find(a => a.id === id)
-      if (!item)
-        throw new Error(`Missing premium avatar in shopAvatars: ${id}`)
-      return {
-        ...item,
-        category: 'premium' as const,
-        subcategory: subcategory as keyof typeof PREMIUM_AVATARS,
-      }
-    }),
-  ),
-
-  // Story
-  ...Object.entries(STORY_AVATARS).flatMap(([subcategory, ids]) =>
-    ids.map(id => ({
+  if ((DEFAULT_AVATARS as readonly string[]).includes(id)) {
+    return {
       id,
-      title: id.charAt(0).toUpperCase() + id.slice(1),
+      title: capitalize(id),
       type: 'avatar',
       rarity: 'common',
       price: 0,
       levelrequired: 1,
-      path: AVATAR_PATHS[id],
+      path,
+      category: 'default',
+    }
+  }
+
+  if ((SHOP_AVATARS as string[]).includes(id)) {
+    return {
+      ...shopItem!,
+      category: 'shop',
+    }
+  }
+
+  const premiumSub = Object.entries(PREMIUM_AVATARS).find(([_, ids]) => ids.includes(id as AvatarID))
+  if (premiumSub) {
+    return {
+      ...shopItem!,
+      category: 'premium',
+      subcategory: premiumSub[0] as keyof typeof PREMIUM_AVATARS,
+    }
+  }
+
+  const storySub = Object.entries(STORY_AVATARS).find(([_, ids]) => ids.includes(id as AvatarID))
+  if (storySub) {
+    return {
+      id,
+      title: capitalize(id),
+      type: 'avatar',
+      rarity: 'common',
+      price: 0,
+      levelrequired: 1,
+      path,
       category: 'story',
-      subcategory: subcategory as keyof typeof STORY_AVATARS,
-    } as const)),
-  ),
-]
+      subcategory: storySub[0] as keyof typeof STORY_AVATARS,
+    }
+  }
 
-/* export const ALL_PREMIUM_AVATARS = Object.values(PREMIUM_AVATARS).flat()
-
-export const ALL_STORY_AVATARS = Object.values(STORY_AVATARS).flat()
-
-export const AVATAR_CATEGORIES = {
-  default: DEFAULT_AVATARS,
-  shop: SHOP_AVATARS,
-  premium: PREMIUM_AVATARS,
-  story: STORY_AVATARS,
-} */
+  throw new Error(`Unknown avatar id "${id}" not found in any category`)
+})
 
 export function getAvatarIds(): AvatarID[] {
   return Object.keys(AVATAR_PATHS) as AvatarID[]
