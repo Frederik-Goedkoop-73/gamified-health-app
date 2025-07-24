@@ -1,24 +1,3 @@
-# KUL Health Monitoring Web App
-
-This is a restyling of the initial version of my gamified health tracking web app for my thesis.
-For this I've switched to nuxtjs as my framework using Dian Pratama's [template](https://github.com/dianprata/nuxt-shadcn-dashboard).
-
-## Credits
-
-- [Dian Pratama](https://github.com/dianprata/nuxt-shadcn-dashboard)
-- [Nuxt.js](https://nuxtjs.org/)
-- [Shadcn Vue](https://shadcn-vue.com/)
-- [UnoCSS](https://unocss.com/)
-
-## License
-
-MIT
-
-[nuxt-src]: https://img.shields.io/badge/Built%20With%20Nuxt-18181B?logo=nuxt.js
-[nuxt-href]: https://nuxt.com/
-
----
-
 # Gamified Health Platform for Fitbit Users
 
 This repository contains the source code for a custom-built gamified web platform designed for a behavioural intervention study on physical activity and well-being. The platform integrates with Fitbit Inspire 2 devices and provides daily/weekly quests (or challenges), badges (or lifetime quests), XP and coin rewards, a shop, a leaderboard, and avatar customisation to enhance user motivation.
@@ -32,6 +11,10 @@ The goal was to investigate whether gamified digital feedback loops could increa
 
 The website was developed during February 2025 - May 25th 2025. The experiment ran from May 12th 2025 - June 17th.
 
+Link to the website: <a href="https://kul-health-monitor.netlify.app/" style="text-decoration: underline;">kul-health-monitor</a>
+
+<a href="https://kul-health-monitor.netlify.app/"><img title="Home page hyper-linked screenshot" alt="Tech Stack Graphic" src="public/github/home page.png"></a>
+
 ## Features
 
 - Fitbit integration via OAuth 2.0
@@ -44,12 +27,34 @@ The website was developed during February 2025 - May 25th 2025. The experiment r
 
 ## Technologies Used
 
-- **Frontend:** Nuxt.js (Vue 3), TypeScript
-- **Backend:** Firebase (Firestore, Firebase Auth)
-- **API Integration:** Fitbit Web API (OAuth 2.0)
-- **Styling & UI:** Tailwind CSS
+- **Frontend:** [Nuxt.js](https://nuxtjs.org/) ([Vue 3](https://vuejs.org/)), [TypeScript](https://www.typescriptlang.org/)
 
-![image](public/github/Tech stack.png)
+  - Vue was chosen due to its simplicity, exntensive documentation, and performance.
+  - TypeScript improves code readability, debugging, and long-term maintainability — especially valuable for future collaborators or contributors.
+
+- **Backend:** [Firebase](https://firebase.google.com/) (Firestore, Firebase Auth)
+
+  - Firebase provides a serverless, no-code backend that's easy to integrate. Its generous free tier was ideal for this small-scale research project (n = 10).
+
+- **API Integration:** [Fitbit Web API](https://www.fitbit.com/dev) (OAuth 2.0)
+
+  - This enables secure access to participants’ fitness and health data.
+
+- **Styling & UI:** [Tailwind CSS](https://tailwindcss.com/)
+
+- **UI Template:** [Dian Pratama's Nuxt.js and Shadcn-vue dashboard template](https://github.com/dianprata/nuxt-shadcn-dashboard)<br>
+  - Initially, the project started without a template — but that quickly became unsustainable due to the time investment required for basic UI scaffolding.
+  - Dian’s template saved substantial development time and allowed me to focus on integrating gamification logic and data features.
+  - The template includes:
+    - [Shadcn-vue UI component library](https://shadcn-vue.com/)
+    - [UnoCSS](https://unocss.dev/)
+
+<img title="Tech Stack Graphic" alt="Tech Stack Graphic" src="public/github/Tech stack.png">
+
+> [!NOTE] For anyone unfamiliar with Vue but interested in contributing to this project:<br>
+>
+> - This project uses Vue’s Composition API, a more modern way of writing Vue components. Unlike the older Options API, it lets you group related logic (like data, computed values, and watchers) together — making the code easier to read, maintain, and reuse.
+> - The [official Vue documentation](https://vuejs.org/guide/introduction.html) provides a quick, high-level overview of the framework. For everything else, you can explore the existing codebase or use an AI code assistant to help you get started.
 
 ## Installation & Setup
 
@@ -57,6 +62,14 @@ The website was developed during February 2025 - May 25th 2025. The experiment r
 > This platform was developed for research purposes and may not be fully production-ready.
 
 > Follow these steps to run the project **locally**:
+
+0. **Ensure the necessary global dependencies are installed:**
+
+   - [Node.js and npm](https://nodejs.org/en/download)
+   - [Git](https://git-scm.com/downloads): Necessary for copying this repository to your local machine.
+   - [Firebase CLI](https://firebase.google.com/docs/cli): Needed for firebase login and auth
+
+   - (Optional) [Nuxt CLI](https://nuxt.com/docs/4.x/getting-started/installation): Helpful if you run `nuxi` commands often
 
 1. **Clone the repository**:
 
@@ -70,6 +83,8 @@ The website was developed during February 2025 - May 25th 2025. The experiment r
    ```bash
    npm install
    ```
+
+   This will install the remaining dependencies such as nuxt, tailwindcss, firebase SDK, shadcn-ui, lucide-vue-next (for icons), pinia (store library and state management framework), vue ...
 
 3. **Generate the Nuxt build files** (this will fix the `.nuxt/tsconfig.server.json` error):
 
@@ -108,17 +123,27 @@ The website was developed during February 2025 - May 25th 2025. The experiment r
 
 ## Usage Instructions
 
-- Users log in using their Google account and connect their Fitbit account via OAuth.
-- Upon login, Fitbit data is pulled and used to generate quest progress.
-- Users can complete and collect quests, earn XP/coins, and unlock avatars.
-- Quest rewards must be collected manually before midnight resets.
+- Users sign in with their Google account and connect their Fitbit account via OAuth.
+- After logging in:
+
+  - User and player data — such as XP, coins, badges, streaks, selected/unlocked avatars, banners, and themes — is loaded from the database.
+  - Fitbit data is fetched and displayed in the health dashboard. It also powers the quest system (i.e. progress tracking and completion).
+
+- Users can complete and manually collect daily and weekly quests to earn XP and coins.
+- Rewards can be spent in the Shop on customisation options like avatars, banners, and themes.
+- **Important**: Quest rewards must be collected **manually before midnight**, as they reset daily at 00:00.
 
 ## Data & Privacy Notes
 
-- No personal or fitness data is stored in this repository or in the platform database.
+- **No personal or fitness data is stored** in this repository or in the platform database (except for username and email).
+
+  - For the analysis of this experiment, all particpants sent their relevant fitness data via email. None of this data is accessible through the website or database.
+
 - All Fitbit data was read client-side and processed in real-time.
+
 - Final XP values were recorded via screenshot and pseudonymised for analysis.
-- Avatar assets based on third-party artwork are not included in this repository due to potential licensing restrictions.
+
+- Avatar assets based on third-party artwork are not included in this repository due to potential licensing restrictions. These have been substituted with a placeholder png as to not disrupt the codebase. More info on this can be found here: (link to public readme)
 
 ## Limitations
 
@@ -141,7 +166,8 @@ The website was developed during February 2025 - May 25th 2025. The experiment r
 This repository is shared for academic purposes and is not intended for commercial use. Please contact the author for licensing questions.
 (link to MIT licence)
 
-**Dian Prata template**
+**Dian Pratama template**
+[Dian Pratama](https://github.com/dianprata/nuxt-shadcn-dashboard)
 
 ## Contact
 
