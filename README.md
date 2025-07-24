@@ -13,7 +13,7 @@ The website was developed during February 2025 - May 25th 2025. The experiment r
 
 Link to the website: <a href="https://kul-health-monitor.netlify.app/" style="text-decoration: underline;">kul-health-monitor</a>
 
-<a href="https://kul-health-monitor.netlify.app/"><img title="Home page hyper-linked screenshot" alt="Tech Stack Graphic" src="public/github/home page.png"></a>
+<a href="https://kul-health-monitor.netlify.app/"><img style="border: 1px black solid; border-radius: 1%;" alt="Home page hyper-linked screenshot" src="public/github/home page.png"></a>
 
 ## Features
 
@@ -49,19 +49,20 @@ Link to the website: <a href="https://kul-health-monitor.netlify.app/" style="te
     - [Shadcn-vue UI component library](https://shadcn-vue.com/)
     - [UnoCSS](https://unocss.dev/)
 
-<img title="Tech Stack Graphic" alt="Tech Stack Graphic" src="public/github/Tech stack.png">
+<img title="Tech Stack Graphic" alt="Tech Stack Graphic" src="public/github/Tech stack.png"><br>
 
-> [!NOTE] For anyone unfamiliar with Vue but interested in contributing to this project:<br>
+> [!NOTE] Note
+> For anyone unfamiliar with Vue but interested in contributing to this project:
 >
 > - This project uses Vue’s Composition API, a more modern way of writing Vue components. Unlike the older Options API, it lets you group related logic (like data, computed values, and watchers) together — making the code easier to read, maintain, and reuse.
 > - The [official Vue documentation](https://vuejs.org/guide/introduction.html) provides a quick, high-level overview of the framework. For everything else, you can explore the existing codebase or use an AI code assistant to help you get started.
 
 ## Installation & Setup
 
-> [!NOTE] <br>
+> [!WARNING] Warning
 > This platform was developed for research purposes and may not be fully production-ready.
 
-> Follow these steps to run the project **locally**:
+Follow these steps to run the project **locally**:
 
 0. **Ensure the necessary global dependencies are installed:**
 
@@ -106,7 +107,7 @@ Link to the website: <a href="https://kul-health-monitor.netlify.app/" style="te
 
 5. **Start the development server**:
 
-   > [!WARNING] <br>
+   > [!IMPORTANT] Important
    > The website won't work unless a .env file is created!
 
    ```bash
@@ -131,7 +132,9 @@ Link to the website: <a href="https://kul-health-monitor.netlify.app/" style="te
 
 - Users can complete and manually collect daily and weekly quests to earn XP and coins.
 - Rewards can be spent in the Shop on customisation options like avatars, banners, and themes.
-- **Important**: Quest rewards must be collected **manually before midnight**, as they reset daily at 00:00.
+
+> [!IMPORTANT] Important
+> Quest rewards must be collected **manually before midnight**, as they reset daily at 00:00.
 
 ## Data & Privacy Notes
 
@@ -139,11 +142,12 @@ Link to the website: <a href="https://kul-health-monitor.netlify.app/" style="te
 
   - For the analysis of this experiment, all particpants sent their relevant fitness data via email. None of this data is accessible through the website or database.
 
-- All Fitbit data was read client-side and processed in real-time.
+- All Fitbit data was read **client-side** and processed in real-time.
 
 - Final XP values were recorded via screenshot and pseudonymised for analysis.
 
-- Avatar assets based on third-party artwork are not included in this repository due to potential licensing restrictions. These have been substituted with a placeholder png as to not disrupt the codebase. More info on this can be found here: (link to public readme)
+> [!NOTE] Note
+> Avatar assets based on third-party artwork are not included in this repository due to potential licensing restrictions. These have been substituted with a placeholder png as to not disrupt the codebase. More info on this can be found here: (link to public readme) <br><br> <img alt="Proprietary Asset Placeholder" src="public/github/cc-placeholder.png"><br>
 
 ## Limitations
 
@@ -163,8 +167,10 @@ Link to the website: <a href="https://kul-health-monitor.netlify.app/" style="te
 
 ## License
 
-This repository is shared for academic purposes and is not intended for commercial use. Please contact the author for licensing questions.
-(link to MIT licence)
+[MIT Licence](LICENSE)
+
+Copyright (c) 2024 [Dian Pratama](https://github.com/dianprata) <br>
+Copyright (c) 2025 [Frederik Goedkoop](https://github.com/Frederik-Goedkoop-73)
 
 **Dian Pratama template**
 [Dian Pratama](https://github.com/dianprata/nuxt-shadcn-dashboard)
