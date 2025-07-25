@@ -51,7 +51,7 @@ Link to the website: <a href="https://kul-health-monitor.netlify.app/" style="te
 
 <img title="Tech Stack Graphic" alt="Tech Stack Graphic" src="public/github/Tech stack.png"><br>
 
-> [!NOTE] Note
+> [!NOTE]
 > For anyone unfamiliar with Vue but interested in contributing to this project:
 >
 > - This project uses Vue’s Composition API, a more modern way of writing Vue components. Unlike the older Options API, it lets you group related logic (like data, computed values, and watchers) together — making the code easier to read, maintain, and reuse.
@@ -59,7 +59,7 @@ Link to the website: <a href="https://kul-health-monitor.netlify.app/" style="te
 
 ## Installation & Setup
 
-> [!WARNING] Warning
+> [!WARNING]
 > This platform was developed for research purposes and may not be fully production-ready.
 
 Follow these steps to run the project **locally**:
@@ -107,7 +107,7 @@ Follow these steps to run the project **locally**:
 
 5. **Start the development server**:
 
-   > [!IMPORTANT] Important
+   > [!IMPORTANT]
    > The website won't work unless a .env file is created!
 
    ```bash
@@ -133,7 +133,7 @@ Follow these steps to run the project **locally**:
 - Users can complete and manually collect daily and weekly quests to earn XP and coins.
 - Rewards can be spent in the Shop on customisation options like avatars, banners, and themes.
 
-> [!IMPORTANT] Important
+> [!IMPORTANT]
 > Quest rewards must be collected **manually before midnight**, as they reset daily at 00:00.
 
 ## Data & Privacy Notes
@@ -146,8 +146,10 @@ Follow these steps to run the project **locally**:
 
 - Final XP values were recorded via screenshot and pseudonymised for analysis.
 
-> [!NOTE] Note
-> Avatar assets based on third-party artwork are not included in this repository due to potential licensing restrictions. These have been substituted with a placeholder png as to not disrupt the codebase. More info on this can be found here: (link to public readme) <br><br> <img alt="Proprietary Asset Placeholder" src="public/github/cc-placeholder.png"><br>
+> [!NOTE]
+>
+> - Avatar assets based on third-party artwork are not included in this repository due to potential licensing restrictions. These have been substituted with a placeholder png as to not disrupt the codebase. More info on this can be found here: (link to public readme) <br><br> <img alt="Proprietary Asset Placeholder" src="public/github/cc-placeholder.png"><br> (move to linked file)
+> - Due to an API key leak, some versions in the commit history have been cleansed of the `fitbit.client.ts` file.
 
 ## Limitations
 
