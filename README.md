@@ -9,11 +9,11 @@ This project was developed as part of a master's thesis titled:
 
 The goal was to investigate whether gamified digital feedback loops could increase physical activity among university students using real-time wearable data.
 
-The website was developed during February 2025 - May 25th 2025. The experiment ran from May 12th 2025 - June 17th.
+The website was developed from February to May 25th 2025. The experiment ran from May 12th to June 17th 2025.
 
-Link to the website: <a href="https://kul-health-monitor.netlify.app/" style="text-decoration: underline;">kul-health-monitor</a>
+Click <a href="https://kul-health-monitor.netlify.app/" style="text-decoration: underline;">here</a> to visit the website.
 
-<a href="https://kul-health-monitor.netlify.app/"><img style="border: 1px black solid; border-radius: 1%;" alt="Home page hyper-linked screenshot" src="public/github/home page.png"></a>
+<a href="https://kul-health-monitor.netlify.app/"><img alt="Home page hyper-linked screenshot" src="public/github/home page.png"></a>
 
 ## Features
 
@@ -29,7 +29,7 @@ Link to the website: <a href="https://kul-health-monitor.netlify.app/" style="te
 
 - **Frontend:** [Nuxt.js](https://nuxtjs.org/) ([Vue 3](https://vuejs.org/)), [TypeScript](https://www.typescriptlang.org/)
 
-  - Vue was chosen due to its simplicity, exntensive documentation, and performance.
+  - Vue was chosen due to its simplicity, extensive documentation, and performance.
   - Nuxt is a meta-framework built on top of Vue and simplifies the development of Vue applications by providing features like file-based routing, static site generation, auto-imports (components & composables), etc.
   - TypeScript improves code readability, debugging, and long-term maintainability — especially valuable for future collaborators or contributors.
 
@@ -145,7 +145,7 @@ Follow these steps to run the project **locally**:
 
 - **No personal or fitness data is stored** in this repository or in the platform database (except for username and email).
 
-  - For the analysis of this experiment, all particpants sent their relevant fitness data via email. None of this data is accessible through the website or database.
+  - For the analysis of this experiment, all participants sent their relevant fitness data via email. None of this data is accessible through the website or database.
 
 - All Fitbit data was read **client-side** and processed in real-time.
 
