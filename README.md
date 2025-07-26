@@ -30,6 +30,7 @@ Link to the website: <a href="https://kul-health-monitor.netlify.app/" style="te
 - **Frontend:** [Nuxt.js](https://nuxtjs.org/) ([Vue 3](https://vuejs.org/)), [TypeScript](https://www.typescriptlang.org/)
 
   - Vue was chosen due to its simplicity, exntensive documentation, and performance.
+  - Nuxt is a meta-framework built on top of Vue and simplifies the development of Vue applications by providing features like file-based routing, static site generation, auto-imports (components & composables), etc.
   - TypeScript improves code readability, debugging, and long-term maintainability — especially valuable for future collaborators or contributors.
 
 - **Backend:** [Firebase](https://firebase.google.com/) (Firestore, Firebase Auth)
@@ -56,6 +57,10 @@ Link to the website: <a href="https://kul-health-monitor.netlify.app/" style="te
 >
 > - This project uses Vue’s Composition API, a more modern way of writing Vue components. Unlike the older Options API, it lets you group related logic (like data, computed values, and watchers) together — making the code easier to read, maintain, and reuse.
 > - The [official Vue documentation](https://vuejs.org/guide/introduction.html) provides a quick, high-level overview of the framework. For everything else, you can explore the existing codebase or use an AI code assistant to help you get started.
+
+### Website Architecture
+
+<img src="public/github/Website Architecture.png" alt="Site's Architectural Diagram">
 
 ## Installation & Setup
 
@@ -107,14 +112,14 @@ Follow these steps to run the project **locally**:
 
 5. **Start the development server**:
 
-   > [!IMPORTANT]
-   > The website won't work unless a .env file is created!
-
    ```bash
    npm run dev
    ```
 
    Copy the localhost url from the terminal into a new browser tab to open the website.
+
+> [!IMPORTANT]
+> The website won't work unless a .env file is created!
 
 6. **Fitbit OAuth Setup**:
 
@@ -133,7 +138,7 @@ Follow these steps to run the project **locally**:
 - Users can complete and manually collect daily and weekly quests to earn XP and coins.
 - Rewards can be spent in the Shop on customisation options like avatars, banners, and themes.
 
-> [!IMPORTANT]
+> [!WARNING]
 > Quest rewards must be collected **manually before midnight**, as they reset daily at 00:00.
 
 ## Data & Privacy Notes
@@ -148,24 +153,70 @@ Follow these steps to run the project **locally**:
 
 > [!NOTE]
 >
-> - Avatar assets based on third-party artwork are not included in this repository due to potential licensing restrictions. These have been substituted with a placeholder png as to not disrupt the codebase. More info on this can be found here: (link to public readme) <br><br> <img alt="Proprietary Asset Placeholder" src="public/github/cc-placeholder.png"><br> (move to linked file)
+> - Avatar assets based on third-party artwork are not included in this repository due to potential licensing restrictions. These have been substituted with a placeholder png as to not disrupt the codebase. <br><br> <img alt="Proprietary Asset Placeholder" src="public/github/cc-placeholder.png"><br>
 > - Due to an API key leak, some versions in the commit history have been cleansed of the `fitbit.client.ts` file.
 
 ## Limitations
 
-- Site performance was limited by non-optimised rendering logic in Vue components.
-- Manual syncing and reward collection were required for full functionality.
-- To prevent exceeding the Fitbit fetch request quota, weekly totals were cached each week and added to the lifetime totals (for badges). This method is rather inefficient and results in data gaps if the user doesn't log in the last days of the week.
-- No tests were written for this website.
+### Technical limitations
+
+1. Manual quest collection & login dependency
+
+   - Users must manually collect rewards and log in daily.
+   - Missed logins result in lost rewards and data gaps.
+   - Users must also be logged in with Google and Fitbit to use / preview the website features. This can be disabled for development.
+
+2. Fitbit API rate limits
+
+   - The platform relies on frequent Fitbit API calls. To avoid exceeding the data fetch request quota, data is cached weekly - which leads to reduced precision and possible data loss (for badges) if the user doesn't sync before the week's end.
+
+3. No server-side processing or background tasks
+
+   - The platform runs entirely on the client side, relying on Firebase and the Fitbit Web API for backend functionality.
+   - Without a custom backend or job scheduler, essential tasks like quest progression, badge unlocking, and data refreshing only occur when a user logs in — making all updates dependent on user interaction.
+
+### Code limitations
+
+1. No lazy loading of assets
+
+   - Large images (e.g. avatars, banners) are loaded upfront, significantly increasing initial load time and reducing performance on slower devices.
+   - This is the biggest issue currently.
+
+2. No unit or integration testing
+
+   - To save time, automated tests were skipped. This means that changes risk introducing bugs and makes the project harder to scale.
+
+3. Tight coupling between stores and Firebase
+
+   - Many Pinia stores directly fetch / save to Firebase, which limits flexibility for swapping out Firebase in the future.
+
+4. No continuous integration or deployment pipeline
 
 ## Future Improvements
 
-- Replace Firebase with a relational or graph-based database for more robust data queries.
-- Implement lazy loading for large assets (avatars, badges) to improve initial load times.
-- Add support for session logging and progress analytics.
-- Add automated quest tracking and notifications.
-- Refactor frontend with modular Vue components and memoisation for improved rendering efficiency.
-- Expand unit testing and CI pipelines for deployment readiness.
+1. Add server-side automation
+
+   - Use [Firebase Cloud Functions](https://firebase.google.com/docs/functions) or a [Node.js](https://nodejs.org/en) backend to:
+   - Auto-reset daily/weekly quests (`cron` trigger).
+   - Auto-unlock badges / quests when requirements are met.
+   - Fetch Fitbit data periodically using refresh tokens (background sync).
+
+2. [Optimise Vue Frontend](https://vuejs.org/guide/best-practices/performance)
+
+   - Improve performance with:
+   - Lazy-loading components using [defineAsyncComponent()](https://vuejs.org/guide/components/async) in Nuxt.
+   - Memoising expensive computed properties using [useMemoize()](https://vueuse.org/core/useMemoize/).
+   - Reducing rerenders by:
+     - Applying [`v-memo`](https://vuejs.org/api/built-in-directives.html#v-memo) to tell Vue to reuse parts of the template unless specific data changes.
+     - Using [`v-once`](https://vuejs.org/api/built-in-directives.html#v-once) for elements that never need to update.
+
+3. Quest UX Improvements
+
+   - Allow grace period collection via timestamp comparison and a `claimedLate: true` flag in Firestore.
+
+4. Upgrade Deployment Readiness
+   - Add unit tests for critical composables (e.g. [UseAuth](composables/UseAuth.ts), [useQuestProgress](composables/useQuestProgress.ts), [useHealthTotals](composables/useHealthTotals.ts)) using Vitest.
+   - Set up CI/CD with [GitHub Actions](https://github.com/features/actions) to automatically lint, test, and deploy to [Netlify](https://www.netlify.com/).
 
 ## License
 
@@ -184,13 +235,3 @@ Copyright (c) 2025 [Frederik Goedkoop](https://github.com/Frederik-Goedkoop-73)
 - Thesis Supervisor: Prof. Jean-Marie Aerts
 - University: KU Leuven and University of Antwerp (UA)
 - Year: 2025
-
----
-
-## To mention
-
-- Future optimisations -> No web dev experience so some parts unoptimised
-- Technical descriptions in README files in folders
-- Proprietary assets -> See README in assets, don't copy from previous commits!
-- Screenshots
-- Add diagram of flow
