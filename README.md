@@ -60,6 +60,8 @@ Click <a href="https://kul-health-monitor.netlify.app/" style="text-decoration: 
 
 ### Website Architecture
 
+This project uses a [RESTful API](https://aws.amazon.com/what-is/restful-api/#:~:text=RESTful%20API%20is%20an%20interface,applications%20to%20perform%20various%20tasks.) to securely connect with Fitbit’s servers and retrieve activity data. A RESTful API is a standard way for different systems—like a website and a wearable device service—to communicate and share information over the internet. It’s commonly used in modern apps to connect with external tools or services, such as fitness platforms, maps, or payment systems.
+
 <img src="public/github/Website Architecture.png" alt="Site's Architectural Diagram">
 
 ## Installation & Setup
