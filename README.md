@@ -145,6 +145,9 @@ Follow these steps to run the project **locally**:
 
 ## Data & Privacy Notes
 
+- The data for the avatars, quests, badges, and shop (e.g. completion requirements) can be found [here](components/tasks/data).
+
+
 - **No personal or fitness data is stored** in this repository or in the platform database (except for username and email).
 
   - For the analysis of this experiment, all participants sent their relevant fitness data via email. None of this data is accessible through the website or database.
